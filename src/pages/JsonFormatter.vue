@@ -434,7 +434,7 @@ function syntaxHighlight(json: string): string {
 }
 
 // Auto-format on input change (with debounce)
-let debounceTimer: number;
+let debounceTimer: NodeJS.Timeout;
 watch(inputJson, () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {

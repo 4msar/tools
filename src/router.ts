@@ -4,6 +4,7 @@ import Home from "./pages/Home.vue";
 import JsonFormatter from "./pages/JsonFormatter.vue";
 import ColorPaletteGenerator from "./pages/ColorPaletteGenerator.vue";
 import RandomColorGenerator from "./pages/RandomColorGenerator.vue";
+import PasswordGenerator from "./pages/PasswordGenerator.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -25,6 +26,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "/random-color-generator",
         name: "Random Color Generator",
         component: RandomColorGenerator,
+    },
+    {
+        path: "/password-generator",
+        name: "Password Generator",
+        component: PasswordGenerator,
     },
 ];
 
