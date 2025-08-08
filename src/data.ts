@@ -18,17 +18,17 @@ export const tools = ref<Tool[]>([
     },
     {
         id: "3",
+        name: "Random Color Generator",
+        description:
+            "Generate random colors in various formats (HEX, RGB, HSL) with a single click.",
+        visitLink: "/random-color-generator",
+    },
+    {
+        id: "4",
         name: "Base64 Encoder/Decoder",
         description:
             "Encode and decode Base64 strings quickly and easily. Perfect for developers working with data encoding and API integrations.",
         visitLink: "/base64-encoder",
-    },
-    {
-        id: "4",
-        name: "URL Shortener",
-        description:
-            "Create short, memorable URLs for your links with detailed analytics, custom domains, and expiration settings.",
-        visitLink: "/url-shortener",
     },
     {
         id: "5",

@@ -3,6 +3,7 @@ import type { RouteRecordRaw } from "vue-router";
 import Home from "./pages/Home.vue";
 import JsonFormatter from "./pages/JsonFormatter.vue";
 import ColorPaletteGenerator from "./pages/ColorPaletteGenerator.vue";
+import RandomColorGenerator from "./pages/RandomColorGenerator.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -19,6 +20,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "/color-palette-generator",
         name: "Color Palette Generator",
         component: ColorPaletteGenerator,
+    },
+    {
+        path: "/random-color-generator",
+        name: "Random Color Generator",
+        component: RandomColorGenerator,
     },
 ];
 
