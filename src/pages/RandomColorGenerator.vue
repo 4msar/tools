@@ -4,108 +4,157 @@
         :style="{ backgroundColor: currentColor }"
         @dblclick="randomizeColor"
     >
-        <!-- Color info display -->
-        <div class="absolute top-8 left-1/2 transform -translate-x-1/2">
-            <div
-                class="bg-white/20 backdrop-blur-sm rounded-lg px-6 py-3 shadow-lg"
-            >
-                <p class="text-white font-mono text-lg font-medium">
-                    {{ currentColor.toUpperCase() }}
-                </p>
-            </div>
-        </div>
-
-        <!-- Instructions -->
-        <div
-            class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center"
-        >
-            <div
-                class="bg-white/10 backdrop-blur-sm rounded-lg px-8 py-6 shadow-lg"
-            >
-                <h1 class="text-white text-2xl font-bold mb-2">
-                    Random Color Generator
-                </h1>
-                <p class="text-white/80 text-sm">
-                    Double-click anywhere to randomize color
-                </p>
-                <p class="text-white/80 text-sm">
-                    Use the color picker below to choose a specific color
-                </p>
-            </div>
-        </div>
-
-        <!-- Bottom controls -->
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-            <div
-                class="flex items-center gap-4 bg-white/20 backdrop-blur-sm rounded-lg px-6 py-4 shadow-lg"
-            >
-                <!-- Color picker -->
-                <div class="flex items-center gap-3">
-                    <label
-                        for="colorPicker"
-                        class="text-white text-sm font-medium"
-                        >Pick Color:</label
+        <template v-if="showDetails">
+            <!-- Color info display -->
+            <div class="absolute top-8 left-1/2 transform -translate-x-1/2">
+                <div
+                    class="bg-white/20 backdrop-blur-sm rounded-lg px-6 py-3 shadow-lg"
+                >
+                    <p
+                        :class="textColorClass"
+                        class="font-mono text-lg font-medium"
                     >
-                    <input
-                        id="colorPicker"
-                        type="color"
-                        :value="currentColor"
-                        @input="updateColor"
-                        class="w-12 h-12 rounded-lg border-2 border-white/30 cursor-pointer"
-                    />
+                        {{ currentColor.toUpperCase() }}
+                    </p>
                 </div>
-
-                <!-- Copy button -->
-                <button
-                    @click="copyColor"
-                    class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
-                >
-                    <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                        ></path>
-                    </svg>
-                    Copy
-                </button>
-
-                <!-- Random button -->
-                <button
-                    @click="randomizeColor"
-                    class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
-                >
-                    <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                        ></path>
-                    </svg>
-                    Random
-                </button>
             </div>
-        </div>
+
+            <!-- Instructions -->
+            <div
+                class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center"
+            >
+                <div
+                    class="bg-white/10 backdrop-blur-sm rounded-lg px-8 py-6 shadow-lg"
+                >
+                    <h1 :class="textColorClass" class="text-2xl font-bold mb-2">
+                        Random Color Generator
+                    </h1>
+                    <p :class="textColorSecondaryClass" class="text-sm">
+                        Double-click anywhere to randomize color
+                    </p>
+                    <p :class="textColorSecondaryClass" class="text-sm">
+                        Use the color picker below to choose a specific color
+                    </p>
+                </div>
+            </div>
+
+            <!-- Bottom controls -->
+            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+                <div
+                    class="flex items-center gap-4 bg-white/20 backdrop-blur-sm rounded-lg px-6 py-4 shadow-lg"
+                >
+                    <!-- Color picker -->
+                    <div class="flex items-center gap-3">
+                        <label
+                            for="colorPicker"
+                            :class="textColorClass"
+                            class="text-sm font-medium"
+                            >Pick Color:</label
+                        >
+                        <input
+                            id="colorPicker"
+                            type="color"
+                            :value="currentColor"
+                            @input="updateColor"
+                            class="w-12 h-12 rounded-lg border-2 border-white/30 cursor-pointer"
+                        />
+                    </div>
+
+                    <!-- Copy button -->
+                    <button
+                        @click="copyColor"
+                        :class="buttonClass"
+                        class="px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
+                    >
+                        <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                            ></path>
+                        </svg>
+                        Copy
+                    </button>
+
+                    <!-- Random button -->
+                    <button
+                        @click="randomizeColor"
+                        :class="buttonClass"
+                        class="px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
+                    >
+                        <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            ></path>
+                        </svg>
+                        Random
+                    </button>
+                </div>
+            </div>
+        </template>
+
+        <button
+            @click="showDetails = !showDetails"
+            class="cursor-pointer fixed bottom-4 right-4 size-5 p-1"
+        >
+            <svg
+                v-if="showDetails"
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 11-4.243-4.243m4.242 4.242L9.88 9.88"
+                ></path>
+            </svg>
+            <svg
+                v-else
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                ></path>
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                ></path>
+            </svg>
+        </button>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { toast } from "vue-sonner";
 
 const currentColor = ref("#3b82f6");
+const showDetails = ref(true);
 
 // Tailwind color palette - comprehensive list of colors
 const tailwindColors = [
@@ -341,6 +390,45 @@ const tailwindColors = [
     "#1e293b",
     "#0f172a",
 ];
+
+// Function to calculate luminance of a color
+const getLuminance = (hex: string) => {
+    // Remove # if present
+    const color = hex.replace("#", "");
+
+    // Convert hex to RGB
+    const r = parseInt(color.substr(0, 2), 16) / 255;
+    const g = parseInt(color.substr(2, 2), 16) / 255;
+    const b = parseInt(color.substr(4, 2), 16) / 255;
+
+    // Calculate relative luminance
+    const srgb = [r, g, b].map((c) => {
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    });
+
+    return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+};
+
+// Computed properties for dynamic text colors
+const isLightBackground = computed(() => {
+    return getLuminance(currentColor.value) > 0.5;
+});
+
+const textColorClass = computed(() => {
+    return isLightBackground.value ? "text-black" : "text-white";
+});
+
+const textColorSecondaryClass = computed(() => {
+    return isLightBackground.value ? "text-black/80" : "text-white/80";
+});
+
+const buttonClass = computed(() => {
+    if (isLightBackground.value) {
+        return "bg-black/20 hover:bg-black/30 text-black";
+    } else {
+        return "bg-white/20 hover:bg-white/30 text-white";
+    }
+});
 
 const randomizeColor = () => {
     const randomIndex = Math.floor(Math.random() * tailwindColors.length);
