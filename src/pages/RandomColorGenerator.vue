@@ -397,9 +397,9 @@ const getLuminance = (hex: string) => {
     const color = hex.replace("#", "");
 
     // Convert hex to RGB
-    const r = parseInt(color.substr(0, 2), 16) / 255;
-    const g = parseInt(color.substr(2, 2), 16) / 255;
-    const b = parseInt(color.substr(4, 2), 16) / 255;
+    const r = parseInt(color.substring(0, 2), 16) / 255;
+    const g = parseInt(color.substring(2, 4), 16) / 255;
+    const b = parseInt(color.substring(4, 6), 16) / 255;
 
     // Calculate relative luminance
     const srgb = [r, g, b].map((c) => {
