@@ -1,4 +1,8 @@
+<script setup lang="ts">
+import { Toaster } from "vue-sonner";
+</script>
 
 <template>
-  <router-view />
+    <router-view />
+    <Toaster rich-colors />
 </template>

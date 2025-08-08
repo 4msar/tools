@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import Home from "./pages/Home.vue";
+import JsonFormatter from "./pages/JsonFormatter.vue";
+import ColorPaletteGenerator from "./pages/ColorPaletteGenerator.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -8,7 +10,16 @@ const routes: Array<RouteRecordRaw> = [
         name: "Home",
         component: Home,
     },
-    // Add more routes here as you add more tools/pages
+    {
+        path: "/json-formatter",
+        name: "JSON Formatter",
+        component: JsonFormatter,
+    },
+    {
+        path: "/color-palette-generator",
+        name: "Color Palette Generator",
+        component: ColorPaletteGenerator,
+    },
 ];
 
 const router = createRouter({

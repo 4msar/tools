@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@import 'vue-sonner/style.css';
+
 @theme {
     --font-mono: "Space Mono", sans-serif;
 }
