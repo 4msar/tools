@@ -1614,6 +1614,43 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mlc-ai/web-llm@npm:^0.2.88":
+  version: 0.2.88
+  resolution: "@mlc-ai/web-llm@npm:0.2.88"
+  dependencies:
+    "@mlc-ai/web-runtime": "npm:0.28.0-dev2"
+    "@mlc-ai/web-tokenizers": "npm:^0.1.6"
+    "@mlc-ai/web-xgrammar": "npm:0.1.27"
+    "@types/chrome": "npm:^0.0.266"
+    "@webgpu/types": "npm:^0.1.24"
+    loglevel: "npm:^1.9.1"
+  checksum: 10c0/66834d8b6044c83dfe9125f3c027d7148cd82bc10f5478ff905de5ab08d7a1d3f29ff73c2fcc7761c2b2e44e5b3e95eb563632da5606b9937c32440249724be7
+  languageName: node
+  linkType: hard
+
+"@mlc-ai/web-runtime@npm:0.28.0-dev2":
+  version: 0.28.0-dev2
+  resolution: "@mlc-ai/web-runtime@npm:0.28.0-dev2"
+  dependencies:
+    tslib: "npm:^2.8.1"
+  checksum: 10c0/fc873d26b0884af45386109250e75bba1dc2136dc7496f272e86016218800b26b9f815ff1855388735433c9cf08d150a6f739c3d2bba6ef4f3301e15dd684cba
+  languageName: node
+  linkType: hard
+
+"@mlc-ai/web-tokenizers@npm:^0.1.6":
+  version: 0.1.6
+  resolution: "@mlc-ai/web-tokenizers@npm:0.1.6"
+  checksum: 10c0/003be952530f2796a42ae53fbffa8ab7cf82949e3dfac5dec21146f0860a123d9efcd576071da5fe3bf9d3643bcf1e60895956df79f6cf2857520d6a53ba4004
+  languageName: node
+  linkType: hard
+
+"@mlc-ai/web-xgrammar@npm:0.1.27":
+  version: 0.1.27
+  resolution: "@mlc-ai/web-xgrammar@npm:0.1.27"
+  checksum: 10c0/354e719c921eccab05e355bd92df3ac9db4ee97cceabf7e40b434cb7c2910e6d201ba8f6816da543f3ea65f2bc9859f385481320818145af8f458af0751556a9
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:^1.2.2":
   version: 1.2.7
   resolution: "@napi-rs/wasm-runtime@npm:1.2.7"
@@ -2378,6 +2415,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/chrome@npm:^0.0.266":
+  version: 0.0.266
+  resolution: "@types/chrome@npm:0.0.266"
+  dependencies:
+    "@types/filesystem": "npm:*"
+    "@types/har-format": "npm:*"
+  checksum: 10c0/ef279c9344b346a2f0c798a91079d5d0243755f480401894848acbe628e9f92affade4dabc144099b55b0c0a5f6978b014ac693cb8bba73822a435f1e82c7e4f
+  languageName: node
+  linkType: hard
+
 "@types/estree@npm:^1.0.0, @types/estree@npm:^1.0.10":
   version: 1.0.10
   resolution: "@types/estree@npm:1.0.10"
@@ -2391,6 +2438,29 @@ __metadata:
   dependencies:
     figlet: "npm:*"
   checksum: 10c0/4e0c6f717de5d221a650d9a2eb580b1ba60336a59ebae6dbca654fffd07d4dae3b05bd0b355b60adff9ba6a3f1fb5a74b5e6e6271cc908e242f6a6dde4c5f77b
+  languageName: node
+  linkType: hard
+
+"@types/filesystem@npm:*":
+  version: 0.0.36
+  resolution: "@types/filesystem@npm:0.0.36"
+  dependencies:
+    "@types/filewriter": "npm:*"
+  checksum: 10c0/3ebec32f0494b0a2612187d148e9f253ff55672c53f566d9a1e6d891eb6e2372df93c252b594b2775bc53e6660c4c37fdb05dc1b26e72b60a31010da8e1f7317
+  languageName: node
+  linkType: hard
+
+"@types/filewriter@npm:*":
+  version: 0.0.33
+  resolution: "@types/filewriter@npm:0.0.33"
+  checksum: 10c0/363ef9a658a961ceae04f52934562e4ebdcdc3a2564dd8544f593d77113c16574938b6ba4fea0bee418c37bda0668c1e03dfedb6adf00d55853f51fb3a59247b
+  languageName: node
+  linkType: hard
+
+"@types/har-format@npm:*":
+  version: 1.2.16
+  resolution: "@types/har-format@npm:1.2.16"
+  checksum: 10c0/77e952bc219db0c1f0588cab3b95865bc343b922e8423a76fbbd6a757c40709a256933fa415eb8fefda6ea5897c8e3dd3191bb8a82b37c13d9232467d31ae485
   languageName: node
   linkType: hard
 
@@ -2758,6 +2828,13 @@ __metadata:
   peerDependencies:
     vue: ^3.5.0
   checksum: 10c0/59860a10ca4831172fec33daa6f4ed10b869cc0604c6bca74d8a1fabcdb4a74fa5126694fac08d670e7c13d08f3a5d7487ae18eb299988c8e34d699cca86efaa
+  languageName: node
+  linkType: hard
+
+"@webgpu/types@npm:^0.1.24":
+  version: 0.1.74
+  resolution: "@webgpu/types@npm:0.1.74"
+  checksum: 10c0/590d475d81f8468e207d1cc8230aa6444d5b2d96dff81279e2a864f3b9197b94bf9572043f9726ca7108ad305e3f5c6b3c86e8ee9b2b652bc83e050dc6bf69fe
   languageName: node
   linkType: hard
 
@@ -4667,6 +4744,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"loglevel@npm:^1.9.1":
+  version: 1.9.2
+  resolution: "loglevel@npm:1.9.2"
+  checksum: 10c0/1e317fa4648fe0b4a4cffef6de037340592cee8547b07d4ce97a487abe9153e704b98451100c799b032c72bb89c9366d71c9fb8192ada8703269263ae77acdc7
+  languageName: node
+  linkType: hard
+
 "lru-cache@npm:^11.0.0":
   version: 11.5.3
   resolution: "lru-cache@npm:11.5.3"
@@ -6064,6 +6148,7 @@ __metadata:
   dependencies:
     "@abraham/reflection": "npm:^0.14.0"
     "@joplin/turndown-plugin-gfm": "npm:^1.0.68"
+    "@mlc-ai/web-llm": "npm:^0.2.88"
     "@noble/hashes": "npm:^2.4.0"
     "@peculiar/asn1-schema": "npm:^3.0.0"
     "@peculiar/x509": "npm:^3.1.0"
