@@ -12,28 +12,32 @@ interface ModelDef {
     family: "gpt" | "claude" | "gemini" | "llama";
     context: number;
     price: number; // default $ per 1M input tokens (editable)
+    out: number; // default $ per 1M output tokens (editable)
 }
 
 const CHARS_PER_TOKEN = { claude: 3.5, gemini: 4, llama: 3.8 } as const;
 
 const MODELS: ModelDef[] = [
-    { id: "gpt-4o", name: "GPT-4o", family: "gpt", context: 128_000, price: 2.5 },
-    { id: "gpt-4o-mini", name: "GPT-4o mini", family: "gpt", context: 128_000, price: 0.15 },
-    { id: "gpt-4.1", name: "GPT-4.1", family: "gpt", context: 1_000_000, price: 2 },
-    { id: "o3", name: "OpenAI o3", family: "gpt", context: 200_000, price: 2 },
-    { id: "o4-mini", name: "OpenAI o4-mini", family: "gpt", context: 200_000, price: 1.1 },
-    { id: "claude-sonnet", name: "Claude Sonnet (estimate)", family: "claude", context: 200_000, price: 3 },
-    { id: "claude-opus", name: "Claude Opus (estimate)", family: "claude", context: 200_000, price: 15 },
-    { id: "claude-haiku", name: "Claude Haiku (estimate)", family: "claude", context: 200_000, price: 0.8 },
-    { id: "gemini-pro", name: "Gemini Pro (estimate)", family: "gemini", context: 1_000_000, price: 1.25 },
-    { id: "gemini-flash", name: "Gemini Flash (estimate)", family: "gemini", context: 1_000_000, price: 0.3 },
-    { id: "llama-3.1", name: "Llama 3.1 (estimate)", family: "llama", context: 128_000, price: 0.9 },
+    { id: "gpt-4o", name: "GPT-4o", family: "gpt", context: 128_000, price: 2.5, out: 10 },
+    { id: "gpt-4o-mini", name: "GPT-4o mini", family: "gpt", context: 128_000, price: 0.15, out: 0.6 },
+    { id: "gpt-4.1", name: "GPT-4.1", family: "gpt", context: 1_000_000, price: 2, out: 8 },
+    { id: "o3", name: "OpenAI o3", family: "gpt", context: 200_000, price: 2, out: 8 },
+    { id: "o4-mini", name: "OpenAI o4-mini", family: "gpt", context: 200_000, price: 1.1, out: 4.4 },
+    { id: "claude-sonnet", name: "Claude Sonnet (estimate)", family: "claude", context: 200_000, price: 3, out: 15 },
+    { id: "claude-opus", name: "Claude Opus (estimate)", family: "claude", context: 200_000, price: 15, out: 75 },
+    { id: "claude-haiku", name: "Claude Haiku (estimate)", family: "claude", context: 200_000, price: 0.8, out: 4 },
+    { id: "gemini-pro", name: "Gemini Pro (estimate)", family: "gemini", context: 1_000_000, price: 1.25, out: 10 },
+    { id: "gemini-flash", name: "Gemini Flash (estimate)", family: "gemini", context: 1_000_000, price: 0.3, out: 2.5 },
+    { id: "llama-3.1", name: "Llama 3.1 (estimate)", family: "llama", context: 128_000, price: 0.9, out: 0.9 },
 ];
 
 const text = ref("");
 const modelId = ref("gpt-4o");
 const contextSize = ref(128_000);
 const price = ref(2.5);
+const outPrice = ref(10);
+const outTokens = ref(500);
+const requests = ref(1);
 const showViz = ref(false);
 const tokenizer = shallowRef<Tokenizer | null>(null);
 const loadError = ref("");
@@ -45,6 +49,7 @@ watch(
     (m) => {
         contextSize.value = m.context;
         price.value = m.price;
+        outPrice.value = m.out;
     },
     { immediate: true },
 );
@@ -81,6 +86,8 @@ const tokens = computed(() => (model.value.family === "gpt" ? gptTokens.value : 
 const isExact = computed(() => model.value.family === "gpt" && !!tokenizer.value);
 const usage = computed(() => (contextSize.value > 0 ? (tokens.value / contextSize.value) * 100 : 0));
 const cost = computed(() => (tokens.value / 1_000_000) * (Number(price.value) || 0));
+const outCost = computed(() => ((Number(outTokens.value) || 0) / 1_000_000) * (Number(outPrice.value) || 0));
+const totalCost = computed(() => (cost.value + outCost.value) * Math.max(1, Number(requests.value) || 1));
 
 const barClass = computed(() => (usage.value > 100 ? "bg-danger" : usage.value > 80 ? "bg-warning" : "bg-accent"));
 
@@ -161,14 +168,26 @@ async function paste() {
 
             <Panel title="Cost estimate">
                 <div class="space-y-4">
-                    <Field label="Input price ($ per 1M tokens)" hint="Default prices are approximate; edit to match current pricing.">
-                        <input v-model.number="price" type="number" min="0" step="0.01" class="input" />
-                    </Field>
-                    <div class="rounded-lg bg-subtle px-4 py-3">
-                        <div class="text-xs text-muted">Input cost for this text</div>
-                        <div class="font-mono text-2xl font-semibold">{{ fmtCost(cost) }}</div>
-                        <div class="text-xs text-muted">{{ fmt(tokens) }} tokens × ${{ price }} / 1M<template v-if="!isExact"> (estimated tokens)</template></div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <Field label="Input price ($ per 1M tokens)">
+                            <input v-model.number="price" type="number" min="0" step="0.01" class="input" />
+                        </Field>
+                        <Field label="Output price ($ per 1M tokens)">
+                            <input v-model.number="outPrice" type="number" min="0" step="0.01" class="input" />
+                        </Field>
+                        <Field label="Expected output tokens" hint="Length of the reply you expect">
+                            <input v-model.number="outTokens" type="number" min="0" step="100" class="input" />
+                        </Field>
+                        <Field label="Number of requests" hint="For example, calls per day or month">
+                            <input v-model.number="requests" type="number" min="1" class="input" />
+                        </Field>
                     </div>
+                    <div class="rounded-lg bg-subtle px-4 py-3">
+                        <div class="text-xs text-muted">Estimated cost{{ requests > 1 ? ` for ${fmt(requests)} requests` : "" }}</div>
+                        <div class="font-mono text-2xl font-semibold">{{ fmtCost(totalCost) }}</div>
+                        <div class="text-xs text-muted">Input {{ fmtCost(cost) }} ({{ fmt(tokens) }} tokens<template v-if="!isExact">, estimated</template>) + output {{ fmtCost(outCost) }} ({{ fmt(outTokens || 0) }} tokens){{ requests > 1 ? " per request" : "" }}</div>
+                    </div>
+                    <p class="text-xs text-muted">Default prices are approximate and change often; edit them to match your provider's current price list.</p>
                 </div>
             </Panel>
         </div>

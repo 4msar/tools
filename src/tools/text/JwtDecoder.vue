@@ -3,13 +3,15 @@ import { computed, ref, watch } from "vue";
 import { ClipboardPaste, Sparkles, Trash2 } from "lucide-vue-next";
 import { compactVerify, importJWK, importSPKI, importX509 } from "jose";
 import type { JWK } from "jose";
-import { Btn, CodeArea, CopyButton, Field, Notice, Panel, ToolPage } from "@/components/ui";
+import { Btn, CodeArea, CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
+import JwtSign from "./JwtSign.vue";
 import { readClipboard } from "@/composables/useClipboard";
 
 const SAMPLE =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 const SAMPLE_SECRET = "your-256-bit-secret";
 
+const mode = ref<"decode" | "sign">("decode");
 const token = ref("");
 const secret = ref("");
 const publicKey = ref("");
@@ -190,10 +192,26 @@ async function paste() {
 watch(token, () => {
     nowTick.value = Date.now();
 });
+
+function fromSigner(t: string, key: string, hmac: boolean) {
+    token.value = t;
+    if (hmac) {
+        secret.value = key;
+        secretB64.value = false;
+    } else publicKey.value = key;
+    mode.value = "decode";
+}
 </script>
 
 <template>
     <ToolPage>
+        <template #actions>
+            <Tabs v-model="mode" :options="[{ value: 'decode', label: 'Decode & verify' }, { value: 'sign', label: 'Sign' }]" />
+        </template>
+
+        <JwtSign v-show="mode === 'sign'" @decode="fromSigner" />
+
+        <template v-if="mode === 'decode'">
         <Panel title="Encoded token" flush>
             <template #actions>
                 <Btn size="sm" variant="ghost" @click="loadSample"><Sparkles /> Sample</Btn>
@@ -269,6 +287,7 @@ watch(token, () => {
                     <p v-else-if="decoded.ok.alg.toLowerCase() !== 'none'" class="text-xs text-muted">Enter a {{ isHmac ? "secret" : "public key" }} to verify the signature.</p>
                 </div>
             </Panel>
+        </template>
         </template>
     </ToolPage>
 </template>

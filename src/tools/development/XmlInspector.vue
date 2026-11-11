@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { FileCode2, Search } from "lucide-vue-next";
+import { XMLBuilder, XMLParser, XMLValidator } from "fast-xml-parser";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
 
 const SAMPLE = `<?xml version="1.0" encoding="UTF-8"?>
@@ -10,7 +11,53 @@ const SAMPLE = `<?xml version="1.0" encoding="UTF-8"?>
 </catalog>`;
 
 const input = ref(SAMPLE);
-const mode = ref<"format" | "minify">("format");
+type Mode = "format" | "minify" | "json" | "fromjson";
+const mode = ref<Mode>("format");
+const modes: { value: Mode; label: string }[] = [
+    { value: "format", label: "Format" }, { value: "minify", label: "Minify" },
+    { value: "json", label: "XML → JSON" }, { value: "fromjson", label: "JSON → XML" },
+];
+const SAMPLE_JSON = JSON.stringify({ catalog: { book: [{ "@_id": "b1", title: "XML Basics", price: 29.99 }, { "@_id": "b2", title: "Les Bases", price: 19.5 }] } }, null, 2);
+const jsonInput = ref(SAMPLE_JSON);
+const keepAttrs = ref(true);
+const parseValues = ref(true);
+
+// Well-formedness check with line and column numbers.
+const validation = computed<{ ok: boolean; message: string } | null>(() => {
+    if (mode.value === "fromjson" || !input.value.trim()) return null;
+    const r = XMLValidator.validate(input.value, { allowBooleanAttributes: false });
+    if (r === true) return { ok: true, message: "Well-formed XML." };
+    return { ok: false, message: `Line ${r.err.line}, column ${r.err.col}: ${r.err.msg}` };
+});
+
+const FXP = { attributeNamePrefix: "@_", textNodeName: "#text" };
+const toJson = computed<{ out: string; error?: string }>(() => {
+    if (!input.value.trim()) return { out: "" };
+    if (validation.value && !validation.value.ok) return { out: "", error: validation.value.message };
+    try {
+        const obj = new XMLParser({ ...FXP, ignoreAttributes: !keepAttrs.value, parseTagValue: parseValues.value, parseAttributeValue: parseValues.value, ignoreDeclaration: true }).parse(input.value);
+        return { out: JSON.stringify(obj, null, indentSize.value) };
+    } catch (e) {
+        return { out: "", error: (e as Error).message };
+    }
+});
+const fromJson = computed<{ out: string; error?: string }>(() => {
+    if (!jsonInput.value.trim()) return { out: "" };
+    let obj: unknown;
+    try {
+        obj = JSON.parse(jsonInput.value);
+    } catch (e) {
+        return { out: "", error: "Invalid JSON: " + (e as Error).message };
+    }
+    if (obj === null || typeof obj !== "object") return { out: "", error: "JSON → XML needs an object or array at the top level." };
+    try {
+        const body = Array.isArray(obj) ? { root: { item: obj } } : Object.keys(obj).length === 1 ? obj : { root: obj };
+        const xml = new XMLBuilder({ ...FXP, ignoreAttributes: false, format: true, indentBy: " ".repeat(indentSize.value), suppressEmptyNode: true }).build(body);
+        return { out: '<?xml version="1.0" encoding="UTF-8"?>\n' + String(xml).trim() };
+    } catch (e) {
+        return { out: "", error: (e as Error).message };
+    }
+});
 const indentSize = ref(2);
 const xpath = ref("//c:book[@id='b2']/c:title");
 
@@ -134,18 +181,42 @@ const xp = computed<{ hits: Hit[]; scalar?: string; error?: string }>(() => {
 <template>
     <ToolPage>
         <template #actions>
-            <Tabs v-model="mode" :options="[{ value: 'format', label: 'Format' }, { value: 'minify', label: 'Minify' }]" />
+            <Tabs v-model="mode" :options="modes" />
         </template>
 
-        <div v-if="mode === 'format'" class="w-32">
-            <label class="label" for="xi-ind">Indent</label>
-            <select id="xi-ind" v-model.number="indentSize" class="select">
-                <option :value="2">2 spaces</option>
-                <option :value="4">4 spaces</option>
-            </select>
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+            <label v-if="mode !== 'minify'" class="flex items-center gap-2">
+                <span class="text-muted">Indent</span>
+                <select v-model.number="indentSize" class="select !w-auto">
+                    <option :value="2">2 spaces</option>
+                    <option :value="4">4 spaces</option>
+                </select>
+            </label>
+            <template v-if="mode === 'json'">
+                <label class="flex items-center gap-2"><input v-model="keepAttrs" type="checkbox" class="checkbox" /> Keep attributes (@_name)</label>
+                <label class="flex items-center gap-2"><input v-model="parseValues" type="checkbox" class="checkbox" /> Parse numbers and booleans</label>
+            </template>
+            <span v-if="mode === 'fromjson'" class="text-xs text-muted">Keys starting with <code class="code">@_</code> become attributes; <code class="code">#text</code> is element text.</span>
         </div>
 
-        <div class="grid gap-4 lg:grid-cols-2">
+        <Notice v-if="validation" :type="validation.ok ? 'success' : 'error'">{{ validation.message }}</Notice>
+
+        <div v-if="mode === 'json' || mode === 'fromjson'" class="grid gap-4 lg:grid-cols-2">
+            <Panel :title="mode === 'json' ? 'XML' : 'JSON'" flush>
+                <template #actions>
+                    <Btn size="sm" variant="ghost" @click="mode === 'json' ? (input = SAMPLE) : (jsonInput = SAMPLE_JSON)"><FileCode2 /> Sample</Btn>
+                </template>
+                <CodeArea v-if="mode === 'json'" v-model="input" :wrap="false" placeholder="Paste XML…" :invalid="!!toJson.error" />
+                <CodeArea v-else v-model="jsonInput" :wrap="false" placeholder="Paste JSON…" :invalid="!!fromJson.error" />
+            </Panel>
+            <Panel :title="mode === 'json' ? 'JSON' : 'XML'" flush>
+                <template #actions><CopyButton :text="(mode === 'json' ? toJson : fromJson).out" /></template>
+                <div v-if="(mode === 'json' ? toJson : fromJson).error" class="p-4"><Notice type="error">{{ (mode === 'json' ? toJson : fromJson).error }}</Notice></div>
+                <CodeArea v-else :model-value="(mode === 'json' ? toJson : fromJson).out" readonly :wrap="false" placeholder="Output appears here" />
+            </Panel>
+        </div>
+
+        <div v-else class="grid gap-4 lg:grid-cols-2">
             <Panel title="XML" flush>
                 <template #actions>
                     <Btn size="sm" variant="ghost" @click="input = SAMPLE"><FileCode2 /> Sample</Btn>
@@ -159,7 +230,7 @@ const xp = computed<{ hits: Hit[]; scalar?: string; error?: string }>(() => {
             </Panel>
         </div>
 
-        <Panel title="XPath">
+        <Panel v-if="mode !== 'fromjson'" title="XPath">
             <div class="flex items-center gap-2">
                 <Search class="size-4 shrink-0 text-muted" />
                 <input v-model="xpath" class="input font-mono" spellcheck="false" placeholder="//book[@id='b1']/title" aria-label="XPath expression" />

@@ -13,6 +13,45 @@ const header = ref(true);
 const dynamicTyping = ref(true);
 const flatten = ref(true);
 const indent = ref(2);
+type OutFmt = "json" | "sql" | "markdown";
+const outFmt = ref<OutFmt>("json");
+const tableName = ref("my_table");
+const createTable = ref(true);
+
+const sqlIdent = (n: string) => `"${n.replace(/"/g, '""')}"`;
+function sqlValue(v: unknown): string {
+    if (v === null || v === undefined || v === "") return "NULL";
+    if (typeof v === "number") return isFinite(v) ? String(v) : "NULL";
+    if (typeof v === "boolean") return v ? "TRUE" : "FALSE";
+    return `'${String(v).replace(/'/g, "''")}'`;
+}
+function toSql(cols: string[], rows: unknown[][]): string {
+    if (!cols.length) return "";
+    const name = sqlIdent(tableName.value.trim() || "my_table");
+    const out: string[] = [];
+    if (createTable.value) {
+        const type = (j: number) => {
+            const vals = rows.map((r) => r[j]).filter((v) => v !== null && v !== undefined && v !== "");
+            if (vals.length && vals.every((v) => typeof v === "number")) return vals.every((v) => Number.isInteger(v)) ? "INTEGER" : "NUMERIC";
+            if (vals.length && vals.every((v) => typeof v === "boolean")) return "BOOLEAN";
+            return "TEXT";
+        };
+        out.push(`CREATE TABLE ${name} (\n${cols.map((c, j) => `  ${sqlIdent(c)} ${type(j)}`).join(",\n")}\n);\n`);
+    }
+    if (rows.length) {
+        const head = `INSERT INTO ${name} (${cols.map(sqlIdent).join(", ")}) VALUES`;
+        out.push(`${head}\n${rows.map((r) => `  (${cols.map((_, j) => sqlValue(r[j])).join(", ")})`).join(",\n")};`);
+    }
+    return out.join("\n") + "\n";
+}
+function toMarkdown(cols: string[], rows: unknown[][]): string {
+    if (!cols.length) return "";
+    const esc = (v: unknown) => cell(v).replace(/\|/g, "\\|").replace(/\r?\n/g, "<br>");
+    const table = [cols.map(esc), ...rows.map((r) => cols.map((_, j) => esc(r[j])))];
+    const widths = cols.map((_, j) => Math.max(3, ...table.map((r) => r[j].length)));
+    const line = (r: string[]) => `| ${r.map((c, j) => c.padEnd(widths[j])).join(" | ")} |`;
+    return [line(table[0]), `| ${widths.map((w) => "-".repeat(w)).join(" | ")} |`, ...table.slice(1).map(line)].join("\n") + "\n";
+}
 
 const SAMPLE_CSV = "id,name,email,active\n1,Ada Lovelace,ada@example.com,true\n2,Alan Turing,alan@example.com,true\n3,\"Hopper, Grace\",grace@example.com,false\n";
 const SAMPLE_JSON = JSON.stringify([
@@ -45,17 +84,19 @@ const result = computed<Result>(() => {
         });
         const fatal = parsed.errors.find((e) => e.type === "Quotes") ?? null;
         const data = parsed.data;
-        const out = JSON.stringify(data, null, indent.value || undefined);
         let cols: string[];
-        let rows: unknown[][];
+        let all: unknown[][];
         if (header.value) {
             cols = parsed.meta.fields ?? [];
-            rows = (data as Record<string, unknown>[]).slice(0, 100).map((r) => cols.map((c) => r[c]));
+            all = (data as Record<string, unknown>[]).map((r) => cols.map((c) => r[c]));
         } else {
             const arr = data as unknown[][];
-            cols = Array.from({ length: Math.max(0, ...arr.map((r) => r.length)) }, (_, i) => String(i + 1));
-            rows = arr.slice(0, 100);
+            const n = arr.reduce((m, r) => Math.max(m, r.length), 0);
+            cols = Array.from({ length: n }, (_, i) => (outFmt.value === "json" ? String(i + 1) : `column_${i + 1}`));
+            all = arr;
         }
+        const rows = all.slice(0, 100);
+        const out = outFmt.value === "sql" ? toSql(cols, all) : outFmt.value === "markdown" ? toMarkdown(cols, all) : JSON.stringify(data, null, indent.value || undefined);
         return {
             out, cols, rows, total: data.length,
             error: fatal ? `Row ${(fatal.row ?? 0) + 1}: ${fatal.message}` : undefined,
@@ -85,14 +126,16 @@ const result = computed<Result>(() => {
 });
 
 function swap() {
-    if (!result.value.out || (result.value.error && dir.value === "json2csv")) return;
+    if (!result.value.out || (result.value.error && dir.value === "json2csv") || (dir.value === "csv2json" && outFmt.value !== "json")) return;
     input.value = result.value.out;
     dir.value = dir.value === "csv2json" ? "json2csv" : "csv2json";
 }
 
 function download() {
-    const csv = dir.value === "json2csv";
-    downloadBlob(result.value.out, csv ? "data.csv" : "data.json", csv ? "text/csv" : "application/json");
+    if (dir.value === "json2csv") return downloadBlob(result.value.out, "data.csv", "text/csv");
+    if (outFmt.value === "sql") return downloadBlob(result.value.out, `${tableName.value.trim() || "data"}.sql`, "application/sql");
+    if (outFmt.value === "markdown") return downloadBlob(result.value.out, "data.md", "text/markdown");
+    downloadBlob(result.value.out, "data.json", "application/json");
 }
 
 function setDir(d: Dir) {
@@ -111,7 +154,7 @@ const cell = (v: unknown) => (v === null || v === undefined ? "" : typeof v === 
 <template>
     <ToolPage>
         <template #actions>
-            <Tabs :model-value="dir" :options="[{ value: 'csv2json', label: 'CSV → JSON' }, { value: 'json2csv', label: 'JSON → CSV' }]" @update:model-value="setDir" />
+            <Tabs :model-value="dir" :options="[{ value: 'csv2json', label: 'From CSV' }, { value: 'json2csv', label: 'JSON → CSV' }]" @update:model-value="setDir" />
         </template>
 
         <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
@@ -129,6 +172,14 @@ const cell = (v: unknown) => (v === null || v === undefined ? "" : typeof v === 
             <label v-if="dir === 'csv2json'" class="flex items-center gap-2"><input v-model="dynamicTyping" type="checkbox" class="checkbox" /> Dynamic typing</label>
             <label v-else class="flex items-center gap-2"><input v-model="flatten" type="checkbox" class="checkbox" /> Flatten nested keys (a.b)</label>
             <label v-if="dir === 'csv2json'" class="flex items-center gap-2">
+                <span class="text-muted">Output</span>
+                <select v-model="outFmt" class="select !w-auto"><option value="json">JSON</option><option value="sql">SQL INSERT</option><option value="markdown">Markdown table</option></select>
+            </label>
+            <template v-if="dir === 'csv2json' && outFmt === 'sql'">
+                <label class="flex items-center gap-2"><span class="text-muted">Table</span><input v-model="tableName" class="input !w-36 font-mono" spellcheck="false" aria-label="Table name" /></label>
+                <label class="flex items-center gap-2"><input v-model="createTable" type="checkbox" class="checkbox" /> CREATE TABLE</label>
+            </template>
+            <label v-if="dir === 'csv2json' && outFmt === 'json'" class="flex items-center gap-2">
                 <span class="text-muted">Indent</span>
                 <select v-model.number="indent" class="select !w-auto"><option :value="0">Minified</option><option :value="2">2 spaces</option><option :value="4">4 spaces</option></select>
             </label>
@@ -148,9 +199,9 @@ const cell = (v: unknown) => (v === null || v === undefined ? "" : typeof v === 
                 <CodeArea v-model="input" :wrap="false" height="20rem" :placeholder="dir === 'csv2json' ? 'Paste CSV here…' : 'Paste a JSON array of objects…'" />
             </Panel>
 
-            <Panel :title="dir === 'csv2json' ? 'JSON' : 'CSV'" flush>
+            <Panel :title="dir === 'json2csv' ? 'CSV' : outFmt === 'sql' ? 'SQL' : outFmt === 'markdown' ? 'Markdown' : 'JSON'" flush>
                 <template #actions>
-                    <Btn size="sm" variant="ghost" :disabled="!result.out" title="Use output as input and switch direction" @click="swap"><ArrowLeftRight /> Swap</Btn>
+                    <Btn v-if="dir === 'json2csv' || outFmt === 'json'" size="sm" variant="ghost" :disabled="!result.out" title="Use output as input and switch direction" @click="swap"><ArrowLeftRight /> Swap</Btn>
                     <Btn size="sm" variant="ghost" :disabled="!result.out" @click="download"><Download /> Download</Btn>
                     <CopyButton :text="result.out" />
                 </template>
