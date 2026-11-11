@@ -8,7 +8,7 @@ import {
     Table, Tag, Terminal, Text, Timer, Type, Wand2, Wrench, Code, Clock3, Image as ImageIcon,
     ALargeSmall, AppWindow, Brush, Calculator, Container, Database, FileBadge, GitBranch, Glasses, LayoutGrid, ListChecks,
     LockKeyhole, MessageSquareText, MonitorSmartphone, PenTool, Pipette, Route, Scissors, Send, Shield, Smartphone, Spline,
-    Squircle, SwatchBook, UserCheck,
+    ServerCog, Squircle, SwatchBook, UserCheck,
 } from "lucide-vue-next";
 
 export type CategoryId =
@@ -142,6 +142,7 @@ export const tools: ToolDef[] = [
     { id: "http-status-codes", name: "HTTP Status Codes", category: "network", icon: Server, keywords: ["http", "404", "500", "status"], isNew: true, description: "Searchable reference of HTTP status codes and what they mean.", component: () => import("./network/HttpStatusCodes.vue") },
     { id: "user-agent-parser", name: "User Agent Parser", category: "network", icon: MonitorSmartphone, keywords: ["ua", "browser", "os", "device", "bot", "user-agent"], isNew: true, description: "Parse a User-Agent string into browser, engine, OS and device, and spot bots.", component: () => import("./network/UserAgentParser.vue") },
     { id: "http-request", name: "HTTP Request Builder", category: "network", icon: Send, keywords: ["api", "rest", "fetch", "postman", "request", "client", "curl"], isNew: true, description: "Send HTTP requests from your browser and inspect status, headers and body.", component: () => import("./network/HttpRequest.vue") },
+    { id: "server-block-generator", name: "Server Block Generator", category: "network", icon: ServerCog, keywords: ["nginx", "apache", "caddy", "vhost", "virtual host", "server block", "reverse proxy", "caddyfile", "ssl", "config"], isNew: true, description: "Generate Nginx server blocks, Apache virtual hosts and Caddyfiles for static sites, PHP apps and reverse proxies.", component: () => import("./network/ServerBlockGenerator.vue") },
 
     // AI
     { id: "pii-redactor", name: "Secret & PII Redactor", category: "ai", icon: EyeOff, keywords: ["redact", "mask", "api key", "email", "privacy"], isNew: true, description: "Mask API keys, tokens, emails and other personal data before pasting into an AI chat.", component: () => import("./ai/PiiRedactor.vue") },

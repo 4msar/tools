@@ -1,12 +1,12 @@
 # DevTools
 
-A collection of 79 free developer tools that run entirely in your browser: JSON, hashes, UUIDs, regex, cron, colors, encoders, AI helpers, and more. No sign-up and no server. Your data never leaves the tab.
+A collection of 80 free developer tools that run entirely in your browser: JSON, hashes, UUIDs, regex, cron, colors, encoders, AI helpers, and more. No sign-up and no server. Your data never leaves the tab.
 
 **Live:** https://tools.msar.me
 
 ## Features
 
-- **79 tools** in 11 categories, each lazy-loaded
+- **80 tools** in 11 categories, each lazy-loaded
 - **Command palette**: press `⌘K` / `Ctrl+K` or `/` to search by name or keyword
 - **Tabs**: every tool you open stays in a tab and keeps its input while you switch. Drag to reorder, middle-click or `Alt+W` to close, `Alt+Shift+←/→` to switch.
 - **Favorites and recent tools** are stored locally
