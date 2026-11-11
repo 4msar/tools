@@ -1,42 +1,48 @@
 import { createRouter, createWebHistory } from "vue-router";
-import type { RouteRecordRaw } from "vue-router";
+import type { RouteComponent, RouteRecordRaw } from "vue-router";
 import Home from "./pages/Home.vue";
-import JsonFormatter from "./pages/JsonFormatter.vue";
-import ColorPaletteGenerator from "./pages/ColorPaletteGenerator.vue";
-import RandomColorGenerator from "./pages/RandomColorGenerator.vue";
-import PasswordGenerator from "./pages/PasswordGenerator.vue";
+import About from "./pages/About.vue";
+import { tools } from "./tools/registry";
+import { componentNames } from "./composables/tabs";
+import type { PageMeta } from "./composables/seo";
 
-const routes: Array<RouteRecordRaw> = [
+const routes: RouteRecordRaw[] = [
+    { path: "/", name: "home", component: Home },
     {
-        path: "/",
-        name: "Home",
-        component: Home,
+        path: "/about",
+        name: "about",
+        component: About,
+        meta: {
+            page: {
+                title: "About · DevTools",
+                description: "About DevTools: free developer tools that run entirely in your browser. No sign-up, no servers, no tracking.",
+                path: "/about",
+            } satisfies PageMeta,
+        },
     },
-    {
-        path: "/json-formatter",
-        name: "JSON Formatter",
-        component: JsonFormatter,
-    },
-    {
-        path: "/color-palette-generator",
-        name: "Color Palette Generator",
-        component: ColorPaletteGenerator,
-    },
-    {
-        path: "/random-color-generator",
-        name: "Random Color Generator",
-        component: RandomColorGenerator,
-    },
-    {
-        path: "/password-generator",
-        name: "Password Generator",
-        component: PasswordGenerator,
-    },
+    ...tools.map(
+        (t): RouteRecordRaw => ({
+            path: `/${t.id}`,
+            name: t.id,
+            component: t.component as () => Promise<RouteComponent>,
+            meta: { toolId: t.id },
+        }),
+    ),
+    { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes,
+    scrollBehavior: (_to, _from, saved) => saved ?? { top: 0 },
+});
+
+// Record each lazy tool's component name once it resolves, so KeepAlive can cache it per tab.
+router.afterEach((to) => {
+    const id = to.meta.toolId as string | undefined;
+    const comp = to.matched[0]?.components?.default as { name?: string; __name?: string } | undefined;
+    const name = comp && typeof comp === "object" ? (comp.name ?? comp.__name) : undefined;
+    if (id && name) componentNames.set(id, name);
 });
 
 export default router;

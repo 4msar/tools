@@ -1,13 +1,204 @@
 @import "tailwindcss";
+@import "vue-sonner/style.css";
 
-@import 'vue-sonner/style.css';
+@custom-variant dark (&:where(.dark, .dark *, [data-theme=dark], [data-theme=dark] *));
 
-@theme {
-    --font-mono: "Space Mono", sans-serif;
+/* msar.me design system: https://msar.me/ai/design-system.md */
+:root,
+[data-theme="light"] {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --subtle: #f2f4f7;
+    --line: #e2e6e9;
+    --fg: #141920;
+    --fg-muted: #4d535c;
+    --fg-subtle: #6e737b;
+    --accent: #00776e;
+    --accent-strong: #005f5a;
+    --accent-soft: #ccfbf1;
+    --accent-fg: #f3fcfa;
+    --ring: #009589;
+    --inverse: #141920;
+    --inverse-fg: #f8fafc;
+    --info: #0069a2;
+    --info-soft: #dff2fe;
+    --warn: #b45307;
+    --warn-soft: #fef3c6;
+    --danger: #bf000f;
+    --danger-soft: #ffe2e2;
+    --noise-dot: #00000026;
+    --shadow-photo: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    color-scheme: light;
+}
+
+[data-theme="dark"],
+.dark {
+    --bg: #07080b;
+    --surface: #0e1114;
+    --subtle: #191c20;
+    --line: #25292f;
+    --fg: #f1f4f6;
+    --fg-muted: #b3b8be;
+    --fg-subtle: #8b9097;
+    --accent: #34d4bf;
+    --accent-strong: #66e9d4;
+    --accent-soft: #04363199;
+    --accent-fg: #021816;
+    --ring: #00baa6;
+    --inverse: #f1f4f6;
+    --inverse-fg: #0e1114;
+    --info: #00bbfe;
+    --info-soft: #052f4a80;
+    --warn: #fcbb00;
+    --warn-soft: #46190180;
+    --danger: #f87171;
+    --danger-soft: #46080980;
+    --noise-dot: #ffffff26;
+    --shadow-photo: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+}
+
+:root {
+    --font-display: Fraunces, Georgia, "Times New Roman", serif;
+    --font-sans: Sora, ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+    --shadow-input: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --shadow-float: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+}
+
+@theme inline {
+    --font-display: var(--font-display);
+    --font-sans: var(--font-sans);
+    --font-mono: var(--font-mono);
+
+    --color-bg: var(--bg);
+    --color-surface: var(--surface);
+    --color-subtle: var(--subtle);
+    --color-line: var(--line);
+    --color-fg: var(--fg);
+    --color-fg-muted: var(--fg-muted);
+    --color-fg-subtle: var(--fg-subtle);
+    --color-accent: var(--accent);
+    --color-accent-strong: var(--accent-strong);
+    --color-accent-soft: var(--accent-soft);
+    --color-accent-fg: var(--accent-fg);
+    --color-ring: var(--ring);
+    --color-inverse: var(--inverse);
+    --color-inverse-fg: var(--inverse-fg);
+    --color-info: var(--info);
+    --color-info-soft: var(--info-soft);
+    --color-warn: var(--warn);
+    --color-warn-soft: var(--warn-soft);
+    --color-danger: var(--danger);
+    --color-danger-soft: var(--danger-soft);
+
+    /* Aliases used across the tools, mapped to the nearest design-system token. */
+    --color-muted: var(--fg-muted);
+    --color-line-strong: var(--line);
+    --color-success: var(--accent);
+    --color-warning: var(--warn);
+
+    --shadow-card: var(--shadow-card);
+    --shadow-input: var(--shadow-input);
+    --shadow-float: var(--shadow-float);
+    --ease-out: var(--ease-out);
 }
 
 @layer base {
+    html {
+        -webkit-font-smoothing: antialiased;
+    }
     body {
-        @apply font-mono;
+        @apply bg-bg font-sans text-fg-muted;
+        background-image: radial-gradient(circle at 1px 1px, var(--noise-dot) 1px, transparent 0);
+        background-size: 24px 24px;
+    }
+    h1,
+    h2,
+    h3,
+    h4 {
+        @apply text-fg;
+    }
+    ::selection {
+        background: var(--accent-soft);
+        color: var(--fg);
+    }
+    :focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+    }
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--line) transparent;
+    }
+    code,
+    kbd,
+    pre,
+    samp {
+        font-family: var(--font-mono);
+    }
+}
+
+@layer components {
+    .input,
+    .select {
+        @apply w-full rounded-md border border-line bg-surface px-3 py-[7px] text-sm leading-6 text-fg shadow-input transition-colors placeholder:text-fg-subtle focus:border-transparent focus:outline-2 focus:outline-ring;
+    }
+    .select {
+        @apply cursor-pointer pr-8;
+    }
+    .checkbox {
+        @apply size-4 cursor-pointer rounded border-line accent-(--accent);
+    }
+    .range {
+        @apply w-full cursor-pointer accent-(--accent);
+    }
+    .label {
+        @apply mb-1.5 block text-sm font-medium text-fg;
+    }
+    .kbd {
+        @apply inline-flex h-5 min-w-5 items-center justify-center rounded-sm border border-line bg-subtle px-1 font-mono text-[10px] text-fg-subtle;
+    }
+    .chip {
+        @apply inline-flex items-center gap-1 rounded-full bg-surface px-2.5 py-0.5 text-xs text-fg-subtle ring-1 ring-line;
+    }
+    .code {
+        @apply rounded bg-subtle px-1.5 py-0.5 font-mono text-[0.85em];
+    }
+    .prose-tool :where(h1, h2, h3) {
+        @apply mt-5 mb-2 font-display font-semibold text-fg;
+    }
+    .prose-tool h1 { @apply text-2xl; }
+    .prose-tool h2 { @apply text-xl; }
+    .prose-tool h3 { @apply text-lg; }
+    .prose-tool p, .prose-tool ul, .prose-tool ol, .prose-tool pre, .prose-tool table, .prose-tool blockquote { @apply my-3; }
+    .prose-tool ul { @apply list-disc pl-6; }
+    .prose-tool ol { @apply list-decimal pl-6; }
+    .prose-tool a { @apply font-medium text-fg underline decoration-accent/40 underline-offset-4 hover:decoration-accent; }
+    .prose-tool code { @apply rounded bg-subtle px-1 font-mono text-[0.85em]; }
+    .prose-tool pre { @apply overflow-auto rounded-lg bg-subtle p-3; }
+    .prose-tool pre code { @apply bg-transparent p-0; }
+    .prose-tool blockquote { @apply border-l-4 border-line pl-4 text-muted; }
+    .prose-tool table { @apply w-full border-collapse text-sm; }
+    .prose-tool th, .prose-tool td { @apply border border-line px-2 py-1 text-left; }
+    .prose-tool hr { @apply my-6 border-line; }
+    .prose-tool img { @apply max-w-full; }
+}
+
+@keyframes page-enter {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+.page-enter {
+    animation: page-enter 0.42s var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+    .page-enter {
+        animation: none;
     }
 }
