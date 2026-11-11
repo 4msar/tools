@@ -1,7 +1,16 @@
 import { readFileSync } from "node:fs";
 import sharp from "sharp";
 import type { Plugin } from "vite";
-import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL, toolOgImage, toolTitle, toolUrl } from "../src/site";
+import {
+    OG_IMAGE,
+    SITE_DESCRIPTION,
+    SITE_NAME,
+    SITE_TITLE,
+    SITE_URL,
+    toolOgImage,
+    toolTitle,
+    toolUrl,
+} from "../src/site.ts";
 
 interface ToolMeta {
     id: string;
@@ -12,16 +21,23 @@ interface ToolMeta {
 }
 
 const esc = (s: string) =>
-    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    s
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
 
 /** Reads tool metadata from registry.ts without importing it (it pulls in Vue components). */
 function readRegistry(file: string) {
     const src = readFileSync(file, "utf8");
     const categories = new Map<string, string>();
-    for (const m of src.matchAll(/\{ id: "([\w-]+)", name: "([^"]+)", icon:/g)) categories.set(m[1], m[2]);
+    for (const m of src.matchAll(/\{ id: "([\w-]+)", name: "([^"]+)", icon:/g))
+        categories.set(m[1], m[2]);
     const tools: ToolMeta[] = [];
     for (const line of src.split("\n")) {
-        const m = line.match(/\{ id: "([^"]+)", name: "([^"]+)", category: "(\w+)".*description: "([^"]+)"/);
+        const m = line.match(
+            /\{ id: "([^"]+)", name: "([^"]+)", category: "(\w+)".*description: "([^"]+)"/,
+        );
         if (!m) continue;
         const kw = line.match(/keywords: \[([^\]]*)\]/)?.[1] ?? "";
         tools.push({
@@ -48,8 +64,12 @@ interface PageMeta {
 
 function applyMeta(html: string, p: PageMeta) {
     const set = (re: RegExp, value: string) => {
-        if (!re.test(html)) throw new Error(`[seo] index.html is missing ${re}`);
-        html = html.replace(re, (_m, pre: string, post: string) => `${pre}${esc(value)}${post}`);
+        if (!re.test(html))
+            throw new Error(`[seo] index.html is missing ${re}`);
+        html = html.replace(
+            re,
+            (_m, pre: string, post: string) => `${pre}${esc(value)}${post}`,
+        );
     };
     set(/(<title>)[^<]*(<\/title>)/, p.title);
     set(/(<meta name="description" content=")[^"]*(")/, p.description);
@@ -62,13 +82,18 @@ function applyMeta(html: string, p: PageMeta) {
     set(/(<meta name="twitter:description" content=")[^"]*(")/, p.description);
     set(/(<meta property="og:image" content=")[^"]*(")/, p.image);
     set(/(<meta name="twitter:image" content=")[^"]*(")/, p.image);
-    if (p.noindex) set(/(<meta name="robots" content=")[^"]*(")/, "noindex, follow");
+    if (p.noindex)
+        set(/(<meta name="robots" content=")[^"]*(")/, "noindex, follow");
     html = html.replace(
         /(<script type="application\/ld\+json" id="ld-json">)[\s\S]*?(<\/script>)/,
-        (_m, a: string, b: string) => `${a}${JSON.stringify(p.jsonLd).replace(/</g, "\\u003c")}${b}`,
+        (_m, a: string, b: string) =>
+            `${a}${JSON.stringify(p.jsonLd).replace(/</g, "\\u003c")}${b}`,
     );
     // Static, screen-reader-only content for crawlers that don't run JS; Vue replaces it on mount.
-    return html.replace("<!--app-html-->", `<div style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">${p.body}</div>`);
+    return html.replace(
+        "<!--app-html-->",
+        `<div style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">${p.body}</div>`,
+    );
 }
 
 /** Greedy word wrap for SVG text (no text layout in SVG). */
@@ -93,7 +118,10 @@ function wrap(text: string, maxChars: number, maxLines: number) {
 function toolOgSvg(t: ToolMeta, total: number) {
     const titleSize = t.name.length > 20 ? 64 : 76;
     const desc = wrap(t.description, 58, 3)
-        .map((l, i) => `<text x="80" y="${388 + i * 44}" font-family="Sora, Helvetica, Arial, sans-serif" font-size="28" fill="#b3b8be">${esc(l)}</text>`)
+        .map(
+            (l, i) =>
+                `<text x="80" y="${388 + i * 44}" font-family="Sora, Helvetica, Arial, sans-serif" font-size="28" fill="#b3b8be">${esc(l)}</text>`,
+        )
         .join("");
     return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs><pattern id="d" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#ffffff26"/></pattern></defs>
@@ -140,7 +168,8 @@ export function seo({ registry }: { registry: string }): Plugin {
                 title: SITE_TITLE,
                 description: SITE_DESCRIPTION,
                 url: `${SITE_URL}/`,
-                keywords: "developer tools, online tools, json formatter, regex tester, uuid generator, hash generator, jwt decoder, base64, cron, color converter",
+                keywords:
+                    "developer tools, online tools, json formatter, regex tester, uuid generator, hash generator, jwt decoder, base64, cron, color converter",
                 jsonLd: {
                     "@context": "https://schema.org",
                     "@type": "WebSite",
@@ -149,7 +178,10 @@ export function seo({ registry }: { registry: string }): Plugin {
                     description: SITE_DESCRIPTION,
                     potentialAction: {
                         "@type": "SearchAction",
-                        target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/?q={search_term_string}` },
+                        target: {
+                            "@type": "EntryPoint",
+                            urlTemplate: `${SITE_URL}/?q={search_term_string}`,
+                        },
                         "query-input": "required name=search_term_string",
                     },
                 },
@@ -167,15 +199,29 @@ export function seo({ registry }: { registry: string }): Plugin {
                     keywords: "",
                     image: OG_IMAGE,
                     noindex: true,
-                    jsonLd: { "@context": "https://schema.org", "@type": "WebPage", name: "Page not found" },
+                    jsonLd: {
+                        "@context": "https://schema.org",
+                        "@type": "WebPage",
+                        name: "Page not found",
+                    },
                     body: `<h1>Page not found</h1><p><a href="/">See all ${tools.length} developer tools</a></p>`,
                 }),
             });
 
             const images = await Promise.all(
-                tools.map((t) => sharp(Buffer.from(toolOgSvg(t, tools.length))).png({ compressionLevel: 9 }).toBuffer()),
+                tools.map((t) =>
+                    sharp(Buffer.from(toolOgSvg(t, tools.length)))
+                        .png({ compressionLevel: 9 })
+                        .toBuffer(),
+                ),
             );
-            tools.forEach((t, i) => this.emitFile({ type: "asset", fileName: `og/${t.id}.png`, source: images[i] }));
+            tools.forEach((t, i) =>
+                this.emitFile({
+                    type: "asset",
+                    fileName: `og/${t.id}.png`,
+                    source: images[i],
+                }),
+            );
 
             for (const t of tools) {
                 const title = toolTitle(t.name);
@@ -187,7 +233,12 @@ export function seo({ registry }: { registry: string }): Plugin {
                         title,
                         description: `${t.description} Free, private and runs entirely in your browser.`,
                         url,
-                        keywords: [t.name.toLowerCase(), ...t.keywords, "online", "free"].join(", "),
+                        keywords: [
+                            t.name.toLowerCase(),
+                            ...t.keywords,
+                            "online",
+                            "free",
+                        ].join(", "),
                         image: toolOgImage(t.id),
                         jsonLd: {
                             "@context": "https://schema.org",
@@ -201,14 +252,28 @@ export function seo({ registry }: { registry: string }): Plugin {
                                     operatingSystem: "Any",
                                     browserRequirements: "Requires JavaScript",
                                     isAccessibleForFree: true,
-                                    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+                                    offers: {
+                                        "@type": "Offer",
+                                        price: "0",
+                                        priceCurrency: "USD",
+                                    },
                                     image: toolOgImage(t.id),
                                 },
                                 {
                                     "@type": "BreadcrumbList",
                                     itemListElement: [
-                                        { "@type": "ListItem", position: 1, name: SITE_NAME, item: `${SITE_URL}/` },
-                                        { "@type": "ListItem", position: 2, name: t.name, item: url },
+                                        {
+                                            "@type": "ListItem",
+                                            position: 1,
+                                            name: SITE_NAME,
+                                            item: `${SITE_URL}/`,
+                                        },
+                                        {
+                                            "@type": "ListItem",
+                                            position: 2,
+                                            name: t.name,
+                                            item: url,
+                                        },
                                     ],
                                 },
                             ],
@@ -219,8 +284,18 @@ export function seo({ registry }: { registry: string }): Plugin {
             }
 
             const entries = [
-                { loc: `${SITE_URL}/`, image: OG_IMAGE, title: SITE_TITLE, priority: "1.0" },
-                ...tools.map((t) => ({ loc: toolUrl(t.id), image: toolOgImage(t.id), title: t.name, priority: "0.8" })),
+                {
+                    loc: `${SITE_URL}/`,
+                    image: OG_IMAGE,
+                    title: SITE_TITLE,
+                    priority: "1.0",
+                },
+                ...tools.map((t) => ({
+                    loc: toolUrl(t.id),
+                    image: toolOgImage(t.id),
+                    title: t.name,
+                    priority: "0.8",
+                })),
             ];
             this.emitFile({
                 type: "asset",
@@ -257,7 +332,17 @@ export function seo({ registry }: { registry: string }): Plugin {
                 source:
                     `# ${SITE_NAME}\n\n> ${SITE_DESCRIPTION}\n\nAll tools run client-side in the browser; no data is sent to a server.\n\n` +
                     categories
-                        .map((c) => `## ${c}\n\n` + tools.filter((t) => t.category === c).map((t) => `- [${t.name}](${toolUrl(t.id)}): ${t.description}`).join("\n"))
+                        .map(
+                            (c) =>
+                                `## ${c}\n\n` +
+                                tools
+                                    .filter((t) => t.category === c)
+                                    .map(
+                                        (t) =>
+                                            `- [${t.name}](${toolUrl(t.id)}): ${t.description}`,
+                                    )
+                                    .join("\n"),
+                        )
                         .join("\n\n") +
                     "\n",
             });
@@ -269,4 +354,3 @@ export function seo({ registry }: { registry: string }): Plugin {
         },
     };
 }
-

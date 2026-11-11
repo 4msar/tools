@@ -3,8 +3,8 @@ import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath, URL } from "node:url";
-import { seo } from "./plugins/seo";
-import { SITE_DESCRIPTION, SITE_NAME } from "./src/site";
+import { seo } from "./plugins/seo.ts";
+import { SITE_DESCRIPTION, SITE_NAME } from "./src/site.ts";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -89,6 +89,7 @@ export default defineConfig({
                     "404.html",
                     "**/*web-llm*",
                     "**/*worker*",
+                    "**/lib-*.js",
                 ],
                 // The GPT tokenizer chunk is ~2 MB.
                 maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
