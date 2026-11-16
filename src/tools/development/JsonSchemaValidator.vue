@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import Ajv2020 from "ajv/dist/2020";
 import * as yaml from "js-yaml";
@@ -69,6 +70,12 @@ const result = computed<{ schemaError?: string; dataError?: string; errors: Err[
     } catch (e) {
         return { schemaError: (e as Error).message, errors: [], valid: false, ready: false };
     }
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string; schema?: string }>("json-schema-validator", (p) => {
+    if (p.schema != null) schemaText.value = p.schema;
+    if (p.input != null) dataText.value = p.input;
 });
 </script>
 

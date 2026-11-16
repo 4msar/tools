@@ -132,7 +132,8 @@ function toggle(index: number) {
 const roman = computed(() => toRoman(value.value));
 
 // Input sent from the chat assistant.
-useHandoff<{ value?: string }>("number-base", (p) => {
+useHandoff<{ value?: string; input?: string }>("number-base", (p) => {
+    if (p.value == null && p.input && /^(0x[0-9a-f]+|0b[01]+|0o[0-7]+|\d+)$/i.test(p.input.trim())) p.value = BigInt(p.input.trim()).toString();
     if (p.value != null) {
         value.value = BigInt(p.value);
         sync();

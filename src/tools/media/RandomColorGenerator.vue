@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, onMounted, ref } from "vue";
 import { Copy, Eye, EyeOff, RefreshCw } from "lucide-vue-next";
 import { Btn, CopyButton, Panel, ToolPage } from "@/components/ui";
@@ -64,6 +65,11 @@ function copyColor() {
 }
 
 onMounted(randomizeColor);
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("random-color-generator", (p) => {
+    if (p.input) currentColor.value = p.input;
+});
 </script>
 
 <template>

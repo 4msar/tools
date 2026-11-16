@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Plus, X } from "lucide-vue-next";
 import { Btn, CopyButton, Field, Notice, Panel, ToolPage } from "@/components/ui";
@@ -101,6 +102,15 @@ function useNow() {
 function changeSource() {
     if (allZones.includes(source.value) && instant.value) input.value = toLocalInput(instant.value.utc, source.value);
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ source?: string; input?: string }>("timezone-converter", (p) => {
+    if (p.source) {
+        source.value = p.source;
+        changeSource();
+    }
+    if (p.input) input.value = p.input;
+});
 </script>
 
 <template>

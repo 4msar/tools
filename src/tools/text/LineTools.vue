@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ArrowDownToLine, ClipboardPaste, Shuffle, Sparkles, Trash2 } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -167,6 +168,11 @@ function sampleCompare() {
 }
 
 const toggles = computed(() => [opSplit.value, opTrim.value, opRemoveEmpty.value, opDedupe.value, opFilter.value, sortMode.value !== "none", opReverse.value, opShuffle.value, opPrefix.value, opNumber.value, opJoin.value].filter(Boolean).length);
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("line-tools", (p) => {
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

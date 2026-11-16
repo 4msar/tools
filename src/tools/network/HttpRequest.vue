@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, reactive, ref } from "vue";
 import { Plus, Send, Square, X } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -120,6 +121,11 @@ function formatBody() {
         /* shown by bodyError */
     }
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("http-request", (p) => {
+    if (p.input) url.value = p.input;
+});
 </script>
 
 <template>

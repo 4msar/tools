@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Moon, Shuffle, Sun } from "lucide-vue-next";
 import { Btn, CopyButton, Field, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -118,6 +119,11 @@ function random() {
     brand.value = toHex([0.6, 0.12 + Math.random() * 0.12, Math.random() * 360]);
 }
 const lumText = (c: LCH) => (c[0] > 0.66 ? "#000" : "#fff");
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("theme-generator", (p) => {
+    if (p.input) brand.value = p.input;
+});
 </script>
 
 <template>

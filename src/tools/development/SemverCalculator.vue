@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import semver from "semver";
 import { Check, X } from "lucide-vue-next";
@@ -42,6 +43,12 @@ const bumps = computed(() => {
     if (!v) return null;
     const id = preid.value.trim();
     return releases.map((r) => ({ r, out: (id ? semver.inc(v, r, id) : semver.inc(v, r)) ?? "" }));
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ range?: string; input?: string }>("semver-calculator", (p) => {
+    if (p.range) range.value = p.range;
+    if (p.input != null) versionsText.value = p.input;
 });
 </script>
 

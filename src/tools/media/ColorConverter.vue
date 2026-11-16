@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ArrowLeftRight } from "lucide-vue-next";
 import { Btn, CopyButton, Field, Notice, Panel, ToolPage } from "@/components/ui";
@@ -183,6 +184,11 @@ function pickContrast(target: "fg" | "bg", e: Event) {
     if (target === "fg") fgText.value = v; else bgText.value = v;
 }
 const hexOf = (c: RGBA | null) => (c ? toHex(c) : "#000000");
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("color-converter", (p) => {
+    if (p.input) onText(p.input);
+});
 </script>
 
 <template>

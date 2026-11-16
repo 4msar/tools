@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { ref, watch } from "vue";
 import { ClipboardPaste, Sparkles, Trash2, Upload } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, ToolPage } from "@/components/ui";
@@ -186,6 +187,11 @@ async function onFile(e: Event) {
     } else input.value = new TextDecoder().decode(buf);
 }
 const rowsText = (it: Item) => it.sections.flatMap((s) => [`# ${s.title}`, ...s.rows.map((r) => `${r.k}: ${r.v.replace(/\n/g, ", ")}`), ""]).join("\n");
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("certificate-decoder", (p) => {
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

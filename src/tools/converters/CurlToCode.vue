@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ClipboardPaste, Sparkles, Trash2 } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -471,6 +472,11 @@ const output = computed(() => {
 async function paste() {
     input.value = await readClipboard();
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("curl-to-code", (p) => {
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

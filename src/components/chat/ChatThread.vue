@@ -25,7 +25,7 @@ import {
 } from "@/chat/store";
 import { toolById } from "@/tools/registry";
 
-const emit = defineEmits<{ settings: []; consent: [] }>();
+const emit = defineEmits<{ settings: []; consent: []; openTool: [] }>();
 const router = useRouter();
 const input = ref("");
 const listEl = ref<HTMLElement>();
@@ -153,6 +153,13 @@ function reopen(message: ChatMessage) {
     const action = message.action!;
     if (action.handoff) sendToTool(action.toolId, action.handoff);
     openTool(action.toolId);
+    emit("openTool");
+}
+
+/** A suggested-tool card was tapped. */
+function pickTool(id: string) {
+    openTool(id);
+    emit("openTool");
 }
 
 function startNewChat() {
@@ -162,7 +169,7 @@ function startNewChat() {
 
 <template>
     <div class="flex min-h-0 flex-1 flex-col">
-        <div ref="listEl" class="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+        <div ref="listEl" class="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-4">
             <div
                 v-if="!activeSession?.messages.length"
                 class="flex h-full flex-col items-center justify-center px-5 text-center"
@@ -271,7 +278,7 @@ function startNewChat() {
                         :key="id"
                         type="button"
                         class="group flex w-full items-start gap-3 rounded-xl border border-line bg-surface p-3 text-left transition-colors hover:border-accent hover:bg-subtle"
-                        @click="openTool(id)"
+                        @click="pickTool(id)"
                     >
                         <span
                             class="grid size-8 shrink-0 place-items-center rounded-lg bg-accent-soft text-accent"
@@ -303,7 +310,7 @@ function startNewChat() {
                 <textarea
                     v-model="input"
                     rows="1"
-                    class="max-h-24 min-h-9 flex-1 resize-none bg-transparent px-2 py-1.5 text-sm text-fg outline-none placeholder:text-fg-subtle"
+                    class="max-h-24 min-h-9 flex-1 resize-none bg-transparent px-2 py-1.5 text-base text-fg sm:text-sm outline-none placeholder:text-fg-subtle"
                     placeholder="Ask, or say “base64 encode hello”…"
                     aria-label="Describe what you need"
                     @keydown.enter.exact.prevent="send()"

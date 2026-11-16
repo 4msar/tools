@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Link2, Link2Off } from "lucide-vue-next";
 import { Btn, CopyButton, Field, Panel, ToolPage } from "@/components/ui";
@@ -59,6 +60,12 @@ const resolutions = computed(() => {
     return out;
 });
 const cssValue = computed(() => (ratio.value ? `aspect-ratio: ${ratio.value.w} / ${ratio.value.h};` : ""));
+
+// Input sent from the chat assistant.
+useHandoff<{ width?: number; height?: number }>("aspect-ratio", (p) => {
+    if (p.width) width.value = p.width;
+    if (p.height) height.value = p.height;
+});
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, reactive, ref } from "vue";
 import { ClipboardPaste, FileText, Trash2 } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -162,6 +163,11 @@ async function pasteReply() {
 async function paste() {
     input.value = await readClipboard();
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("pii-redactor", (p) => {
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

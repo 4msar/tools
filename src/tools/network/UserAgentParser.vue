@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Monitor, Trash2 } from "lucide-vue-next";
 import Bowser from "bowser";
@@ -54,6 +55,11 @@ const tokens = computed(() => {
     let m: RegExpExecArray | null;
     while ((m = re.exec(ua.value.trim()))) out.push({ product: m[1], comment: m[2] ?? "" });
     return out;
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("user-agent-parser", (p) => {
+    if (p.input) ua.value = p.input;
 });
 </script>
 

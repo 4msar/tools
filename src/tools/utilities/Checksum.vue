@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Upload } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -129,6 +130,14 @@ const luhn = computed(() => {
     };
     const check = (10 - (sum(digits, true) % 10)) % 10;
     return { digits, valid: digits.length > 1 && sum(digits, false) % 10 === 0, check, full: digits + check };
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("checksum", (p) => {
+    if (p.input != null) {
+        source.value = "text";
+        text.value = p.input;
+    }
 });
 </script>
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { FileCode2, Search } from "lucide-vue-next";
 import { XMLBuilder, XMLParser, XMLValidator } from "fast-xml-parser";
@@ -175,6 +176,11 @@ const xp = computed<{ hits: Hit[]; scalar?: string; error?: string }>(() => {
     } catch (e) {
         return { hits: [], error: (e as Error).message };
     }
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("xml-inspector", (p) => {
+    if (p.input != null) input.value = p.input;
 });
 </script>
 

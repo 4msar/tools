@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, onMounted, ref, watch } from "vue";
 import { Download } from "lucide-vue-next";
 import QRCode from "qrcode";
@@ -100,6 +101,14 @@ const kinds = [
     { value: "text", label: "Text / URL" }, { value: "wifi", label: "Wi-Fi" }, { value: "email", label: "Email" },
     { value: "phone", label: "Phone" }, { value: "sms", label: "SMS" }, { value: "vcard", label: "vCard" },
 ] as const;
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("qr-code-generator", (p) => {
+    if (p.input != null) {
+        kind.value = "text";
+        text.value = p.input;
+    }
+});
 </script>
 
 <template>

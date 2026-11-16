@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ArrowDownUp, ClipboardPaste, Sparkles, Trash2 } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -289,6 +290,13 @@ function loadSample() {
 async function paste() {
     input.value = await readClipboard();
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string; kind?: Kind; dir?: Dir }>("escape-tools", (p) => {
+    if (p.kind) kind.value = p.kind;
+    if (p.dir) dir.value = p.dir;
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

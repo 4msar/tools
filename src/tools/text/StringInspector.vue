@@ -158,8 +158,9 @@ async function paste() {
 }
 
 // Input sent from the chat assistant.
-useHandoff<{ text?: string }>("string-inspector", (p) => {
-    if (p.text != null) text.value = p.text;
+useHandoff<{ text?: string; input?: string }>("string-inspector", (p) => {
+    const t = p.text ?? p.input;
+    if (t != null) text.value = t;
 });
 </script>
 

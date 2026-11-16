@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ClipboardPaste, Download, Sparkles, Trash2, Upload } from "lucide-vue-next";
 import { deflate, deflateRaw, gzip, inflate, inflateRaw } from "pako";
@@ -134,6 +135,12 @@ function swap() {
         mode.value = "compress";
     }
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string; mode?: Mode }>("compression", (p) => {
+    if (p.mode) mode.value = p.mode;
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

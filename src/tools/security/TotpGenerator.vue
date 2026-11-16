@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { RefreshCw } from "lucide-vue-next";
 import QRCode from "qrcode";
@@ -143,6 +144,14 @@ function importUri(text: string) {
 function onSecretInput() {
     if (secret.value.trim().startsWith("otpauth://")) importUri(secret.value);
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("totp-generator", (p) => {
+    if (p.input) {
+        secret.value = p.input;
+        onSecretInput();
+    }
+});
 </script>
 
 <template>

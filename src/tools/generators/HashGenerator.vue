@@ -89,10 +89,11 @@ function fmtSize(n: number) {
 }
 
 // Input sent from the chat assistant.
-useHandoff<{ text?: string }>("hash-generator", (p) => {
-    if (p.text != null) {
+useHandoff<{ text?: string; input?: string }>("hash-generator", (p) => {
+    const t = p.text ?? p.input;
+    if (t != null) {
         source.value = "text";
-        text.value = p.text;
+        text.value = t;
     }
 });
 </script>

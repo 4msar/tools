@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ArrowLeftRight, ClipboardPaste, Sparkles, Trash2 } from "lucide-vue-next";
 import { dump, loadAll } from "js-yaml";
@@ -237,6 +238,13 @@ function swap() {
 }
 
 async function paste() { input.value = await readClipboard(); }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string; from?: Fmt; to?: Fmt }>("config-converter", (p) => {
+    if (p.from) from.value = p.from;
+    if (p.to) to.value = p.to;
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ClipboardPaste, Sparkles } from "lucide-vue-next";
 import { JSONPath } from "jsonpath-plus";
@@ -67,6 +68,12 @@ const output = computed(() => {
 async function paste() {
     input.value = await readClipboard();
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string; path?: string }>("json-path", (p) => {
+    if (p.path) path.value = p.path;
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

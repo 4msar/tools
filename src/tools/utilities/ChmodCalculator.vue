@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref, watch } from "vue";
 import { Btn, CopyButton, Field, Notice, Panel, ToolPage } from "@/components/ui";
 
@@ -159,6 +160,14 @@ const presets = [
     { v: 0o4755, note: "setuid executable" },
     { v: 0o1777, note: "Shared dir (/tmp)" },
 ];
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("chmod-calculator", (p) => {
+    if (p.input && /^[0-7]{3,4}$/.test(p.input)) {
+        octalText.value = p.input;
+        onOctal();
+    }
+});
 </script>
 
 <template>

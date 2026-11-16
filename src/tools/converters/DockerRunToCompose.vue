@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Sparkles, Trash2 } from "lucide-vue-next";
 import { dump } from "js-yaml";
@@ -187,6 +188,11 @@ const result = computed<{ yaml: string; notes: string[]; external?: boolean; err
     } catch (e) {
         return { yaml: "", notes: [], error: (e as Error).message };
     }
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("docker-run-to-compose", (p) => {
+    if (p.input != null) input.value = p.input;
 });
 </script>
 

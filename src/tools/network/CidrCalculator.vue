@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Btn, CopyButton, Field, Notice, Panel, ToolPage } from "@/components/ui";
 
@@ -118,6 +119,11 @@ const inRange = computed(() => {
 });
 
 const examples = ["192.168.1.10/24", "10.0.0.0/8", "172.16.5.4 255.255.240.0", "100.64.0.1/10"];
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("cidr-calculator", (p) => {
+    if (p.input) input.value = p.input;
+});
 </script>
 
 <template>

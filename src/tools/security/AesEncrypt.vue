@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref, watch } from "vue";
 import { Eye, EyeOff, Lock, LockOpen } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -96,6 +97,12 @@ const strength = computed(() => {
     if (!p) return null;
     if (p.length < 8) return { type: "warning" as const, text: "Short passwords can be guessed quickly. Use a long passphrase." };
     return null;
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string; mode?: "encrypt" | "decrypt" }>("aes-encryption", (p) => {
+    if (p.mode) mode.value = p.mode;
+    if (p.input != null) input.value = p.input;
 });
 </script>
 

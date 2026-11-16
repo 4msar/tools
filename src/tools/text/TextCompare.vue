@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, nextTick, ref, watch } from "vue";
 import { ArrowDown, ArrowLeftRight, ArrowUp, Sparkles, Trash2 } from "lucide-vue-next";
 import { diffArrays, diffChars, diffWords, diffWordsWithSpace } from "diff";
@@ -172,6 +173,13 @@ const bg = (k: Kind) => (k === "add" ? "bg-success/15" : k === "del" ? "bg-dange
 const mark = (k: Kind) => (k === "add" ? "+" : k === "del" ? "-" : " ");
 const ring = (g: number) => (g >= 0 && g === current.value ? "outline-2 -outline-offset-2 outline-accent" : "");
 const segBg = (k: Kind) => (k === "add" ? "bg-success/25 text-success" : k === "del" ? "bg-danger/25 text-danger line-through decoration-danger/50" : "");
+
+// Input sent from the chat assistant.
+useHandoff<{ left?: string; right?: string; input?: string }>("text-compare", (p) => {
+    if (p.left != null) left.value = p.left;
+    if (p.right != null) right.value = p.right;
+    else if (p.input != null) left.value = p.input;
+});
 </script>
 
 <template>

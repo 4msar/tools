@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Image as ImageIcon, Sparkles, Trash2 } from "lucide-vue-next";
 import { marked } from "marked";
@@ -110,6 +111,11 @@ const plain = computed(() => {
 const stats = computed(() => {
     const words = src.value.trim() ? src.value.trim().split(/\s+/).length : 0;
     return `${words} words · ${src.value.length} chars`;
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("markdown-preview", (p) => {
+    if (p.input != null) src.value = p.input;
 });
 </script>
 

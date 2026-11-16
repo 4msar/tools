@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, onMounted, ref, shallowRef } from "vue";
 import { ClipboardPaste, Download, Sparkles } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -113,6 +114,11 @@ const exported = computed(() => (view.value === "jsonl" ? records.value.map((r) 
 async function paste() {
     text.value = await readClipboard();
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("text-chunker", (p) => {
+    if (p.input != null) text.value = p.input;
+});
 </script>
 
 <template>

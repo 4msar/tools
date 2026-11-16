@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Loader2, ShieldCheck, ShieldX } from "lucide-vue-next";
 import bcrypt from "bcryptjs";
@@ -54,6 +55,11 @@ function parse(h: string) {
 }
 const info = computed(() => parse(mode.value === "hash" ? result.value : vHash.value));
 const truncated = computed(() => bcrypt.truncates(mode.value === "hash" ? password.value : vPassword.value));
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("bcrypt-generator", (p) => {
+    if (p.input != null) password.value = p.input;
+});
 </script>
 
 <template>

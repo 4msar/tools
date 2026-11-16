@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, onMounted, ref, shallowRef, watch } from "vue";
 import { ClipboardPaste, Trash2 } from "lucide-vue-next";
 import { Btn, CodeArea, Field, Notice, Panel, ToolPage } from "@/components/ui";
@@ -105,6 +106,11 @@ const viz = computed(() => {
 async function paste() {
     text.value = await readClipboard();
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("token-counter", (p) => {
+    if (p.input != null) text.value = p.input;
+});
 </script>
 
 <template>

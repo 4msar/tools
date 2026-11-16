@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { RefreshCw } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Field, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -92,6 +93,13 @@ const fake = computed(() => {
     void nonce.value;
     const arr = Array.from({ length: fc.value }, () => fakeOne(kind.value));
     return asJson.value ? JSON.stringify(arr, null, 2) : arr.join("\n");
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ count?: number; unit?: "paragraphs" | "sentences" | "words" }>("lorem-ipsum", (p) => {
+    tab.value = "lorem";
+    if (p.unit) unit.value = p.unit;
+    if (p.count) count.value = p.count;
 });
 </script>
 

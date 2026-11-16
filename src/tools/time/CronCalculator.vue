@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, reactive, ref, watch } from "vue";
 import { toString as cronToString } from "cronstrue";
 import { CronExpressionParser } from "cron-parser";
@@ -143,6 +144,11 @@ function buildField(b: BField, i: number): string {
 watch(builder, () => {
     expr.value = builder.map(buildField).join(" ");
 }, { deep: true });
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("cron-calculator", (p) => {
+    if (p.input) expr.value = p.input;
+});
 </script>
 
 <template>

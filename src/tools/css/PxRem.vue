@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { CodeArea, CopyButton, Field, Panel, ToolPage } from "@/components/ui";
 
@@ -71,6 +72,11 @@ const bulkOut = computed(() =>
         return v === 0 ? "0" : `${num(v / r.value)}rem`;
     }),
 );
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("px-rem", (p) => {
+    if (p.input != null) bulkIn.value = p.input;
+});
 </script>
 
 <template>

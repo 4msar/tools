@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, reactive, ref, watch } from "vue";
 import { Download, Sparkles, Trash2 } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -101,6 +102,11 @@ function load(s: (typeof SAMPLES)[number]) {
 function clearValues() {
     for (const k of Object.keys(values)) values[k] = "";
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("prompt-template", (p) => {
+    if (p.input != null) template.value = p.input;
+});
 </script>
 
 <template>

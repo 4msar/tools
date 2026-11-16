@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import * as yaml from "js-yaml";
 import { ArrowRight, FileJson } from "lucide-vue-next";
@@ -132,6 +133,13 @@ const style: Record<Kind, string> = {
     change: "bg-warning/10 text-warning",
 };
 const sym: Record<Kind, string> = { add: "+ added", remove: "− removed", change: "~ changed" };
+
+// Input sent from the chat assistant.
+useHandoff<{ left?: string; right?: string; input?: string }>("json-diff", (p) => {
+    if (p.left != null) left.value = p.left;
+    if (p.right != null) right.value = p.right;
+    else if (p.input != null) left.value = p.input;
+});
 </script>
 
 <template>

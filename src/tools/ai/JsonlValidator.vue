@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ClipboardPaste, Download, Sparkles, Trash2, Upload } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -124,6 +125,11 @@ async function onFile(e: Event) {
     if (f) input.value = await f.text();
     (e.target as HTMLInputElement).value = "";
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("jsonl-validator", (p) => {
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ClipboardPaste, Download, Sparkles, Trash2 } from "lucide-vue-next";
 import { format } from "sql-formatter";
@@ -165,6 +166,11 @@ function download() {
     if (mode.value === "data") downloadBlob(result.value.out, dataFmt.value === "json" ? "data.json" : "data.csv", dataFmt.value === "json" ? "application/json" : "text/csv");
     else downloadBlob(result.value.out, "query.sql", "application/sql");
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("sql-formatter", (p) => {
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

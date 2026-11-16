@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Btn, CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
 
@@ -106,6 +107,13 @@ const fields = [
 function swap() {
     [start.value, end.value] = [end.value, start.value];
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ start?: string; end?: string }>("date-difference", (p) => {
+    if (p.start || p.end) mode.value = "diff";
+    if (p.start) start.value = p.start;
+    if (p.end) end.value = p.end;
+});
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref, watch } from "vue";
 import { Download, Sparkles, Trash2, Upload } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -146,6 +147,11 @@ async function onFile(e: Event) {
     (e.target as HTMLInputElement).value = "";
 }
 const fmtB = (n: number) => (n < 1024 ? `${n} B` : `${(n / 1024).toFixed(2)} KB`);
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("svg-tools", (p) => {
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

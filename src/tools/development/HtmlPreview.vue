@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { useStorage } from "@vueuse/core";
 import { Monitor, RotateCcw, Smartphone, Tablet } from "lucide-vue-next";
@@ -32,6 +33,11 @@ const CSP = `<meta http-equiv="Content-Security-Policy" content="default-src 'no
 const srcdoc = computed(() => CSP + html.value);
 
 const frameWidth = computed(() => ({ mobile: "375px", tablet: "768px", full: "100%" })[width.value]);
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("html-preview", (p) => {
+    if (p.input != null) html.value = p.input;
+});
 </script>
 
 <template>

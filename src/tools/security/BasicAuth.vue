@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Eye, EyeOff } from "lucide-vue-next";
 import { Btn, CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -43,6 +44,12 @@ const decoded = computed<{ user?: string; pass?: string; error?: string }>(() =>
     } catch {
         return { error: "That is not a valid Base64 Basic credential." };
     }
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ username?: string; password?: string }>("basic-auth", (p) => {
+    if (p.username != null) username.value = p.username;
+    if (p.password != null) password.value = p.password;
 });
 </script>
 

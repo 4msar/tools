@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref, watch } from "vue";
 import { RefreshCw } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Field, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -56,6 +57,12 @@ const output = computed(() => items.value.join("\n"));
 const entropy = computed(() => {
     const n = Array.from(alphabet.value).length;
     return n < 2 ? 0 : len.value * Math.log2(n);
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ length?: number; count?: number }>("random-string", (p) => {
+    if (p.length) length.value = p.length;
+    if (p.count) count.value = p.count;
 });
 </script>
 

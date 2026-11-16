@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Eraser, FlaskConical } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -86,6 +87,12 @@ const replaced = computed(() => {
     } catch (e) {
         return (e as Error).message;
     }
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string; pattern?: string }>("regex-tester", (p) => {
+    if (p.pattern != null) pattern.value = p.pattern;
+    if (p.input != null) text.value = p.input;
 });
 </script>
 

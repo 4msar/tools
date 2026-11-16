@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ArrowLeftRight, ClipboardPaste, Download, Sparkles, Trash2 } from "lucide-vue-next";
 import Papa from "papaparse";
@@ -149,6 +150,12 @@ async function onFile(e: Event) {
     (e.target as HTMLInputElement).value = "";
 }
 const cell = (v: unknown) => (v === null || v === undefined ? "" : typeof v === "object" ? JSON.stringify(v) : String(v));
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string; dir?: Dir }>("csv-json", (p) => {
+    if (p.dir) dir.value = p.dir;
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

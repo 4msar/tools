@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { FileJson } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -315,6 +316,11 @@ const result = computed<{ out: string; error?: string }>(() => {
         case "py": return { out: genPy(t, name, pyStyle.value) };
         default: return { out: genSchema(t, name) };
     }
+});
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("json-to-code", (p) => {
+    if (p.input != null) input.value = p.input;
 });
 </script>
 

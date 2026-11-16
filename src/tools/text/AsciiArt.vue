@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref, watch } from "vue";
 import { Download } from "lucide-vue-next";
 import figlet from "figlet";
@@ -90,6 +91,11 @@ function wrap(art: string): string {
 
 const output = computed(() => wrap(render(font.value)));
 const gallery = computed(() => (showAll.value ? fontNames.map((f) => ({ f, art: render(f) })).filter((x) => x.art) : []));
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("ascii-art", (p) => {
+    if (p.input) text.value = p.input;
+});
 </script>
 
 <template>

@@ -1,20 +1,5 @@
-<script lang="ts">
-import { reactive } from "vue";
-
-// Module-level state: survives navigating away from the page.
-const sw = reactive({
-    running: false,
-    startedAt: 0,
-    accumulated: 0,
-    laps: [] as number[], // cumulative totals in ms
-});
-
-export function elapsedMs() {
-    return sw.accumulated + (sw.running ? performance.now() - sw.startedAt : 0);
-}
-</script>
-
 <script setup lang="ts">
+import { elapsedMs, lap, reset as resetSw, sw, toggle } from "./stopwatch";
 import { computed, onActivated, onDeactivated, onMounted, onUnmounted, ref } from "vue";
 import { useActiveEventListener } from "@/composables/useActiveEventListener";
 import { Download, Flag, Pause, Play, RotateCcw } from "lucide-vue-next";
@@ -28,30 +13,6 @@ function loop() {
     raf = requestAnimationFrame(loop);
 }
 
-function start() {
-    if (sw.running) return;
-    sw.startedAt = performance.now();
-    sw.running = true;
-}
-function pause() {
-    if (!sw.running) return;
-    sw.accumulated = elapsedMs();
-    sw.running = false;
-}
-function toggle() {
-    sw.running ? pause() : start();
-}
-function lap() {
-    if (!sw.running) return;
-    sw.laps.push(Math.round(elapsedMs()));
-}
-function reset() {
-    sw.running = false;
-    sw.accumulated = 0;
-    sw.laps = [];
-    tick.value = 0;
-}
-
 function onKey(e: KeyboardEvent) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     const t = e.target as HTMLElement | null;
@@ -62,6 +23,11 @@ function onKey(e: KeyboardEvent) {
         toggle();
     } else if (e.key === "l" || e.key === "L") lap();
     else if (e.key === "r" || e.key === "R") reset();
+}
+
+function reset() {
+    resetSw();
+    tick.value = 0;
 }
 
 useActiveEventListener("keydown", onKey);

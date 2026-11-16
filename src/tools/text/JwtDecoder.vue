@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref, watch } from "vue";
 import { ClipboardPaste, Sparkles, Trash2 } from "lucide-vue-next";
 import { compactVerify, importJWK, importSPKI, importX509 } from "jose";
@@ -201,6 +202,11 @@ function fromSigner(t: string, key: string, hmac: boolean) {
     } else publicKey.value = key;
     mode.value = "decode";
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("jwt-decoder", (p) => {
+    if (p.input) token.value = p.input;
+});
 </script>
 
 <template>

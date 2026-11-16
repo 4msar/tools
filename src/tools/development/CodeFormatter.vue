@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { ref } from "vue";
 import { ArrowLeft, Loader2, Wand2 } from "lucide-vue-next";
 import type { Plugin } from "prettier";
@@ -79,6 +80,15 @@ function onLang() {
     output.value = "";
     error.value = "";
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string; lang?: Lang }>("code-formatter", (p) => {
+    if (p.lang) lang.value = p.lang;
+    if (p.input != null) {
+        input.value = p.input;
+        void format();
+    }
+});
 </script>
 
 <template>

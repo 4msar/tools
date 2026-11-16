@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { toast } from "vue-sonner";
 import { Download, RefreshCw } from "lucide-vue-next";
@@ -305,6 +306,11 @@ const typeOptions = [
     { value: "tetradic", label: "Tetradic" },
     { value: "splitComplementary", label: "Split complementary" },
 ];
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("color-palette-generator", (p) => {
+    if (p.input) baseColor.value = p.input;
+});
 </script>
 
 <template>
