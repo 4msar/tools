@@ -1,12 +1,12 @@
 # DevTools
 
-A collection of 80 free developer tools that run entirely in your browser: JSON, hashes, UUIDs, regex, cron, colors, encoders, AI helpers, and more. No sign-up and no server. Your data never leaves the tab.
+A collection of 84 free developer tools that run entirely in your browser: JSON, hashes, UUIDs, regex, cron, colors, encoders, AI helpers, and more. No sign-up and no server. Your data never leaves the tab.
 
 **Live:** https://tools.msar.me
 
 ## Features
 
-- **80 tools** in 11 categories, each lazy-loaded
+- **84 tools** in 12 categories, each lazy-loaded
 - **Command palette**: press `⌘K` / `Ctrl+K` or `/` to search by name or keyword
 - **Tabs**: every tool you open stays in a tab and keeps its input while you switch. Drag to reorder, middle-click or `Alt+W` to close, `Alt+Shift+←/→` to switch.
 - **Favorites and recent tools** are stored locally
@@ -94,6 +94,13 @@ A collection of 80 free developer tools that run entirely in your browser: JSON,
 - **Secret & PII Redactor**: Mask API keys, tokens, emails and other personal data before pasting into an AI chat.
 - **Token Counter**: Count GPT tokens exactly, estimate others, and check context window usage.
 - **AI Text Cleaner**: Remove hidden characters, citation markers and Markdown from AI-written text.
+
+### Productivity
+
+- **Pomodoro Timer**: Work in focused sessions with short and long breaks, alerts and a daily tally.
+- **Alarms & Reminders**: Set countdown timers and alarms that alert you with a sound and a desktop notification.
+- **Break Reminder**: Get nudged to rest your eyes, drink water and stretch at intervals you choose.
+- **To-Do List**: Keep a quick task list with priorities and due dates, saved in your browser.
 
 ### Utilities
 

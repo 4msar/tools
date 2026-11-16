@@ -8,7 +8,7 @@ import {
     Table, Tag, Terminal, Text, Timer, Type, Wand2, Wrench, Code, Clock3, Image as ImageIcon,
     ALargeSmall, AppWindow, Brush, Calculator, Container, Database, FileBadge, GitBranch, Glasses, LayoutGrid, ListChecks,
     LockKeyhole, MessageSquareText, MonitorSmartphone, PenTool, Pipette, Route, Scissors, Send, Shield, Smartphone, Spline,
-    ServerCog, Squircle, SwatchBook, UserCheck,
+    ServerCog, Squircle, SwatchBook, UserCheck, AlarmClock, Coffee, ListTodo, Zap,
 } from "lucide-vue-next";
 
 export type CategoryId =
@@ -22,7 +22,8 @@ export type CategoryId =
     | "text"
     | "ai"
     | "utilities"
-    | "css";
+    | "css"
+    | "productivity";
 
 export interface Category {
     id: CategoryId;
@@ -52,6 +53,7 @@ export const categories: Category[] = [
     { id: "css", name: "CSS", icon: Layers },
     { id: "network", name: "Network", icon: Network },
     { id: "ai", name: "AI", icon: Bot },
+    { id: "productivity", name: "Productivity", icon: Zap },
     { id: "utilities", name: "Utilities", icon: Wrench },
 ];
 
@@ -151,6 +153,12 @@ export const tools: ToolDef[] = [
     { id: "prompt-template", name: "Prompt Template Builder", category: "ai", icon: MessageSquareText, keywords: ["prompt", "template", "variables", "placeholders", "llm"], isNew: true, description: "Write prompts with {{variables}}, fill them in and export as text or code.", component: () => import("./ai/PromptTemplate.vue") },
     { id: "text-chunker", name: "RAG Text Chunker", category: "ai", icon: Scissors, keywords: ["rag", "chunk", "overlap", "split", "embedding", "tokens"], isNew: true, description: "Split text into chunks by tokens, words or characters with overlap, and see every boundary.", component: () => import("./ai/TextChunker.vue") },
     { id: "jsonl-validator", name: "JSONL Validator", category: "ai", icon: ListChecks, keywords: ["jsonl", "ndjson", "fine-tune", "fine tuning", "batch", "dataset"], isNew: true, description: "Validate JSONL line by line for fine-tuning datasets and batch request files.", component: () => import("./ai/JsonlValidator.vue") },
+
+    // Productivity
+    { id: "pomodoro-timer", name: "Pomodoro Timer", category: "productivity", icon: Timer, keywords: ["pomodoro", "focus", "timer", "break", "tomato", "deep work"], isNew: true, description: "Work in focused sessions with short and long breaks, alerts and a daily tally.", component: () => import("./productivity/Pomodoro.vue") },
+    { id: "reminders", name: "Alarms & Reminders", category: "productivity", icon: AlarmClock, keywords: ["alarm", "alert", "reminder", "countdown", "timer", "notification"], isNew: true, description: "Set countdown timers and alarms that alert you with a sound and a desktop notification.", component: () => import("./productivity/Reminders.vue") },
+    { id: "break-reminder", name: "Break Reminder", category: "productivity", icon: Coffee, keywords: ["20-20-20", "eye strain", "water", "hydrate", "stretch", "posture", "health"], isNew: true, description: "Get nudged to rest your eyes, drink water and stretch at intervals you choose.", component: () => import("./productivity/BreakReminder.vue") },
+    { id: "todo-list", name: "To-Do List", category: "productivity", icon: ListTodo, keywords: ["todo", "tasks", "checklist", "list", "priority"], isNew: true, description: "Keep a quick task list with priorities and due dates, saved in your browser.", component: () => import("./productivity/TodoList.vue") },
 
     // Utilities
     { id: "unit-converter", name: "Unit Converter", category: "utilities", icon: Ruler, keywords: ["length", "weight", "temperature", "data", "bytes"], isNew: true, description: "Convert length, weight, temperature, area, speed and data units.", component: () => import("./utilities/UnitConverter.vue") },
