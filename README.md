@@ -1,13 +1,14 @@
 # DevTools
 
-A collection of 84 free developer tools that run entirely in your browser: JSON, hashes, UUIDs, regex, cron, colors, encoders, AI helpers, productivity timers, and more, plus a chat assistant that runs them for you. No sign-up and no server. Your data never leaves the tab.
+A collection of 85 free developer tools that run entirely in your browser: JSON, hashes, UUIDs, regex, cron, colors, encoders, AI helpers, productivity timers, and more, plus a chat assistant that runs them for you and a private on-device AI chat. No sign-up and no server. Your data never leaves the tab.
 
 **Live:** https://tools.msar.me
 
 ## Features
 
-- **84 tools** in 12 categories, each lazy-loaded
+- **85 tools** in 12 categories, each lazy-loaded
 - **Chat assistant** that finds tools and runs them from plain-language commands, then opens the tool with your input filled in (see [Chat assistant](#chat-assistant))
+- **General Chat**: a private AI chat with an open-source model running in the browser (WebLLM + WebGPU). Pick any model from the WebLLM catalog or add a custom MLC model; also available as a tab in the chatbox
 - **Command palette**: press `⌘K` / `Ctrl+K` or `/` to search by name or keyword
 - **Tabs**: every tool you open stays in a tab and keeps its input while you switch. Drag to reorder, middle-click or `Alt+W` to close, `Alt+Shift+←/→` to switch.
 - **Favorites and recent tools** are stored locally
@@ -35,6 +36,8 @@ Text after a colon, on the next line, in quotes or in a ``` code block is treate
 | Generators | `lorem ipsum 2 paragraphs` · `gitignore for node python macos` · `qr code for https://example.com` · paste a `curl …` or `docker run …` command |
 | Productivity | `start a pomodoro` · `pause pomodoro` · `set a timer for 10 minutes` · `remind me at 3pm to call Sam` · `start break reminders` · `add todo review PR tomorrow` |
 | Anything else | `open image converter`, `go to box shadow`, … opens any tool by name |
+
+The chatbox has two tabs: **Tools** (the commands above) and **General chat**, a plain conversation with the on-device model that isn't tied to any tool. Conversations, the system prompt, temperature and reply length are shared with the [General Chat](#ai) tool page, where you also download, switch and delete models. One model is in memory at a time, and the tool finder uses whichever is loaded.
 
 Tools that need a file, a password or a visual editor (image converter, favicon, AES, key pairs, CSS designers, …) open from the chat and take over from there. AES never receives your password through the chat.
 
@@ -139,6 +142,7 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 
 ### AI
 
+- **General Chat**: Chat privately with an open-source model that runs in your browser. Download any WebLLM model or add your own.
 - **Secret & PII Redactor**: Mask API keys, tokens, emails and other personal data before pasting into an AI chat.
 - **Token Counter**: Count GPT tokens exactly, estimate others, check context usage and estimate API cost.
 - **AI Text Cleaner**: Remove hidden characters, citation markers and Markdown from AI-written text.

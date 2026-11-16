@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, watch } from "vue";
-import { onKeyStroke, useMediaQuery } from "@vueuse/core";
-import { MessageCircle, Settings2, X } from "lucide-vue-next";
+import { onKeyStroke, useMediaQuery, useStorage } from "@vueuse/core";
+import { useRouter } from "vue-router";
+import { MessageCircle, MessagesSquare, Settings2, X } from "lucide-vue-next";
+import { Tabs } from "@/components/ui";
 import ChatConsent from "./ChatConsent.vue";
+import GeneralThread from "./GeneralThread.vue";
 import ChatSettings from "./ChatSettings.vue";
 import ChatThread from "./ChatThread.vue";
 import { chatSettings } from "@/chat/store";
@@ -12,6 +15,14 @@ const open = defineModel<boolean>({ default: false });
 const view = defineModel<"consent" | "thread" | "settings">("view", {
     default: "thread",
 });
+
+/** "tools" finds and runs tools; "general" is General Chat, a plain conversation with the model. */
+const mode = useStorage<"tools" | "general">("devtools:chat:mode", "tools");
+const router = useRouter();
+function manageModels() {
+    void router.push("/general-chat");
+    closeOnMobile();
+}
 
 onKeyStroke("Escape", () => {
     if (open.value) open.value = false;
@@ -173,11 +184,15 @@ function loadFromSettings() {
                         <div class="flex items-center gap-2">
                             <span
                                 class="grid size-8 place-items-center rounded-lg bg-accent-soft text-accent"
-                                ><MessageCircle class="size-4"
+                                ><MessagesSquare
+                                    v-if="mode === 'general'"
+                                    class="size-4" /><MessageCircle
+                                    v-else
+                                    class="size-4"
                             /></span>
                             <div>
                                 <h2 class="text-sm font-semibold text-fg">
-                                    Find a tool
+                                    {{ mode === "general" ? "General chat" : "Find a tool" }}
                                 </h2>
                                 <p class="text-[10px] text-fg-subtle">
                                     Private, on-device assistant
@@ -186,7 +201,7 @@ function loadFromSettings() {
                         </div>
                         <div class="flex items-center gap-1">
                             <button
-                                v-if="view === 'thread'"
+                                v-if="mode === 'tools' && view === 'thread'"
                                 type="button"
                                 class="grid size-8 place-items-center rounded-md text-fg-subtle hover:bg-subtle hover:text-fg"
                                 aria-label="Chat settings"
@@ -204,8 +219,26 @@ function loadFromSettings() {
                             </button>
                         </div>
                     </header>
+                    <div
+                        v-if="mode === 'general' || view !== 'settings'"
+                        class="flex justify-center border-b border-line px-4 py-2"
+                    >
+                        <Tabs
+                            v-model="mode"
+                            size="sm"
+                            :options="[
+                                { value: 'tools', label: 'Tools' },
+                                { value: 'general', label: 'General chat' },
+                            ]"
+                        />
+                    </div>
+                    <GeneralThread
+                        v-if="mode === 'general'"
+                        compact
+                        @manage="manageModels"
+                    />
                     <ChatConsent
-                        v-if="view === 'consent'"
+                        v-else-if="view === 'consent'"
                         @start="startModel"
                         @skip="skipModel"
                         @settings="openSettings"

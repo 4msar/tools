@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import type { InitProgressReport, WebWorkerMLCEngine } from "@mlc-ai/web-llm";
+import { appConfig } from "./models";
 
 export type EngineStatus =
     "idle" | "unsupported" | "downloading" | "ready" | "generating" | "error";
@@ -15,6 +16,8 @@ export const engineError = ref("");
 let engine: WebWorkerMLCEngine | undefined;
 let worker: Worker | undefined;
 let loadedModelId = "";
+/** The model currently in memory. The tool finder and General Chat share one engine. */
+export const loadedModel = ref("");
 
 export async function supportsWebGPU() {
     if (!("gpu" in navigator)) return false;
@@ -43,9 +46,11 @@ export async function load(modelId: string) {
     try {
         const { CreateWebWorkerMLCEngine } = await import("@mlc-ai/web-llm");
         engine = await CreateWebWorkerMLCEngine(worker, modelId, {
+            appConfig: await appConfig(),
             initProgressCallback: (report) => (engineProgress.value = report),
         });
         loadedModelId = modelId;
+        loadedModel.value = modelId;
         engineStatus.value = "ready";
     } catch (error) {
         engineStatus.value = "error";
@@ -60,9 +65,15 @@ export async function load(modelId: string) {
     }
 }
 
+export interface AskOptions {
+    temperature?: number;
+    max_tokens?: number;
+}
+
 export async function ask(
     messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
     onToken: (token: string) => void,
+    options: AskOptions = {},
 ) {
     if (!engine) throw new Error("The model is not loaded.");
     engineStatus.value = "generating";
@@ -70,8 +81,8 @@ export async function ask(
         const stream = await engine.chat.completions.create({
             messages,
             stream: true,
-            temperature: 0.2,
-            max_tokens: 180,
+            temperature: options.temperature ?? 0.2,
+            max_tokens: options.max_tokens ?? 180,
         });
         for await (const chunk of stream) {
             const token = chunk.choices[0]?.delta?.content;
@@ -97,18 +108,19 @@ export async function unload() {
     engine = undefined;
     worker = undefined;
     loadedModelId = "";
+    loadedModel.value = "";
     if (engineStatus.value !== "unsupported") engineStatus.value = "idle";
 }
 
 export async function deleteModel(modelId: string) {
     if (loadedModelId === modelId) await unload();
     const { deleteModelAllInfoInCache } = await import("@mlc-ai/web-llm");
-    await deleteModelAllInfoInCache(modelId);
+    await deleteModelAllInfoInCache(modelId, await appConfig());
 }
 
 export async function isCached(modelId: string) {
     const { hasModelInCache } = await import("@mlc-ai/web-llm");
-    return hasModelInCache(modelId);
+    return hasModelInCache(modelId, await appConfig());
 }
 
 export async function storageEstimate() {

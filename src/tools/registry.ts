@@ -8,7 +8,7 @@ import {
     Table, Tag, Terminal, Text, Timer, Type, Wand2, Wrench, Code, Clock3, Image as ImageIcon,
     ALargeSmall, AppWindow, Brush, Calculator, Container, Database, FileBadge, GitBranch, Glasses, LayoutGrid, ListChecks,
     LockKeyhole, MessageSquareText, MonitorSmartphone, PenTool, Pipette, Route, Scissors, Send, Shield, Smartphone, Spline,
-    ServerCog, Squircle, SwatchBook, UserCheck, AlarmClock, Coffee, ListTodo, Zap,
+    ServerCog, Squircle, SwatchBook, UserCheck, AlarmClock, Coffee, ListTodo, Zap, MessagesSquare,
 } from "lucide-vue-next";
 
 export type CategoryId =
@@ -147,6 +147,7 @@ export const tools: ToolDef[] = [
     { id: "server-block-generator", name: "Server Block Generator", category: "network", icon: ServerCog, keywords: ["nginx", "apache", "caddy", "vhost", "virtual host", "server block", "reverse proxy", "caddyfile", "ssl", "config"], isNew: true, description: "Generate Nginx server blocks, Apache virtual hosts and Caddyfiles for static sites, PHP apps and reverse proxies.", component: () => import("./network/ServerBlockGenerator.vue") },
 
     // AI
+    { id: "general-chat", name: "General Chat", category: "ai", icon: MessagesSquare, keywords: ["chat", "llm", "ai", "assistant", "webllm", "local model", "offline", "qwen", "llama", "phi", "gemma"], isNew: true, description: "Chat privately with an open-source model that runs in your browser. Download any WebLLM model or add your own.", component: () => import("./ai/GeneralChat.vue") },
     { id: "pii-redactor", name: "Secret & PII Redactor", category: "ai", icon: EyeOff, keywords: ["redact", "mask", "api key", "email", "privacy"], isNew: true, description: "Mask API keys, tokens, emails and other personal data before pasting into an AI chat.", component: () => import("./ai/PiiRedactor.vue") },
     { id: "token-counter", name: "Token Counter", category: "ai", icon: Coins, keywords: ["gpt", "claude", "tokens", "context", "llm", "cost", "price", "pricing"], isNew: true, description: "Count GPT tokens exactly, estimate others, check context usage and estimate API cost.", component: () => import("./ai/TokenCounter.vue") },
     { id: "ai-text-cleaner", name: "AI Text Cleaner", category: "ai", icon: Sparkles, keywords: ["clean", "invisible", "quotes", "markdown"], isNew: true, description: "Remove hidden characters, citation markers and Markdown from AI-written text.", component: () => import("./ai/AiTextCleaner.vue") },
