@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, defineComponent, h, ref, type Component, type PropType, type VNode } from "vue";
 import { dump } from "js-yaml";
 import { ClipboardPaste, Download, FileText, Trash2 } from "lucide-vue-next";
@@ -161,6 +162,11 @@ function download() {
     const yaml = tab.value === "yaml";
     downloadBlob(currentOutput.value, yaml ? "data.yaml" : tab.value === "minify" ? "minified.json" : "formatted.json", yaml ? "text/yaml" : "application/json");
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("json-formatter", (p) => {
+    if (p.input != null) inputJson.value = p.input;
+});
 </script>
 
 <template>

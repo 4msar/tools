@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Sparkles, Trash2 } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Panel, ToolPage } from "@/components/ui";
@@ -55,6 +56,11 @@ const results = computed(() => {
 });
 
 const sample = "userProfileURL\nHTTPServer2Config\nhello world-example_name\nXMLHttpRequest";
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("case-converter", (p) => {
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

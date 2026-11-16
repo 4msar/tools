@@ -4,7 +4,7 @@ import { Check, Download, Settings2, Sparkles } from "lucide-vue-next";
 import { chatModels } from "@/chat/models";
 import { engineProgress, engineStatus } from "@/chat/engine";
 
-defineEmits<{ start: []; settings: [] }>();
+defineEmits<{ start: []; settings: []; skip: [] }>();
 const model = chatModels[0];
 const unsupported = computed(() => engineStatus.value === "unsupported");
 
@@ -30,7 +30,9 @@ function progressPercent() {
         </h2>
         <p class="mt-2 text-sm leading-6 text-fg-muted">
             Describe what you are trying to do and get a useful starting point
-            from the tools already in this app.
+            from the tools already in this app. Commands like “base64 encode
+            hello” or “start a pomodoro” work right away, with or without the
+            model.
         </p>
 
         <div
@@ -100,6 +102,15 @@ function progressPercent() {
                         ? "Continue without model"
                         : "Download and start"
                 }}
+            </button>
+            <button
+                v-if="!unsupported"
+                type="button"
+                class="flex h-9 items-center justify-center gap-2 rounded-md px-3 text-sm text-fg ring-1 ring-line ring-inset hover:bg-subtle"
+                :disabled="engineStatus === 'downloading'"
+                @click="$emit('skip')"
+            >
+                Continue without the model
             </button>
             <button
                 type="button"

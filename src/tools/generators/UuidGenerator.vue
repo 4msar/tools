@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref, watch } from "vue";
 import { Download, RefreshCw } from "lucide-vue-next";
 import { v1, v4, v7 } from "uuid";
@@ -79,6 +80,12 @@ const info = computed(() => {
 function validDate(d: Date | null) {
     return d && !Number.isNaN(d.getTime()) ? d : null;
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ version?: Ver; count?: number }>("uuid-generator", (p) => {
+    if (p.version) version.value = p.version;
+    if (p.count) count.value = p.count;
+});
 </script>
 
 <template>

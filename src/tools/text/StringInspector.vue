@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Check, ClipboardPaste, Eraser, Sparkles, Trash2 } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, ToolPage } from "@/components/ui";
@@ -155,6 +156,11 @@ const NORM_HELP: Record<string, string> = {
 async function paste() {
     text.value = await readClipboard();
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ text?: string }>("string-inspector", (p) => {
+    if (p.text != null) text.value = p.text;
+});
 </script>
 
 <template>

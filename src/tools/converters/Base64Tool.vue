@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ArrowDownUp, ClipboardPaste, Download, Trash2, Upload } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -71,6 +72,12 @@ function downloadDecoded() {
     const bytes = result.value.bytes;
     if (bytes) downloadBlob(bytes as BlobPart, fileName.value || "decoded.bin", "application/octet-stream");
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ mode?: Mode; input?: string }>("base64-encoder", (p) => {
+    if (p.mode) mode.value = p.mode;
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

@@ -1,22 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useStorage } from "@vueuse/core";
 import { CalendarDays, Download, Flag, Plus, Trash2 } from "lucide-vue-next";
 import { Btn, CopyButton, Panel, Tabs, ToolPage } from "@/components/ui";
 import { downloadBlob } from "@/composables/useClipboard";
-
-type Priority = "high" | "medium" | "low";
-interface Todo {
-    id: string;
-    text: string;
-    done: boolean;
-    priority: Priority;
-    due?: string; // yyyy-mm-dd
-    createdAt: number;
-    doneAt?: number;
-}
-
-const todos = useStorage<Todo[]>("devtools:todos", []);
+import { addTodo, todos, type Priority, type Todo } from "./todos";
 
 const text = ref("");
 const priority = ref<Priority>("medium");
@@ -27,7 +14,7 @@ const sort = ref<"priority" | "due" | "created">("priority");
 function add() {
     const t = text.value.trim();
     if (!t) return;
-    todos.value.unshift({ id: crypto.randomUUID(), text: t, done: false, priority: priority.value, due: due.value || undefined, createdAt: Date.now() });
+    addTodo(t, priority.value, due.value || undefined);
     text.value = "";
     due.value = "";
 }

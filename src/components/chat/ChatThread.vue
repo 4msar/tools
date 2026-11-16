@@ -4,12 +4,17 @@ import { useRouter } from "vue-router";
 import {
     ArrowUp,
     ExternalLink,
+    CircleCheck,
+    CircleAlert,
     Plus,
     Square,
     Sparkles,
     Settings2,
 } from "lucide-vue-next";
 import { rankTools } from "@/chat/retrieval";
+import { actionExamples, runAction } from "@/chat/actions";
+import { sendToTool } from "@/composables/handoff";
+import CopyButton from "@/components/ui/CopyButton.vue";
 import { ask, engineStatus, stop } from "@/chat/engine";
 import {
     activeSession,
@@ -48,9 +53,35 @@ function patchMessage(
     }));
 }
 
-async function send() {
-    const text = input.value.trim();
+async function runCommand(text: string) {
+    const action = await runAction(text);
+    if (!action) return false;
+    const session = ensureSession();
+    updateSession(session.id, (current) => ({
+        ...current,
+        title: current.messages.length ? current.title : text.slice(0, 42),
+        updatedAt: Date.now(),
+        messages: [
+            ...current.messages,
+            { id: crypto.randomUUID(), role: "user", content: text },
+            { id: crypto.randomUUID(), role: "assistant", content: action.summary, action },
+        ],
+    }));
+    input.value = "";
+    if (action.handoff) sendToTool(action.toolId, action.handoff);
+    openTool(action.toolId);
+    return true;
+}
+
+async function send(preset?: string) {
+    const text = (preset ?? input.value).trim();
     if (!text || busy.value) return;
+    busy.value = true;
+    try {
+        if (await runCommand(text)) return;
+    } finally {
+        busy.value = false;
+    }
     const session = ensureSession();
     const matches = rankTools(text);
     const userMessage: ChatMessage = {
@@ -115,7 +146,13 @@ async function send() {
 }
 
 function openTool(id: string) {
-    if (toolById.has(id)) router.push("/" + id);
+    if (toolById.has(id) && router.currentRoute.value.path !== "/" + id) router.push("/" + id);
+}
+
+function reopen(message: ChatMessage) {
+    const action = message.action!;
+    if (action.handoff) sendToTool(action.toolId, action.handoff);
+    openTool(action.toolId);
 }
 
 function startNewChat() {
@@ -139,9 +176,20 @@ function startNewChat() {
                     What are you trying to make?
                 </p>
                 <p class="mt-1 max-w-[260px] text-xs leading-5 text-fg-subtle">
-                    Ask about a format, a debugging task, or a developer
-                    workflow.
+                    Find a tool, or tell me what to do and I'll run it and
+                    open the tool for you.
                 </p>
+                <div class="mt-4 flex max-w-[300px] flex-wrap justify-center gap-1.5">
+                    <button
+                        v-for="example in actionExamples"
+                        :key="example"
+                        type="button"
+                        class="rounded-full border border-line bg-surface px-2.5 py-1 text-xs text-fg-subtle transition-colors hover:border-accent hover:text-fg"
+                        @click="send(example)"
+                    >
+                        {{ example }}
+                    </button>
+                </div>
             </div>
             <template
                 v-for="message in activeSession?.messages"
@@ -171,6 +219,44 @@ function startNewChat() {
                             />
                         </p>
                     </div>
+                </div>
+                <div
+                    v-if="message.action"
+                    class="ml-1 overflow-hidden rounded-xl border border-line bg-surface"
+                >
+                    <div
+                        v-if="message.action.output"
+                        class="relative border-b border-line"
+                    >
+                        <pre
+                            class="max-h-48 overflow-auto p-3 pr-16 font-mono text-xs leading-5 break-all whitespace-pre-wrap text-fg"
+                            >{{ message.action.output }}</pre
+                        >
+                        <div class="absolute top-1.5 right-1.5">
+                            <CopyButton :text="message.action.output" />
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        class="group flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-fg-subtle transition-colors hover:bg-subtle hover:text-fg"
+                        @click="reopen(message)"
+                    >
+                        <CircleAlert
+                            v-if="message.action.error"
+                            class="size-3.5 shrink-0 text-warn"
+                        /><CircleCheck
+                            v-else
+                            class="size-3.5 shrink-0 text-accent"
+                        />
+                        <component
+                            :is="toolById.get(message.action.toolId)?.icon"
+                            class="size-3.5 shrink-0"
+                        />
+                        <span class="flex-1 truncate"
+                            >{{ toolById.get(message.action.toolId)?.name }}</span
+                        >
+                        <ExternalLink class="size-3.5 shrink-0 group-hover:text-accent" />
+                    </button>
                 </div>
                 <div
                     v-if="
@@ -212,15 +298,15 @@ function startNewChat() {
         <div class="border-t border-line p-3">
             <form
                 class="flex items-end gap-2 rounded-xl border border-line bg-subtle p-1.5 focus-within:border-ring"
-                @submit.prevent="send"
+                @submit.prevent="send()"
             >
                 <textarea
                     v-model="input"
                     rows="1"
                     class="max-h-24 min-h-9 flex-1 resize-none bg-transparent px-2 py-1.5 text-sm text-fg outline-none placeholder:text-fg-subtle"
-                    placeholder="Describe what you need…"
+                    placeholder="Ask, or say “base64 encode hello”…"
                     aria-label="Describe what you need"
-                    @keydown.enter.exact.prevent="send"
+                    @keydown.enter.exact.prevent="send()"
                 />
                 <button
                     v-if="busy"

@@ -1,12 +1,15 @@
 import { computed, ref, watch } from "vue";
 import { useStorage } from "@vueuse/core";
 import { defaultModelId } from "./models";
+import type { ActionResult } from "./actions";
 
 export interface ChatMessage {
     id: string;
     role: "user" | "assistant";
     content: string;
     toolIds?: string[];
+    /** Set when the message ran a tool command. */
+    action?: ActionResult;
     streaming?: boolean;
 }
 
@@ -27,6 +30,8 @@ interface ChatSettings {
     autoLoad: boolean;
     remember: boolean;
     consented: boolean;
+    /** Chose to use search and commands without downloading the model. */
+    skipModel?: boolean;
 }
 
 const newSession = (): ChatSession => ({

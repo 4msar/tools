@@ -26,7 +26,8 @@ onMounted(async () => {
         void startModel();
 });
 watch(open, (value) => {
-    if (value && !chatSettings.value.consented) view.value = "consent";
+    if (value && !chatSettings.value.consented && !chatSettings.value.skipModel)
+        view.value = "consent";
 });
 
 async function startModel() {
@@ -37,6 +38,11 @@ async function startModel() {
     } catch {
         /* retrieval remains available */
     }
+}
+
+function skipModel() {
+    chatSettings.value.skipModel = true;
+    view.value = "thread";
 }
 
 function openSettings() {
@@ -109,6 +115,7 @@ function loadFromSettings() {
                     <ChatConsent
                         v-if="view === 'consent'"
                         @start="startModel"
+                        @skip="skipModel"
                         @settings="openSettings"
                     />
                     <ChatThread
@@ -118,7 +125,10 @@ function loadFromSettings() {
                     <ChatSettings
                         v-else
                         @back="
-                            view = chatSettings.consented ? 'thread' : 'consent'
+                            view =
+                                chatSettings.consented || chatSettings.skipModel
+                                    ? 'thread'
+                                    : 'consent'
                         "
                         @load="loadFromSettings"
                     />

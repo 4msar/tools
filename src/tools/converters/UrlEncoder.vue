@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { ClipboardPaste, Plus, Sparkles, Trash2, X } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -87,6 +88,12 @@ const fields = computed(() => [
     ["Path", pathname.value],
     ["Hash", hash.value],
 ].filter(([, v]) => v !== ""));
+
+// Input sent from the chat assistant.
+useHandoff<{ tab?: Tab; input?: string }>("url-encoder", (p) => {
+    if (p.tab) tab.value = p.tab;
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>

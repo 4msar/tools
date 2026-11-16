@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, reactive, ref, watch } from "vue";
 import { Btn, CopyButton, Panel, Tabs, ToolPage } from "@/components/ui";
 
@@ -129,6 +130,14 @@ function toggle(index: number) {
 }
 
 const roman = computed(() => toRoman(value.value));
+
+// Input sent from the chat assistant.
+useHandoff<{ value?: string }>("number-base", (p) => {
+    if (p.value != null) {
+        value.value = BigInt(p.value);
+        sync();
+    }
+});
 </script>
 
 <template>

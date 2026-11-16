@@ -118,6 +118,9 @@ export default defineConfig({
         }),
     ],
     base: "/",
+    server: {
+        allowedHosts: ["app.msar.dev"],
+    },
     // Large chunks (tokenizer, prettier parsers) are lazy-loaded per tool.
     build: { chunkSizeWarningLimit: 2500 },
     worker: { format: "es" },

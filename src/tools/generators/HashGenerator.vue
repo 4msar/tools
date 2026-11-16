@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { FileUp, Trash2 } from "lucide-vue-next";
 import { md5, sha1 } from "@noble/hashes/legacy.js";
@@ -86,6 +87,14 @@ function fmtSize(n: number) {
     if (n < 1048576) return `${(n / 1024).toFixed(1)} KB`;
     return `${(n / 1048576).toFixed(2)} MB`;
 }
+
+// Input sent from the chat assistant.
+useHandoff<{ text?: string }>("hash-generator", (p) => {
+    if (p.text != null) {
+        source.value = "text";
+        text.value = p.text;
+    }
+});
 </script>
 
 <template>

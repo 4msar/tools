@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHandoff } from "@/composables/handoff";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { Plus, X } from "lucide-vue-next";
 import { Btn, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
@@ -180,6 +181,11 @@ const unitOptions = [
     { value: "auto", label: "Auto" }, { value: "s", label: "s" }, { value: "ms", label: "ms" },
     { value: "us", label: "µs" }, { value: "ns", label: "ns" },
 ] as const;
+
+// Input sent from the chat assistant.
+useHandoff<{ input?: string }>("timestamp-converter", (p) => {
+    if (p.input != null) input.value = p.input;
+});
 </script>
 
 <template>
