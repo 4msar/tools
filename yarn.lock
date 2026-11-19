@@ -3925,6 +3925,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"framer-motion@npm:~14.9.1":
+  version: 14.9.1
+  resolution: "framer-motion@npm:14.9.1"
+  dependencies:
+    motion-dom: "npm:14.9.1"
+    motion-utils: "npm:14.7.0"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+    remix: ^3.1.0
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-dom:
+      optional: true
+    remix:
+      optional: true
+  checksum: 10c0/c5782a0db74b4e692e363dcc5b636b07d738a522fcb8e461c42aecf312941398644a3c4027f705e8f49c2b54081ecf402a2e9b4790eea9219c3a127f2b1dcb9a
+  languageName: node
+  linkType: hard
+
 "fs-extra@npm:^9.0.1":
   version: 9.1.0
   resolution: "fs-extra@npm:9.1.0"
@@ -4151,6 +4173,13 @@ __metadata:
   dependencies:
     function-bind: "npm:^1.1.2"
   checksum: 10c0/2d8de939e270b70618f8cebb69746620db10617dbb495bc66ddad326955ea24d3ca4af133aff3eb7c1853e0218f867bc2b050ec26fe02e3aea58f880ffc5e506
+  languageName: node
+  linkType: hard
+
+"hey-listen@npm:^1.0.8":
+  version: 1.0.8
+  resolution: "hey-listen@npm:1.0.8"
+  checksum: 10c0/38db3028b4756f3d536c0f6a92da53bad577ab649b06dddfd0a4d953f9a46bbc6a7f693c8c5b466a538d6d23dbc469260c848427f0de14198a2bbecbac37b39e
   languageName: node
   linkType: hard
 
@@ -4902,10 +4931,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion-utils@npm:14.7.0":
+"motion-dom@npm:14.9.1, motion-dom@npm:~14.9.1":
+  version: 14.9.1
+  resolution: "motion-dom@npm:14.9.1"
+  dependencies:
+    motion-utils: "npm:14.7.0"
+  checksum: 10c0/dc5f640e1e51f7d3753b20fa48816f58a0c54f778d8dd9f721f86e9de38c6f2c872290ff7bf7189333b0929f0ebbfa6fdd90c0896ab1a6eb9df568f119a16165
+  languageName: node
+  linkType: hard
+
+"motion-utils@npm:14.7.0, motion-utils@npm:~14.7.0":
   version: 14.7.0
   resolution: "motion-utils@npm:14.7.0"
   checksum: 10c0/99f4fff3c164998a053ae698f171858735631d4da980d27de67817899a708b2d6ba7246a8fb007b1d883dfd90ee06cfaa1dcfb55abb00511c8e169eb0bd14769
+  languageName: node
+  linkType: hard
+
+"motion-v@npm:2.11.1":
+  version: 2.11.1
+  resolution: "motion-v@npm:2.11.1"
+  dependencies:
+    framer-motion: "npm:~14.9.1"
+    hey-listen: "npm:^1.0.8"
+    motion-dom: "npm:~14.9.1"
+    motion-utils: "npm:~14.7.0"
+  peerDependencies:
+    "@vueuse/core": ">=10.0.0"
+    vue: ">=3.0.0"
+  checksum: 10c0/e80304d6441d219e6d80035dcf83534e8c0ca0791504dc3adbc4d34486a1d849c599ca99b53fb6396bf0da4c1aaacca16c7f2fca230c44d7b4cfc48aa95f99fc
   languageName: node
   linkType: hard
 
@@ -6183,6 +6236,7 @@ __metadata:
     lucide-vue-next: "npm:^1.0.0"
     marked: "npm:^18.2.0"
     motion: "npm:^14.12.0"
+    motion-v: "npm:2.11.1"
     pako: "npm:^3.0.3"
     papaparse: "npm:^5.7.0"
     prettier: "npm:^3.9.10"

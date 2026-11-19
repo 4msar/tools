@@ -40,3 +40,7 @@ export function toggleFavorite(id: string) {
 export function pushRecent(id: string) {
     recentIds.value = [id, ...recentIds.value.filter((x) => x !== id)].slice(0, 8);
 }
+
+// Layout: desktop sidebar collapse and the distraction-free "compact" tool view.
+export const sidebarCollapsed = useStorage<boolean>("devtools:sidebar-collapsed", false);
+export const compactMode = useStorage<boolean>("devtools:compact", false);

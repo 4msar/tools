@@ -157,11 +157,15 @@ function loadFromSettings() {
     )
         void startModel();
 }
+
+// Hidden (not unmounted) in compact view so an open conversation survives.
+defineProps<{ hidden?: boolean }>();
 </script>
 
 <template>
     <Teleport to="body">
         <div
+            v-show="!hidden"
             class="fixed right-4 bottom-4 z-40 flex flex-col items-end gap-3 sm:right-6 sm:bottom-6"
         >
             <Transition
