@@ -6,7 +6,7 @@ A collection of 85 free developer tools that run entirely in your browser: JSON,
 
 ## Features
 
-- **100 tools** in 12 categories, each lazy-loaded
+- **101 tools** in 12 categories, each lazy-loaded
 - **Chat assistant** that finds tools and runs them from plain-language commands, then opens the tool with your input filled in (see [Chat assistant](#chat-assistant))
 - **General Chat**: a private AI chat with an open-source model running in the browser (WebLLM + WebGPU). Pick any model from the WebLLM catalog or add a custom MLC model; also available as a tab in the chatbox
 - **Command palette**: press `⌘K` / `Ctrl+K` or `/` to search by name or keyword
@@ -129,6 +129,7 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **Image Palette Extractor**: Extract the dominant colors from an image and export them as CSS, Tailwind or JSON.
 - **Pixel Art Sprite Studio**: Draw pixel art, animate frames and export PNGs or a sprite sheet.
 - **Sound Tool**: Generate tones and noise, keep time with a metronome and measure your mic level and pitch.
+- **Whiteboard**: Sketch hand-drawn diagrams and wireframes on an infinite canvas, and export PNG or SVG.
 
 ### CSS
 

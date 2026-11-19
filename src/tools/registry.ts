@@ -10,7 +10,7 @@ import {
     LockKeyhole, MessageSquareText, MonitorSmartphone, PenTool, Pipette, Route, Scissors, Send, Shield, Smartphone, Spline,
     ServerCog, Squircle, SwatchBook, UserCheck, AlarmClock, Coffee, ListTodo, Zap, MessagesSquare,
     CreditCard, Scale, CodeXml, FileLock, Radar, GlobeLock, Keyboard, AudioWaveform, FlaskConical, FerrisWheel, Hourglass,
-    SearchCode, BotOff, Earth, Workflow,
+    SearchCode, BotOff, Earth, Workflow, Presentation,
 } from "lucide-vue-next";
 
 export type CategoryId =
@@ -139,6 +139,7 @@ export const tools: ToolDef[] = [
     { id: "palette-extractor", name: "Image Palette Extractor", category: "media", icon: Pipette, keywords: ["palette", "colors", "image", "dominant", "extract"], isNew: true, description: "Extract the dominant colors from an image and export them as CSS, Tailwind or JSON.", component: () => import("./media/PaletteExtractor.vue") },
     { id: "pixel-art-studio", name: "Pixel Art Sprite Studio", category: "media", icon: Brush, keywords: ["pixel art", "sprite", "sprite sheet", "animation", "draw", "editor"], isNew: true, description: "Draw pixel art, animate frames and export PNGs or a sprite sheet.", component: () => import("./media/PixelArtStudio.vue") },
     { id: "sound-tool", name: "Sound Tool", category: "media", icon: AudioWaveform, keywords: ["tone generator", "frequency", "noise", "white noise", "metronome", "microphone", "pitch", "tuner", "audio"], isNew: true, description: "Generate tones and noise, keep time with a metronome and measure your mic level and pitch.", component: () => import("./media/SoundTool.vue") },
+    { id: "whiteboard", name: "Whiteboard", category: "media", icon: Presentation, keywords: ["whiteboard", "sketch", "draw", "diagram", "excalidraw", "hand-drawn", "canvas", "wireframe"], isNew: true, description: "Sketch hand-drawn diagrams and wireframes on an infinite canvas, and export PNG or SVG.", component: () => import("./media/Whiteboard.vue") },
 
     // CSS
     { id: "box-shadow", name: "Box Shadow", category: "css", icon: Square, keywords: ["css", "shadow", "elevation"], isNew: true, description: "Design layered CSS box shadows visually and copy the CSS or Tailwind class.", component: () => import("./css/BoxShadow.vue") },

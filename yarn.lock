@@ -7284,6 +7284,7 @@ __metadata:
     papaparse: "npm:^5.7.0"
     prettier: "npm:^3.9.10"
     qrcode: "npm:^1.5.4"
+    roughjs: "npm:^4.6.6"
     semver: "npm:^7.8.6"
     sharp: "npm:^0.35.5"
     smol-toml: "npm:^1.9.1"

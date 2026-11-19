@@ -45,6 +45,7 @@
     "papaparse": "^5.7.0",
     "prettier": "^3.9.10",
     "qrcode": "^1.5.4",
+    "roughjs": "^4.6.6",
     "semver": "^7.8.6",
     "smol-toml": "^1.9.1",
     "sql-formatter": "^15.9.0",
