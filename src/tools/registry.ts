@@ -10,6 +10,7 @@ import {
     LockKeyhole, MessageSquareText, MonitorSmartphone, PenTool, Pipette, Route, Scissors, Send, Shield, Smartphone, Spline,
     ServerCog, Squircle, SwatchBook, UserCheck, AlarmClock, Coffee, ListTodo, Zap, MessagesSquare,
     CreditCard, Scale, CodeXml, FileLock, Radar, GlobeLock, Keyboard, AudioWaveform, FlaskConical, FerrisWheel, Hourglass,
+    SearchCode, BotOff, Earth, Workflow,
 } from "lucide-vue-next";
 
 export type CategoryId =
@@ -72,6 +73,7 @@ export const tools: ToolDef[] = [
     { id: "xml-inspector", name: "XML Inspector", category: "development", icon: FileCode2, keywords: ["xml", "xpath", "format", "minify", "validate", "xml to json", "json to xml"], isNew: true, description: "Format, minify and validate XML, convert XML to and from JSON, and query with XPath.", component: () => import("./development/XmlInspector.vue") },
     { id: "json-path", name: "JSONPath Evaluator", category: "development", icon: Route, keywords: ["jsonpath", "query", "json", "filter", "jq"], isNew: true, description: "Query JSON with JSONPath expressions and see matching values and paths live.", component: () => import("./development/JsonPath.vue") },
     { id: "sql-formatter", name: "SQL Formatter", category: "development", icon: Database, keywords: ["sql", "format", "minify", "insert", "postgres", "mysql", "sql to json", "sql to csv"], isNew: true, description: "Format or minify SQL for any dialect, and turn INSERT statements into JSON or CSV.", component: () => import("./development/SqlTools.vue") },
+    { id: "mermaid-editor", name: "Mermaid Diagram Editor", category: "development", icon: Workflow, keywords: ["mermaid", "diagram", "flowchart", "sequence diagram", "er diagram", "gantt", "uml", "chart"], isNew: true, description: "Write Mermaid flowcharts, sequence, ER and Gantt diagrams with a live preview, and export SVG or PNG.", component: () => import("./development/MermaidEditor.vue") },
 
     // Generators
     { id: "hash-generator", name: "Hash Generator", category: "generators", icon: Hash, keywords: ["md5", "sha1", "sha256", "sha512", "sha3", "hmac", "checksum"], isNew: true, description: "MD5, SHA-1, SHA-2 and SHA-3 hashes and HMAC for text and files.", component: () => import("./generators/HashGenerator.vue") },
@@ -85,6 +87,7 @@ export const tools: ToolDef[] = [
     { id: "card-number-generator", name: "Card Number Generator", category: "generators", icon: CreditCard, keywords: ["credit card", "test card", "luhn", "visa", "mastercard", "amex", "fake", "payment testing"], isNew: true, description: "Generate Luhn-valid test card numbers for Visa, Mastercard, Amex and more, with expiry and CVV.", component: () => import("./generators/CardNumberGenerator.vue") },
     { id: "license-generator", name: "License Generator", category: "generators", icon: Scale, keywords: ["license", "mit", "gpl", "apache", "bsd", "spdx", "open source", "copyright"], isNew: true, description: "Generate an open-source LICENSE file (MIT, GPL, Apache, BSD and more) with your name and year.", component: () => import("./generators/LicenseGenerator.vue") },
     { id: "meta-tag-generator", name: "Meta Tag Generator", category: "generators", icon: CodeXml, keywords: ["seo", "meta", "open graph", "og", "twitter card", "html head", "social preview"], isNew: true, description: "Build SEO, Open Graph and Twitter meta tags with live search and social previews.", component: () => import("./generators/MetaTagGenerator.vue") },
+    { id: "robots-sitemap-generator", name: "Robots.txt & Sitemap Generator", category: "generators", icon: BotOff, keywords: ["robots.txt", "sitemap", "sitemap.xml", "seo", "crawler", "ai crawlers", "gptbot", "disallow"], isNew: true, description: "Build robots.txt rules (including AI crawler blocking), test URLs against them, and generate sitemap.xml.", component: () => import("./generators/RobotsSitemapGenerator.vue") },
 
     // Security
     { id: "totp-generator", name: "TOTP / 2FA Generator", category: "security", icon: Smartphone, keywords: ["totp", "2fa", "otp", "authenticator", "otpauth", "mfa"], isNew: true, description: "Generate time-based one-time codes from a secret, with an authenticator QR code.", component: () => import("./security/TotpGenerator.vue") },
@@ -122,6 +125,7 @@ export const tools: ToolDef[] = [
     { id: "timezone-converter", name: "Time Zone Converter", category: "time", icon: Globe, keywords: ["utc", "timezone", "dst"], isNew: true, description: "Convert a date and time between time zones, with DST handled.", component: () => import("./time/TimezoneConverter.vue") },
     { id: "stopwatch", name: "Stopwatch", category: "time", icon: Timer, keywords: ["timer", "laps", "split"], isNew: true, description: "Record laps and split times and export them as CSV.", component: () => import("./time/Stopwatch.vue") },
     { id: "countdown-timer", name: "Countdown Timer", category: "time", icon: Hourglass, keywords: ["countdown", "timer", "event", "days until", "new year", "deadline"], isNew: true, description: "Count down to events and dates, or run a timer with a progress ring and alert.", component: () => import("./time/CountdownTimer.vue") },
+    { id: "world-clock", name: "World Clock & Meeting Planner", category: "time", icon: Earth, keywords: ["world clock", "time zones", "meeting planner", "team", "remote", "working hours", "utc"], isNew: true, description: "See the time in cities around the world and find meeting slots that fit everyone's working hours.", component: () => import("./time/WorldClock.vue") },
 
     // Media & color
     { id: "color-palette-generator", name: "Color Palette Generator", category: "media", icon: Palette, keywords: ["harmony", "shades", "contrast"], description: "Generate color palettes with harmony rules, accessibility checks and exports.", component: () => import("./media/ColorPaletteGenerator.vue") },
@@ -154,6 +158,7 @@ export const tools: ToolDef[] = [
     { id: "server-block-generator", name: "Server Block Generator", category: "network", icon: ServerCog, keywords: ["nginx", "apache", "caddy", "vhost", "virtual host", "server block", "reverse proxy", "caddyfile", "ssl", "config"], isNew: true, description: "Generate Nginx server blocks, Apache virtual hosts and Caddyfiles for static sites, PHP apps and reverse proxies.", component: () => import("./network/ServerBlockGenerator.vue") },
     { id: "whois-lookup", name: "WHOIS Lookup", category: "network", icon: GlobeLock, keywords: ["whois", "rdap", "domain", "registrar", "expiry", "ip", "asn", "nameservers"], isNew: true, description: "Look up a domain, IP or ASN via RDAP: registrar, dates, status and nameservers.", component: () => import("./network/WhoisLookup.vue") },
     { id: "subdomain-explorer", name: "Subdomain Explorer", category: "network", icon: Radar, keywords: ["subdomain", "enumeration", "certificate transparency", "crt.sh", "recon", "dns"], isNew: true, description: "Find a domain's subdomains from Certificate Transparency logs and check which resolve.", component: () => import("./network/SubdomainExplorer.vue") },
+    { id: "dns-lookup", name: "DNS Lookup", category: "network", icon: SearchCode, keywords: ["dns", "nslookup", "dig", "mx", "txt", "spf", "dmarc", "ptr", "reverse dns", "doh"], isNew: true, description: "Query A, MX, TXT, NS and other DNS records over HTTPS, with reverse lookup and SPF/DMARC checks.", component: () => import("./network/DnsLookup.vue") },
 
     // AI
     { id: "general-chat", name: "General Chat", category: "ai", icon: MessagesSquare, keywords: ["chat", "llm", "ai", "assistant", "webllm", "local model", "offline", "qwen", "llama", "phi", "gemma"], isNew: true, description: "Chat privately with an open-source model that runs in your browser. Download any WebLLM model or add your own.", component: () => import("./ai/GeneralChat.vue") },

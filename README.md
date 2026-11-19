@@ -6,7 +6,7 @@ A collection of 85 free developer tools that run entirely in your browser: JSON,
 
 ## Features
 
-- **96 tools** in 12 categories, each lazy-loaded
+- **100 tools** in 12 categories, each lazy-loaded
 - **Chat assistant** that finds tools and runs them from plain-language commands, then opens the tool with your input filled in (see [Chat assistant](#chat-assistant))
 - **General Chat**: a private AI chat with an open-source model running in the browser (WebLLM + WebGPU). Pick any model from the WebLLM catalog or add a custom MLC model; also available as a tab in the chatbox
 - **Command palette**: press `⌘K` / `Ctrl+K` or `/` to search by name or keyword
@@ -57,6 +57,7 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **XML Inspector**: Format, minify and validate XML, convert XML to and from JSON, and query with XPath.
 - **JSONPath Evaluator**: Query JSON with JSONPath expressions and see matching values and paths live.
 - **SQL Formatter**: Format or minify SQL for any dialect, and turn INSERT statements into JSON or CSV.
+- **Mermaid Diagram Editor**: Write Mermaid flowcharts, sequence, ER and Gantt diagrams with a live preview, and export SVG or PNG.
 
 ### Generators
 
@@ -71,6 +72,7 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **Card Number Generator**: Generate Luhn-valid test card numbers for Visa, Mastercard, Amex and more, with expiry and CVV.
 - **License Generator**: Generate an open-source LICENSE file (MIT, GPL, Apache, BSD and more) with your name and year.
 - **Meta Tag Generator**: Build SEO, Open Graph and Twitter meta tags with live search and social previews.
+- **Robots.txt & Sitemap Generator**: Build robots.txt rules (including AI crawler blocking), test URLs against them, and generate sitemap.xml.
 
 ### Security
 
@@ -112,6 +114,7 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **Time Zone Converter**: Convert a date and time between time zones, with DST handled.
 - **Stopwatch**: Record laps and split times and export them as CSV.
 - **Countdown Timer**: Count down to events and dates, or run a timer with a progress ring and alert.
+- **World Clock & Meeting Planner**: See the time in cities around the world and find meeting slots that fit everyone's working hours.
 
 ### Media & Color
 
@@ -147,6 +150,7 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **Server Block Generator**: Generate Nginx server blocks, Apache virtual hosts and Caddyfiles for static sites, PHP apps and reverse proxies.
 - **WHOIS Lookup**: Look up a domain, IP or ASN via RDAP: registrar, dates, status and nameservers.
 - **Subdomain Explorer**: Find a domain's subdomains from Certificate Transparency logs and check which resolve.
+- **DNS Lookup**: Query A, MX, TXT, NS and other DNS records over HTTPS, with reverse lookup and SPF/DMARC checks.
 
 ### AI
 
