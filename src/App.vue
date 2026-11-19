@@ -422,7 +422,7 @@ onKeyStroke((e) => {
         </motion.div>
 
         <CommandPalette v-model:open="paletteOpen" />
-        <ChatWidget :hidden="isCompact" />
+        <ChatWidget />
         <Toaster
             position="bottom-right"
             :theme="isDark ? 'dark' : 'light'"
