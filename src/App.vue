@@ -403,10 +403,14 @@ onKeyStroke((e) => {
             </AnimatePresence>
 
             <motion.main
-                class="mx-auto w-full px-4 sm:px-6"
-                :class="isCompact ? 'max-w-none pb-6' : 'max-w-[1400px] pb-6 lg:pb-8'"
+                class="mx-auto w-full"
+                :class="
+                    isCompact
+                        ? 'max-w-none pr-4 pb-6 pl-16 sm:pr-6'
+                        : 'max-w-[1400px] px-4 pb-6 sm:px-6 lg:pb-8'
+                "
                 :initial="false"
-                :animate="{ paddingTop: isCompact ? 64 : isDesktop ? 32 : 24 }"
+                :animate="{ paddingTop: isCompact ? 12 : isDesktop ? 32 : 24 }"
                 :transition="softSpring"
             >
                 <RouterView v-slot="{ Component }">
