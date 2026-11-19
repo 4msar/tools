@@ -6,7 +6,7 @@ A collection of 85 free developer tools that run entirely in your browser: JSON,
 
 ## Features
 
-- **85 tools** in 12 categories, each lazy-loaded
+- **96 tools** in 12 categories, each lazy-loaded
 - **Chat assistant** that finds tools and runs them from plain-language commands, then opens the tool with your input filled in (see [Chat assistant](#chat-assistant))
 - **General Chat**: a private AI chat with an open-source model running in the browser (WebLLM + WebGPU). Pick any model from the WebLLM catalog or add a custom MLC model; also available as a tab in the chatbox
 - **Command palette**: press `⌘K` / `Ctrl+K` or `/` to search by name or keyword
@@ -68,6 +68,9 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **Bcrypt Generator**: Generate bcrypt hashes and verify a password against a hash.
 - **Random String**: Generate Nano IDs, hex and Base64URL tokens, and strings from a custom alphabet.
 - **Gitignore Generator**: Build a .gitignore from templates for languages, frameworks, editors and operating systems.
+- **Card Number Generator**: Generate Luhn-valid test card numbers for Visa, Mastercard, Amex and more, with expiry and CVV.
+- **License Generator**: Generate an open-source LICENSE file (MIT, GPL, Apache, BSD and more) with your name and year.
+- **Meta Tag Generator**: Build SEO, Open Graph and Twitter meta tags with live search and social previews.
 
 ### Security
 
@@ -76,6 +79,7 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **SSH / RSA Key Generator**: Generate Ed25519, RSA and ECDSA key pairs as PEM, OpenSSH and JWK.
 - **Certificate Decoder**: Decode X.509 certificates and CSRs: subject, validity, SANs, key usage and fingerprints.
 - **Basic Auth Generator**: Build or decode an HTTP Basic Authorization header, with ready-to-use snippets.
+- **JavaScript Obfuscator**: Minify and obfuscate JavaScript by encoding strings and packing the source, then compare output.
 
 ### Converters
 
@@ -107,6 +111,7 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **Cron Calculator**: Explain cron expressions in plain English and list the next runs.
 - **Time Zone Converter**: Convert a date and time between time zones, with DST handled.
 - **Stopwatch**: Record laps and split times and export them as CSV.
+- **Countdown Timer**: Count down to events and dates, or run a timer with a progress ring and alert.
 
 ### Media & Color
 
@@ -120,6 +125,7 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **Color Blindness Simulator**: See how a palette or image looks with protanopia, deuteranopia, tritanopia and achromatopsia.
 - **Image Palette Extractor**: Extract the dominant colors from an image and export them as CSS, Tailwind or JSON.
 - **Pixel Art Sprite Studio**: Draw pixel art, animate frames and export PNGs or a sprite sheet.
+- **Sound Tool**: Generate tones and noise, keep time with a metronome and measure your mic level and pitch.
 
 ### CSS
 
@@ -139,6 +145,8 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **User Agent Parser**: Parse a User-Agent string into browser, engine, OS and device, and spot bots.
 - **HTTP Request Builder**: Send HTTP requests from your browser and inspect status, headers and body.
 - **Server Block Generator**: Generate Nginx server blocks, Apache virtual hosts and Caddyfiles for static sites, PHP apps and reverse proxies.
+- **WHOIS Lookup**: Look up a domain, IP or ASN via RDAP: registrar, dates, status and nameservers.
+- **Subdomain Explorer**: Find a domain's subdomains from Certificate Transparency logs and check which resolve.
 
 ### AI
 
@@ -156,6 +164,7 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **Alarms & Reminders**: Set countdown timers and alarms that alert you with a sound and a desktop notification.
 - **Break Reminder**: Get nudged to rest your eyes, drink water and stretch at intervals you choose.
 - **To-Do List**: Keep a quick task list with priorities and due dates, saved in your browser.
+- **Typing Speed Test**: Measure your typing speed and accuracy in WPM with words, quotes or code.
 
 ### Utilities
 
@@ -163,6 +172,8 @@ Tools that need a file, a password or a visual editor (image converter, favicon,
 - **chmod Calculator**: Set file permissions with checkboxes, octal or rwx text and get the chmod command.
 - **Checksum**: Calculate CRC-32, CRC-16 and Adler-32 checksums and validate Luhn numbers.
 - **Programmer Calculator**: Bitwise operations, shifts and two's complement on 8 to 64-bit integers, with a clickable bit grid.
+- **Interactive Periodic Table**: Explore all 118 elements by category, state and properties, with electron shells.
+- **Decision Wheel & Picker**: Spin a wheel, pick random items, flip coins, roll dice or split a list into teams.
 
 See [docs/PLAN.md](docs/PLAN.md) for the roadmap, including the Phase 2 tools.
 
