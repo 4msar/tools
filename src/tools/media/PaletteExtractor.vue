@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { ImageUp } from "lucide-vue-next";
-import { CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
+import { CodeBlock, CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
 import { copyText } from "@/composables/useClipboard";
 
 const count = ref(6);
@@ -146,7 +146,7 @@ const exported = computed(() => {
                         <Tabs v-model="exportAs" size="sm" :options="[{ value: 'css', label: 'CSS' }, { value: 'tailwind', label: 'Tailwind' }, { value: 'scss', label: 'SCSS' }, { value: 'json', label: 'JSON' }]" />
                         <CopyButton :text="exported" />
                     </template>
-                    <pre class="max-h-64 overflow-auto p-4 font-mono text-[13px]">{{ exported }}</pre>
+                    <CodeBlock class="max-h-64 overflow-auto p-4 font-mono text-[13px]" :code="exported" :language="exportAs === 'tailwind' ? 'css' : exportAs" />
                 </Panel>
             </div>
         </div>

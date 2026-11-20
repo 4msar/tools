@@ -61,7 +61,7 @@ useHandoff<{ input?: string }>("html-preview", (p) => {
                 <template #actions>
                     <Btn size="sm" variant="ghost" @click="html = SAMPLE"><RotateCcw /> Reset</Btn>
                 </template>
-                <CodeArea v-model="html" :wrap="false" height="28rem" placeholder="Write HTML…" />
+                <CodeArea language="html" v-model="html" :wrap="false" height="28rem" placeholder="Write HTML…" />
             </Panel>
             <Panel flush>
                 <template #title>

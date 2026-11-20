@@ -195,7 +195,7 @@ useHandoff<{ input?: string }>("json-formatter", (p) => {
                     <Btn size="sm" variant="ghost" @click="inputJson = JSON.stringify(SAMPLE, null, 2)"><FileText /> Sample</Btn>
                     <Btn size="sm" variant="ghost" :disabled="!inputJson" @click="inputJson = ''"><Trash2 /> Clear</Btn>
                 </template>
-                <CodeArea v-model="inputJson" placeholder="Paste your JSON here…" :wrap="false" :invalid="!!parsed.error" height="0" />
+                <CodeArea language="json" v-model="inputJson" placeholder="Paste your JSON here…" :wrap="false" :invalid="!!parsed.error" height="0" />
                 <div class="border-t border-line px-4 py-2 text-xs text-muted">{{ inputJson.length }} characters</div>
             </Panel>
 
@@ -209,7 +209,7 @@ useHandoff<{ input?: string }>("json-formatter", (p) => {
                 </template>
                 <div v-if="parsed.error" class="flex-1 overflow-auto p-4"><Notice type="error">{{ parsed.error }}</Notice></div>
                 <pre v-else-if="tab !== 'yaml' && currentOutput" class="min-h-0 flex-1 overflow-auto p-4 font-mono text-[13px] leading-relaxed break-words whitespace-pre-wrap" v-html="highlighted"></pre>
-                <CodeArea v-else :model-value="currentOutput" readonly placeholder="Output appears here" height="0" :wrap="false" />
+                <CodeArea language="yaml" v-else :model-value="currentOutput" readonly placeholder="Output appears here" height="0" :wrap="false" />
                 <div class="border-t border-line px-4 py-2 text-xs" :class="parsed.ok ? 'text-success' : 'text-muted'">
                     <template v-if="parsed.ok">Valid JSON · {{ currentOutput.length }} characters</template>
                     <template v-else-if="parsed.error">Invalid JSON</template>

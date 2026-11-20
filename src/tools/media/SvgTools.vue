@@ -165,7 +165,7 @@ useHandoff<{ input?: string }>("svg-tools", (p) => {
                     <Btn size="sm" variant="ghost" @click="input = SAMPLE"><Sparkles /> Sample</Btn>
                     <Btn size="sm" variant="ghost" :disabled="!input" @click="input = ''"><Trash2 /> Clear</Btn>
                 </template>
-                <CodeArea v-model="input" :wrap="false" height="20rem" :invalid="!!meta.error" placeholder="Paste SVG markup or open a file…" />
+                <CodeArea language="xml" v-model="input" :wrap="false" height="20rem" :invalid="!!meta.error" placeholder="Paste SVG markup or open a file…" />
                 <div v-if="meta.error" class="border-t border-line px-4 py-2 text-xs text-danger">{{ meta.error }}</div>
             </Panel>
 

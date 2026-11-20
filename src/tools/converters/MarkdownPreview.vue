@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 import { Image as ImageIcon, Sparkles, Trash2 } from "lucide-vue-next";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import { highlightCode } from "@/composables/highlight";
 import TurndownService from "turndown";
 import { gfm } from "@joplin/turndown-plugin-gfm";
 import {
@@ -92,6 +93,10 @@ const html = computed(() => {
     const raw = marked.parse(src.value, { gfm: true, async: false });
     const clean = DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
     const doc = new DOMParser().parseFromString(clean, "text/html");
+    doc.querySelectorAll("pre > code").forEach((code) => {
+        const lang = /\blanguage-([\w+#-]+)/.exec(code.className)?.[1];
+        if (lang) code.innerHTML = highlightCode(code.textContent ?? "", lang);
+    });
     doc.querySelectorAll("a[href]").forEach((a) => {
         a.setAttribute("target", "_blank");
         a.setAttribute("rel", "noopener noreferrer");
@@ -220,6 +225,7 @@ useHandoff<{ input?: string }>("markdown-preview", (p) => {
                         >
                     </template>
                     <CodeArea
+                        language="html"
                         v-model="htmlSrc"
                         height="28rem"
                         placeholder="Paste HTML here…"
@@ -230,6 +236,7 @@ useHandoff<{ input?: string }>("markdown-preview", (p) => {
                         ><CopyButton :text="markdownOut"
                     /></template>
                     <CodeArea
+                        language="markdown"
                         :model-value="markdownOut"
                         readonly
                         height="28rem"
@@ -271,6 +278,7 @@ useHandoff<{ input?: string }>("markdown-preview", (p) => {
                         >
                     </template>
                     <CodeArea
+                        language="markdown"
                         v-model="src"
                         height="28rem"
                         placeholder="Write Markdown here…"
@@ -305,6 +313,7 @@ useHandoff<{ input?: string }>("markdown-preview", (p) => {
                         v-html="html"
                     />
                     <CodeArea
+                        :language="view === 'text' ? undefined : 'html'"
                         v-else
                         :model-value="view === 'text' ? plain : html"
                         readonly

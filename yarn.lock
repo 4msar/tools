@@ -5039,6 +5039,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"highlight.js@npm:^11.12.0":
+  version: 11.12.0
+  resolution: "highlight.js@npm:11.12.0"
+  checksum: 10c0/c62ebfad125b541790412374a15ae1ca15a45fdfac0fae2b5c96b6a10dc8d5d15380adf748584fb08cfeb4db2b3a749a170e2afd0b640e9fad86445b1c435777
+  languageName: node
+  linkType: hard
+
 "hookable@npm:^5.5.3":
   version: 5.5.3
   resolution: "hookable@npm:5.5.3"
@@ -7270,6 +7277,7 @@ __metadata:
     fflate: "npm:^0.8.3"
     figlet: "npm:^1.12.0"
     gpt-tokenizer: "npm:^4.1.1"
+    highlight.js: "npm:^11.12.0"
     jose: "npm:^6.2.17"
     js-yaml: "npm:^5.5.0"
     json5: "npm:^2.2.3"

@@ -236,11 +236,11 @@ async function downloadZip() {
         <div class="grid gap-4 lg:grid-cols-2">
             <Panel title="HTML for <head>" flush>
                 <template #actions><CopyButton :text="html" /></template>
-                <CodeArea :model-value="html" readonly :wrap="false" height="11rem" />
+                <CodeArea language="html" :model-value="html" readonly :wrap="false" height="11rem" />
             </Panel>
             <Panel title="site.webmanifest" flush>
                 <template #actions><CopyButton :text="manifest" /></template>
-                <CodeArea :model-value="manifest" readonly :wrap="false" height="11rem" />
+                <CodeArea language="json" :model-value="manifest" readonly :wrap="false" height="11rem" />
             </Panel>
         </div>
     </ToolPage>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-vue-next";
-import { Btn, CopyButton, Panel, ToolPage } from "@/components/ui";
+import { Btn, CodeBlock, CopyButton, Panel, ToolPage } from "@/components/ui";
 
 interface Layer { id: number; x: number; y: number; blur: number; spread: number; color: string; alpha: number; inset: boolean }
 
@@ -114,7 +114,7 @@ const previewShadow = computed(() => value.value.replace(/\n\s*/g, " "));
                 </Panel>
                 <Panel title="CSS" flush>
                     <template #actions><CopyButton :text="css" /></template>
-                    <pre class="overflow-x-auto p-4 font-mono text-sm">{{ css }}</pre>
+                    <CodeBlock class="overflow-x-auto p-4 font-mono text-sm" :code="css" :language="'css'" />
                 </Panel>
             </div>
         </div>

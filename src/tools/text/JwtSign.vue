@@ -116,7 +116,7 @@ watch([alg, payload, extraHeader, secret, privateKey], sign, { immediate: true }
             </Panel>
             <Panel title="Payload" flush>
                 <template #actions><Btn size="sm" variant="ghost" title="Set iat to now and exp to one hour from now" @click="setTimes">Refresh iat / exp</Btn></template>
-                <CodeArea v-model="payload" :wrap="false" height="14rem" placeholder='{"sub":"123"}' />
+                <CodeArea language="json" v-model="payload" :wrap="false" height="14rem" placeholder='{"sub":"123"}' />
             </Panel>
         </div>
 

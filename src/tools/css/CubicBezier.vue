@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, ref } from "vue";
 import { Play } from "lucide-vue-next";
-import { Btn, CopyButton, Field, Panel, ToolPage } from "@/components/ui";
+import { Btn, CodeBlock, CopyButton, Field, Panel, ToolPage } from "@/components/ui";
 
 const p = reactive({ x1: 0.25, y1: 0.1, x2: 0.25, y2: 1 });
 const duration = ref(1);
@@ -125,7 +125,7 @@ const clampX = (k: "x1" | "x2") => (p[k] = Math.min(1, Math.max(0, Number(p[k]) 
 
                 <Panel title="CSS" flush>
                     <template #actions><CopyButton :text="value" label="Copy value" /><CopyButton :text="css" label="Copy CSS" /></template>
-                    <pre class="overflow-auto p-4 font-mono text-[13px]">{{ css }}</pre>
+                    <CodeBlock class="overflow-auto p-4 font-mono text-[13px]" :code="css" :language="'css'" />
                     <div class="flex items-center justify-between gap-2 border-t border-line px-4 py-2">
                         <code class="min-w-0 font-mono text-xs break-all text-muted">Tailwind: {{ tailwind }}</code><CopyButton :text="tailwind" icon-only />
                     </div>

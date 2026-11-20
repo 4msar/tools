@@ -239,12 +239,12 @@ useHandoff<{ input?: string }>("jwt-decoder", (p) => {
                 <Panel flush>
                     <template #title><span class="text-danger">Header</span></template>
                     <template #actions><CopyButton :text="pretty(decoded.ok.header)" /></template>
-                    <CodeArea :model-value="pretty(decoded.ok.header)" readonly :wrap="false" height="10rem" />
+                    <CodeArea language="json" :model-value="pretty(decoded.ok.header)" readonly :wrap="false" height="10rem" />
                 </Panel>
                 <Panel flush>
                     <template #title><span class="text-accent">Payload</span></template>
                     <template #actions><CopyButton :text="pretty(decoded.ok.payload)" /></template>
-                    <CodeArea :model-value="pretty(decoded.ok.payload)" readonly :wrap="false" height="10rem" />
+                    <CodeArea language="json" :model-value="pretty(decoded.ok.payload)" readonly :wrap="false" height="10rem" />
                 </Panel>
             </div>
 

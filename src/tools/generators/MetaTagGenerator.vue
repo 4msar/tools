@@ -370,6 +370,7 @@ const viewports = [
                 <Panel title="HTML" flush>
                     <template #actions><CopyButton :text="html" /></template>
                     <CodeArea
+                        language="html"
                         :model-value="html"
                         readonly
                         height="24rem"

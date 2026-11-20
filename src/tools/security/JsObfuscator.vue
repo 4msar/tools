@@ -398,7 +398,7 @@ async function runBoth() {
                     <span class="text-xs text-muted">{{ inSize.toLocaleString() }} bytes</span>
                     <Btn size="sm" variant="ghost" @click="input = ''">Clear</Btn>
                 </template>
-                <CodeArea v-model="input" placeholder="Paste JavaScript here…" height="20rem" :wrap="false" />
+                <CodeArea language="javascript" v-model="input" placeholder="Paste JavaScript here…" height="20rem" :wrap="false" />
             </Panel>
             <Panel title="Output" flush>
                 <template #actions>
@@ -406,7 +406,7 @@ async function runBoth() {
                     <CopyButton :text="output" />
                     <Btn size="sm" variant="ghost" :disabled="!output" @click="download"><Download /> .js</Btn>
                 </template>
-                <CodeArea :model-value="output" readonly height="20rem" :wrap="false" />
+                <CodeArea language="javascript" :model-value="output" readonly height="20rem" :wrap="false" />
             </Panel>
         </div>
 

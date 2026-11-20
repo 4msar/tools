@@ -2,7 +2,7 @@
 import { useHandoff } from "@/composables/handoff";
 import { computed, reactive, ref, watch } from "vue";
 import { Download, Sparkles, Trash2 } from "lucide-vue-next";
-import { Btn, CodeArea, CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
+import { Btn, CodeArea, CodeBlock, CopyButton, Field, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
 import { downloadBlob } from "@/composables/useClipboard";
 
 const SAMPLES: { name: string; text: string; values: Record<string, string> }[] = [
@@ -150,7 +150,7 @@ useHandoff<{ input?: string }>("prompt-template", (p) => {
                         <Btn size="sm" variant="ghost" @click="downloadBlob(exported, { text: 'prompt.txt', js: 'prompt.js', python: 'prompt.py', json: 'prompt.json' }[exportAs])"><Download /> Download</Btn>
                         <CopyButton :text="exported" />
                     </template>
-                    <pre class="max-h-64 overflow-auto p-4 font-mono text-xs break-words whitespace-pre-wrap">{{ exported }}</pre>
+                    <CodeBlock class="max-h-64 overflow-auto p-4 font-mono text-xs break-words whitespace-pre-wrap" :code="exported" :language="exportAs === 'text' ? undefined : exportAs" />
                 </Panel>
             </div>
         </div>

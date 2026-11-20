@@ -122,14 +122,14 @@ useHandoff<{ input?: string; lang?: Lang }>("code-formatter", (p) => {
 
         <div class="grid gap-4 lg:grid-cols-2" @keydown.ctrl.enter.prevent="format" @keydown.meta.enter.prevent="format">
             <Panel title="Input" flush>
-                <CodeArea v-model="input" :wrap="false" placeholder="Paste code to format…" />
+                <CodeArea :language="lang" v-model="input" :wrap="false" placeholder="Paste code to format…" />
             </Panel>
             <Panel title="Formatted" flush>
                 <template #actions>
                     <Btn size="sm" variant="ghost" :disabled="!output" title="Use output as input" @click="input = output"><ArrowLeft /> Use as input</Btn>
                     <CopyButton :text="output" />
                 </template>
-                <CodeArea :model-value="output" readonly :wrap="false" placeholder="Formatted code appears here" />
+                <CodeArea :language="lang" :model-value="output" readonly :wrap="false" placeholder="Formatted code appears here" />
             </Panel>
         </div>
     </ToolPage>

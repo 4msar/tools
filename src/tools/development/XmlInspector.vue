@@ -350,6 +350,7 @@ useHandoff<{ input?: string }>("xml-inspector", (p) => {
                     >
                 </template>
                 <CodeArea
+                    language="xml"
                     v-if="mode === 'json'"
                     v-model="input"
                     :wrap="false"
@@ -357,6 +358,7 @@ useHandoff<{ input?: string }>("xml-inspector", (p) => {
                     :invalid="!!toJson.error"
                 />
                 <CodeArea
+                    language="json"
                     v-else
                     v-model="jsonInput"
                     :wrap="false"
@@ -378,6 +380,7 @@ useHandoff<{ input?: string }>("xml-inspector", (p) => {
                     }}</Notice>
                 </div>
                 <CodeArea
+                    :language="mode === 'json' ? 'json' : 'xml'"
                     v-else
                     :model-value="(mode === 'json' ? toJson : fromJson).out"
                     readonly
@@ -395,6 +398,7 @@ useHandoff<{ input?: string }>("xml-inspector", (p) => {
                     >
                 </template>
                 <CodeArea
+                    language="xml"
                     v-model="input"
                     :wrap="false"
                     placeholder="Paste XML…"
@@ -411,6 +415,7 @@ useHandoff<{ input?: string }>("xml-inspector", (p) => {
                     </Notice>
                 </div>
                 <CodeArea
+                    language="xml"
                     v-else
                     :model-value="output"
                     readonly

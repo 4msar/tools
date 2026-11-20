@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { Dices, Plus, Trash2 } from "lucide-vue-next";
-import { Btn, CopyButton, Field, Panel, Tabs, ToolPage } from "@/components/ui";
+import { Btn, CodeBlock, CopyButton, Field, Panel, Tabs, ToolPage } from "@/components/ui";
 
 type GType = "linear" | "radial" | "conic";
 interface Stop { id: number; color: string; pos: number }
@@ -162,7 +162,7 @@ function random() {
 
         <Panel title="CSS" flush>
             <template #actions><CopyButton :text="css" /></template>
-            <pre class="overflow-x-auto p-4 font-mono text-sm break-words whitespace-pre-wrap">{{ css }}</pre>
+            <CodeBlock class="overflow-x-auto p-4 font-mono text-sm break-words whitespace-pre-wrap" :code="css" :language="'css'" />
         </Panel>
     </ToolPage>
 </template>

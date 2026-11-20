@@ -203,7 +203,7 @@ useHandoff<{ input?: string; dir?: Dir }>("csv-json", (p) => {
                     <Btn size="sm" variant="ghost" @click="paste"><ClipboardPaste /> Paste</Btn>
                     <Btn size="sm" variant="ghost" :disabled="!input" @click="input = ''"><Trash2 /> Clear</Btn>
                 </template>
-                <CodeArea v-model="input" :wrap="false" height="20rem" :placeholder="dir === 'csv2json' ? 'Paste CSV here…' : 'Paste a JSON array of objects…'" />
+                <CodeArea :language="dir === 'csv2json' ? undefined : 'json'" v-model="input" :wrap="false" height="20rem" :placeholder="dir === 'csv2json' ? 'Paste CSV here…' : 'Paste a JSON array of objects…'" />
             </Panel>
 
             <Panel :title="dir === 'json2csv' ? 'CSV' : outFmt === 'sql' ? 'SQL' : outFmt === 'markdown' ? 'Markdown' : 'JSON'" flush>
@@ -213,7 +213,7 @@ useHandoff<{ input?: string; dir?: Dir }>("csv-json", (p) => {
                     <CopyButton :text="result.out" />
                 </template>
                 <div v-if="result.error" class="p-4"><Notice type="error">{{ result.error }}</Notice></div>
-                <CodeArea :model-value="result.out" readonly :wrap="false" height="20rem" placeholder="Output appears here" />
+                <CodeArea :language="dir === 'csv2json' ? 'json' : undefined" :model-value="result.out" readonly :wrap="false" height="20rem" placeholder="Output appears here" />
                 <div v-if="result.note" class="border-t border-line px-4 py-2 text-xs text-muted">{{ result.total }} rows · {{ result.note }}</div>
             </Panel>
         </div>

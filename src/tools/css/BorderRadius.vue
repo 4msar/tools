@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from "vue";
 import { Link2, Link2Off, Shuffle } from "lucide-vue-next";
-import { Btn, CopyButton, Field, Panel, Tabs, ToolPage } from "@/components/ui";
+import { Btn, CodeBlock, CopyButton, Field, Panel, Tabs, ToolPage } from "@/components/ui";
 
 const mode = ref<"corners" | "blob">("corners");
 
@@ -94,7 +94,7 @@ const border = ref(0);
 
                 <Panel title="CSS" flush>
                     <template #actions><CopyButton :text="css" /></template>
-                    <pre class="p-4 font-mono text-[13px] break-all whitespace-pre-wrap">{{ css }}</pre>
+                    <CodeBlock class="p-4 font-mono text-[13px] break-all whitespace-pre-wrap" :code="css" :language="'css'" />
                     <div class="flex items-center justify-between gap-2 border-t border-line px-4 py-2">
                         <code class="min-w-0 font-mono text-xs break-all text-muted">{{ tailwind }}</code><CopyButton :text="tailwind" icon-only />
                     </div>

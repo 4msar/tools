@@ -228,12 +228,12 @@ useHandoff<{ input?: string }>("html-to-jsx", (p) => {
                     <Btn size="sm" variant="ghost" @click="paste"><ClipboardPaste /> Paste</Btn>
                     <Btn size="sm" variant="ghost" :disabled="!input" @click="input = ''"><Trash2 /> Clear</Btn>
                 </template>
-                <CodeArea v-model="input" :wrap="false" height="26rem" placeholder="<div class=&quot;box&quot;>…</div>" />
+                <CodeArea language="html" v-model="input" :wrap="false" height="26rem" placeholder="<div class=&quot;box&quot;>…</div>" />
             </Panel>
             <Panel title="JSX" flush>
                 <template #actions><CopyButton :text="result.out" /></template>
                 <div v-if="result.error" class="p-4"><Notice type="error">{{ result.error }}</Notice></div>
-                <CodeArea v-else :model-value="result.out" readonly :wrap="false" height="26rem" placeholder="JSX appears here" />
+                <CodeArea language="jsx" v-else :model-value="result.out" readonly :wrap="false" height="26rem" placeholder="JSX appears here" />
             </Panel>
         </div>
         <p class="text-xs text-muted">Event handlers become arrow functions, <code class="code">style</code> strings become objects, and <code class="code">checked</code>/<code class="code">selected</code> map to their uncontrolled <code class="code">default*</code> props.</p>

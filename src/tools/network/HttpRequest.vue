@@ -2,7 +2,7 @@
 import { useHandoff } from "@/composables/handoff";
 import { computed, reactive, ref } from "vue";
 import { Plus, Send, Square, X } from "lucide-vue-next";
-import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
+import { Btn, CodeArea, CodeBlock, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
 
 const METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
 const method = ref("GET");
@@ -165,7 +165,7 @@ useHandoff<{ input?: string }>("http-request", (p) => {
                         <span v-if="['GET', 'HEAD'].includes(method)" class="text-xs text-muted">{{ method }} requests are sent without a body.</span>
                         <span v-else-if="bodyError" class="text-xs text-danger">{{ bodyError }}</span>
                     </div>
-                    <CodeArea v-if="bodyType !== 'none'" v-model="body" :wrap="false" height="14rem" :invalid="!!bodyError" :placeholder="bodyType === 'form' ? 'name=value&other=value' : 'Request body'" />
+                    <CodeArea :language="bodyType === 'json' ? 'json' : undefined" v-if="bodyType !== 'none'" v-model="body" :wrap="false" height="14rem" :invalid="!!bodyError" :placeholder="bodyType === 'form' ? 'name=value&other=value' : 'Request body'" />
                 </template>
             </Panel>
 
@@ -189,7 +189,7 @@ useHandoff<{ input?: string }>("http-request", (p) => {
                     <template v-if="resTab === 'body'">
                         <p v-if="res.isBinary" class="p-4 text-sm text-muted">Binary response ({{ res.type }}, {{ fmtSize(res.size) }}) is not shown.</p>
                         <p v-else-if="!res.body" class="p-4 text-sm text-muted">The response has no body.</p>
-                        <CodeArea v-else :model-value="res.body" readonly :wrap="false" height="18rem" />
+                        <CodeArea language="auto" v-else :model-value="res.body" readonly :wrap="false" height="18rem" />
                     </template>
                     <dl v-else class="max-h-72 divide-y divide-line overflow-auto text-sm">
                         <div v-for="[k, v] in res.headers" :key="k" class="flex gap-3 px-4 py-2">
@@ -202,7 +202,7 @@ useHandoff<{ input?: string }>("http-request", (p) => {
 
         <Panel title="As cURL" flush>
             <template #actions><CopyButton :text="curl" /></template>
-            <pre class="overflow-auto p-4 font-mono text-[13px]">{{ curl || "Enter a URL to build the command." }}</pre>
+            <CodeBlock class="overflow-auto p-4 font-mono text-[13px]" :code="curl || 'Enter a URL to build the command.'" :language="curl ? 'bash' : undefined" />
         </Panel>
         <p class="text-xs text-muted">Requests go straight from your browser to the URL, with no proxy and no cookies. Only APIs that allow cross-origin requests (CORS) can be read, and only the response headers the server exposes are visible.</p>
     </ToolPage>

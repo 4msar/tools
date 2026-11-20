@@ -203,7 +203,7 @@ useHandoff<{ input?: string }>("sql-formatter", (p) => {
                     <Btn size="sm" variant="ghost" @click="paste"><ClipboardPaste /> Paste</Btn>
                     <Btn size="sm" variant="ghost" :disabled="!input" @click="input = ''"><Trash2 /> Clear</Btn>
                 </template>
-                <CodeArea v-model="input" height="26rem" :invalid="!!result.error" :placeholder="mode === 'data' ? 'Paste INSERT INTO … VALUES statements…' : 'Paste SQL here…'" />
+                <CodeArea language="sql" v-model="input" height="26rem" :invalid="!!result.error" :placeholder="mode === 'data' ? 'Paste INSERT INTO … VALUES statements…' : 'Paste SQL here…'" />
             </Panel>
             <Panel :title="mode === 'format' ? 'Formatted' : mode === 'minify' ? 'Minified' : dataFmt.toUpperCase()" flush>
                 <template #actions>
@@ -211,7 +211,7 @@ useHandoff<{ input?: string }>("sql-formatter", (p) => {
                     <CopyButton :text="result.out" />
                 </template>
                 <div v-if="result.error" class="p-4"><Notice type="error">{{ result.error }}</Notice></div>
-                <CodeArea v-else :model-value="result.out" readonly :wrap="mode === 'minify'" height="26rem" placeholder="Output appears here" />
+                <CodeArea language="sql" v-else :model-value="result.out" readonly :wrap="mode === 'minify'" height="26rem" placeholder="Output appears here" />
                 <div v-if="result.note" class="border-t border-line px-4 py-2 text-xs text-muted">{{ result.note }}</div>
             </Panel>
         </div>

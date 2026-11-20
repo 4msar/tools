@@ -204,12 +204,12 @@ useHandoff<{ input?: string }>("docker-run-to-compose", (p) => {
                     <Btn size="sm" variant="ghost" @click="input = SAMPLE"><Sparkles /> Sample</Btn>
                     <Btn size="sm" variant="ghost" :disabled="!input" @click="input = ''"><Trash2 /> Clear</Btn>
                 </template>
-                <CodeArea v-model="input" height="26rem" :invalid="!!result.error" placeholder="docker run -d -p 8080:80 nginx" />
+                <CodeArea language="bash" v-model="input" height="26rem" :invalid="!!result.error" placeholder="docker run -d -p 8080:80 nginx" />
             </Panel>
             <Panel title="compose.yaml" flush>
                 <template #actions><CopyButton :text="result.yaml" /></template>
                 <div v-if="result.error" class="p-4"><Notice type="error">{{ result.error }}</Notice></div>
-                <CodeArea v-else :model-value="result.yaml" readonly :wrap="false" height="26rem" placeholder="Compose file appears here" />
+                <CodeArea language="yaml" v-else :model-value="result.yaml" readonly :wrap="false" height="26rem" placeholder="Compose file appears here" />
             </Panel>
         </div>
         <Notice v-if="result.notes.length" type="warning">

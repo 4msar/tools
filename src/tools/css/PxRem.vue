@@ -119,11 +119,11 @@ useHandoff<{ input?: string }>("px-rem", (p) => {
 
         <div class="grid gap-4 lg:grid-cols-2">
             <Panel title="CSS with px values" flush>
-                <CodeArea v-model="bulkIn" placeholder="Paste CSS containing NNpx values…" height="16rem" />
+                <CodeArea language="css" v-model="bulkIn" placeholder="Paste CSS containing NNpx values…" height="16rem" />
             </Panel>
             <Panel title="Converted to rem" flush>
                 <template #actions><CopyButton :text="bulkOut" /></template>
-                <CodeArea :model-value="bulkOut" readonly height="16rem" />
+                <CodeArea language="css" :model-value="bulkOut" readonly height="16rem" />
             </Panel>
         </div>
     </ToolPage>

@@ -86,7 +86,7 @@ useHandoff<{ input?: string; selected?: string[] }>("gitignore-generator", (p) =
                     <Btn size="sm" variant="ghost" :disabled="!output" @click="downloadBlob(output, '.gitignore')"><Download /> Download</Btn>
                     <CopyButton :text="output" />
                 </template>
-                <CodeArea :model-value="output" readonly :wrap="false" height="34rem" placeholder="Pick templates to build your .gitignore" />
+                <CodeArea language="bash" :model-value="output" readonly :wrap="false" height="34rem" placeholder="Pick templates to build your .gitignore" />
                 <div class="border-t border-line px-4 py-2 text-xs text-muted">{{ selected.length }} template{{ selected.length === 1 ? "" : "s" }} · {{ ruleCount }} rules</div>
             </Panel>
         </div>

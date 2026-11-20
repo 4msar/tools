@@ -154,7 +154,7 @@ useHandoff<{ input?: string }>("jsonl-validator", (p) => {
                     <Btn size="sm" variant="ghost" @click="paste"><ClipboardPaste /> Paste</Btn>
                     <Btn size="sm" variant="ghost" :disabled="!input" @click="input = ''"><Trash2 /> Clear</Btn>
                 </template>
-                <CodeArea v-model="input" :wrap="false" height="26rem" :invalid="result.errors > 0" placeholder='{"messages": [...]}&#10;{"messages": [...]}' />
+                <CodeArea language="json" v-model="input" :wrap="false" height="26rem" :invalid="result.errors > 0" placeholder='{"messages": [...]}&#10;{"messages": [...]}' />
                 <div class="flex flex-wrap gap-x-4 border-t border-line px-4 py-2 text-xs text-muted">
                     <span>{{ result.lines.length }} records</span><span v-if="result.empty">{{ result.empty }} blank lines</span><span>{{ chars.toLocaleString() }} characters</span><span>about {{ Math.ceil(chars / 4).toLocaleString() }} tokens</span>
                 </div>

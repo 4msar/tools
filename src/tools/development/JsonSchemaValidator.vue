@@ -86,11 +86,11 @@ useHandoff<{ input?: string; schema?: string }>("json-schema-validator", (p) => 
                 <template #actions>
                     <Btn size="sm" variant="ghost" @click="((schemaText = SCHEMA), (dataText = DATA))"><FileJson /> Sample</Btn>
                 </template>
-                <CodeArea v-model="schemaText" :wrap="false" height="18rem" placeholder="Paste a JSON Schema…" :invalid="!!result.schemaError" />
+                <CodeArea language="json" v-model="schemaText" :wrap="false" height="18rem" placeholder="Paste a JSON Schema…" :invalid="!!result.schemaError" />
                 <div v-if="result.schemaError" class="border-t border-line p-3"><Notice type="error">Schema: {{ result.schemaError }}</Notice></div>
             </Panel>
             <Panel title="Data (JSON or YAML)" flush>
-                <CodeArea v-model="dataText" :wrap="false" height="18rem" placeholder="Paste data to validate…" :invalid="!!result.dataError" />
+                <CodeArea language="json" v-model="dataText" :wrap="false" height="18rem" placeholder="Paste data to validate…" :invalid="!!result.dataError" />
                 <div v-if="result.dataError" class="border-t border-line p-3"><Notice type="error">Data: {{ result.dataError }}</Notice></div>
             </Panel>
         </div>

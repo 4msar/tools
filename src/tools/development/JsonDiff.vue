@@ -243,6 +243,7 @@ useHandoff<{ left?: string; right?: string; input?: string }>(
                     >
                 </template>
                 <CodeArea
+                    :language="/^\s*[\[{]/.test(left) ? 'json' : 'yaml'"
                     v-model="left"
                     :wrap="false"
                     height="16rem"
@@ -252,6 +253,7 @@ useHandoff<{ left?: string; right?: string; input?: string }>(
             </Panel>
             <Panel title="Modified (JSON or YAML)" flush>
                 <CodeArea
+                    :language="/^\s*[\[{]/.test(right) ? 'json' : 'yaml'"
                     v-model="right"
                     :wrap="false"
                     height="16rem"

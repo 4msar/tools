@@ -277,13 +277,13 @@ useHandoff<{ input?: string; from?: Fmt; to?: Fmt }>("config-converter", (p) => 
                     <Btn size="sm" variant="ghost" @click="paste"><ClipboardPaste /> Paste</Btn>
                     <Btn size="sm" variant="ghost" :disabled="!input" @click="input = ''"><Trash2 /> Clear</Btn>
                 </template>
-                <CodeArea v-model="input" :wrap="false" :invalid="!!result.parseError" height="24rem" :placeholder="`Paste ${label(from)} here…`" />
+                <CodeArea :language="from" v-model="input" :wrap="false" :invalid="!!result.parseError" height="24rem" :placeholder="`Paste ${label(from)} here…`" />
                 <div v-if="result.parseError || result.valid" class="border-t border-line px-4 py-2 text-xs" :class="result.parseError ? 'text-danger' : 'text-success'">{{ result.parseError ?? result.valid }}</div>
             </Panel>
             <Panel :title="label(to)" flush>
                 <template #actions><CopyButton :text="result.out" /></template>
                 <div v-if="result.error" class="p-4"><Notice type="error">{{ result.error }}</Notice></div>
-                <CodeArea v-else :model-value="result.out" readonly :wrap="false" height="24rem" placeholder="Output appears here" />
+                <CodeArea :language="to" v-else :model-value="result.out" readonly :wrap="false" height="24rem" placeholder="Output appears here" />
             </Panel>
         </div>
         <p class="text-xs text-muted">The input is validated as you type, with the line and column of the first error. Multi-document YAML is read as an array. .env is flat KEY=VALUE: nested objects become KEY_SUBKEY, and values are strings.</p>

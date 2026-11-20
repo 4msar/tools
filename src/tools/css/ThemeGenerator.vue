@@ -2,7 +2,7 @@
 import { useHandoff } from "@/composables/handoff";
 import { computed, ref } from "vue";
 import { Moon, Shuffle, Sun } from "lucide-vue-next";
-import { Btn, CopyButton, Field, Panel, Tabs, ToolPage } from "@/components/ui";
+import { Btn, CodeBlock, CopyButton, Field, Panel, Tabs, ToolPage } from "@/components/ui";
 import { copyText } from "@/composables/useClipboard";
 
 const brand = ref("#6366f1");
@@ -178,7 +178,7 @@ useHandoff<{ input?: string }>("theme-generator", (p) => {
                     <Tabs v-model="tab" size="sm" :options="[{ value: 'shadcn', label: 'shadcn/ui' }, { value: 'tailwind', label: 'Tailwind v4' }, { value: 'hex', label: 'JSON (hex)' }]" />
                     <CopyButton :text="outputs[tab]" />
                 </template>
-                <pre class="max-h-[26rem] overflow-auto p-4 font-mono text-xs leading-relaxed">{{ outputs[tab] }}</pre>
+                <CodeBlock class="max-h-[26rem] overflow-auto p-4 font-mono text-xs leading-relaxed" :code="outputs[tab]" :language="tab === 'hex' ? 'json' : 'css'" />
             </Panel>
         </div>
         <p class="text-xs text-muted">Colors are generated in OKLCH and chroma is reduced where a shade would fall outside sRGB. Paste the shadcn/ui block into your global CSS, or the Tailwind block to get <code class="code">bg-{{ slug }}-500</code> utilities. Check text contrast before shipping.</p>

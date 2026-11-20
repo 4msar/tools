@@ -92,7 +92,7 @@ useHandoff<{ input?: string; path?: string }>("json-path", (p) => {
                     <Btn size="sm" variant="ghost" @click="input = SAMPLE"><Sparkles /> Sample</Btn>
                     <Btn size="sm" variant="ghost" @click="paste"><ClipboardPaste /> Paste</Btn>
                 </template>
-                <CodeArea v-model="input" :wrap="false" height="26rem" :invalid="!!parsed.error" placeholder="Paste JSON here…" />
+                <CodeArea language="json" v-model="input" :wrap="false" height="26rem" :invalid="!!parsed.error" placeholder="Paste JSON here…" />
                 <div v-if="parsed.error" class="border-t border-line px-4 py-2 text-xs text-danger">{{ parsed.error }}</div>
             </Panel>
 
@@ -101,7 +101,7 @@ useHandoff<{ input?: string; path?: string }>("json-path", (p) => {
                     <Tabs v-model="view" size="sm" :options="[{ value: 'values', label: 'Values' }, { value: 'paths', label: 'Paths' }]" />
                     <CopyButton :text="output" />
                 </template>
-                <CodeArea :model-value="output" readonly :wrap="false" height="26rem" placeholder="Matches appear here" />
+                <CodeArea language="json" :model-value="output" readonly :wrap="false" height="26rem" placeholder="Matches appear here" />
             </Panel>
         </div>
 

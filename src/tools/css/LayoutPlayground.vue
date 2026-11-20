@@ -2,7 +2,7 @@
 import { computed, reactive, ref } from "vue";
 import type { CSSProperties } from "vue";
 import { Minus, Plus, RotateCcw } from "lucide-vue-next";
-import { Btn, CopyButton, Field, Panel, Tabs, ToolPage } from "@/components/ui";
+import { Btn, CodeBlock, CopyButton, Field, Panel, Tabs, ToolPage } from "@/components/ui";
 
 const mode = ref<"flex" | "grid">("flex");
 const count = ref(5);
@@ -160,7 +160,7 @@ const sizes = [56, 80, 64, 96, 72, 60, 88, 68, 76, 58, 92, 66];
 
                 <Panel title="CSS" flush>
                     <template #actions><CopyButton :text="css" /></template>
-                    <pre class="max-h-72 overflow-auto p-4 font-mono text-[13px]">{{ css }}</pre>
+                    <CodeBlock class="max-h-72 overflow-auto p-4 font-mono text-[13px]" :code="css" :language="'css'" />
                 </Panel>
             </div>
         </div>

@@ -308,7 +308,7 @@ const notes = computed(() => {
                         <Btn size="sm" variant="ghost" @click="downloadBlob(config, fileName)"><Download /> Download</Btn>
                         <CopyButton :text="config" />
                     </template>
-                    <CodeArea :model-value="config" readonly :wrap="false" height="34rem" />
+                    <CodeArea :language="o.server === 'caddy' ? undefined : o.server" :model-value="config" readonly :wrap="false" height="34rem" />
                 </Panel>
 
                 <Panel title="Install it" flush>

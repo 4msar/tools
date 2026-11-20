@@ -488,7 +488,7 @@ useHandoff<{ input?: string }>("curl-to-code", (p) => {
                     <Btn size="sm" variant="ghost" @click="paste"><ClipboardPaste /> Paste</Btn>
                     <Btn size="sm" variant="ghost" :disabled="!input" @click="input = ''"><Trash2 /> Clear</Btn>
                 </template>
-                <CodeArea v-model="input" :wrap="false" height="22rem" :invalid="!!parsed.error" placeholder="curl https://api.example.com -H 'Accept: application/json'" />
+                <CodeArea language="bash" v-model="input" :wrap="false" height="22rem" :invalid="!!parsed.error" placeholder="curl https://api.example.com -H 'Accept: application/json'" />
                 <div v-if="parsed.req" class="flex flex-wrap gap-1.5 border-t border-line px-4 py-2 text-xs">
                     <span class="chip">{{ parsed.req.method }}</span>
                     <span class="chip max-w-full truncate">{{ parsed.req.url }}</span>
@@ -509,7 +509,7 @@ useHandoff<{ input?: string }>("curl-to-code", (p) => {
                     <div v-if="parsed.req?.notes.length" class="space-y-2 p-4 pb-0">
                         <Notice v-for="n in parsed.req.notes" :key="n" type="warning">{{ n }}</Notice>
                     </div>
-                    <CodeArea :model-value="output" readonly :wrap="false" height="22rem" placeholder="Generated code appears here" />
+                    <CodeArea :language="lang === 'fetch' || lang === 'axios' ? 'javascript' : lang === 'httpie' ? 'bash' : lang" :model-value="output" readonly :wrap="false" height="22rem" placeholder="Generated code appears here" />
                 </template>
             </Panel>
         </div>

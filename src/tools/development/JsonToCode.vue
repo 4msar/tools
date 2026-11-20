@@ -510,6 +510,7 @@ useHandoff<{ input?: string }>("json-to-code", (p) => {
                     >
                 </template>
                 <CodeArea
+                    language="json"
                     v-model="input"
                     :wrap="false"
                     placeholder="Paste JSON here…"
@@ -522,6 +523,7 @@ useHandoff<{ input?: string }>("json-to-code", (p) => {
                     <Notice type="error">{{ result.error }}</Notice>
                 </div>
                 <CodeArea
+                    :language="lang === 'schema' ? 'json' : lang"
                     v-else
                     :model-value="result.out"
                     readonly

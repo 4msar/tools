@@ -108,7 +108,7 @@ const color: Record<string, string> = {
                 <template #title>
                     <Tabs v-model="tab" size="sm" :options="(['html', 'css', 'js'] as const).map((v) => ({ value: v, label: labels[v] }))" />
                 </template>
-                <CodeArea v-model="current" :wrap="false" height="24rem" :placeholder="`${labels[tab]} code…`" />
+                <CodeArea :language="tab" v-model="current" :wrap="false" height="24rem" :placeholder="`${labels[tab]} code…`" />
             </Panel>
 
             <div class="flex min-w-0 flex-col gap-4">
