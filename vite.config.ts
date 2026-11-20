@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
@@ -11,9 +11,28 @@ const pkg = JSON.parse(
     readFileSync(new URL("./package.json", import.meta.url), "utf8"),
 ) as { version: string };
 
+const BUILD_DATE = new Date().toISOString();
+
+// Emits /version.json so open tabs can detect a new deploy (see src/composables/pwa.ts).
+const versionFile = (): Plugin => ({
+    name: "app-version-file",
+    apply: "build",
+    generateBundle() {
+        this.emitFile({
+            type: "asset",
+            fileName: "version.json",
+            source: JSON.stringify({
+                version: pkg.version,
+                buildDate: BUILD_DATE,
+            }),
+        });
+    },
+});
+
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [
+        versionFile(),
         vue(),
         tailwindcss(),
         seo({
@@ -92,6 +111,8 @@ export default defineConfig({
                 globIgnores: [
                     "og/**",
                     "404.html",
+                    // Must always come from the network so update checks see the latest deploy.
+                    "version.json",
                     "**/*web-llm*",
                     "**/*worker*",
                     "**/lib-*.js",
@@ -100,6 +121,18 @@ export default defineConfig({
                 maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
                 navigateFallback: "/index.html",
                 cleanupOutdatedCaches: true,
+                // Tie the app shell's revision to the app version, so every version bump
+                // produces a new sw.js and triggers a service-worker update.
+                manifestTransforms: [
+                    (entries) => ({
+                        manifest: entries.map((e) =>
+                            e.url === "index.html"
+                                ? { ...e, revision: `${e.revision}-v${pkg.version}` }
+                                : e,
+                        ),
+                        warnings: [],
+                    }),
+                ],
                 runtimeCaching: [
                     {
                         urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -125,7 +158,7 @@ export default defineConfig({
     base: "/",
     define: {
         __APP_VERSION__: JSON.stringify(pkg.version),
-        __BUILD_DATE__: JSON.stringify(new Date().toISOString()),
+        __BUILD_DATE__: JSON.stringify(BUILD_DATE),
     },
     server: {
         allowedHosts: ["app.msar.dev"],
