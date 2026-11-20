@@ -23,19 +23,19 @@ The chat button in the corner finds tools and runs them. Tell it what you want i
 
 Text after a colon, on the next line, in quotes or in a ``` code block is treated as the input, e.g. `base64 encode: hello world`.
 
-| Area | Try |
-|---|---|
-| Encode & convert | `convert hello to base64` · `url decode a%20b` · `escape html: <b>` · `yaml to json: a: 1` · `csv to json:` (data on the next line) · `markdown to html: # Hi` · `gzip some text` |
-| Hashes & IDs | `SHA-256 of password123` · `md5 hash of hello` · `bcrypt hash of secret` · `crc32 of hello` · `generate 3 uuids` · `uuid v7` · `generate a 24 character password` · `random hex token 32` |
-| Code & data | `format json {"a":1}` · `format sql: select …` · `format css: a{color:red}` · `$.items[*].id on {...}` · `test regex /\d+/g on abc 123` · `json to typescript: {...}` · `html to jsx: <div class="a">` |
-| Text | `convert user name to camel case` · `count words in: …` · `how many tokens in: …` · `sort lines:` / `dedupe lines:` (list on the next lines) · `compare` with two code blocks · `ascii art hello` · `redact: …` |
-| Time | `convert 1700000000 to date` · `current unix timestamp` · `explain cron */5 * * * *` · `what time is it in tokyo` · `3pm utc in tokyo` · `days between 2024-01-01 and 2024-03-01` · `30 days from now` · `start stopwatch` |
-| Numbers & units | `255 to hex` · `0xff & 0x0f` · `5 km to miles` · `100 f to c` · `16px to rem` · `1920x1080 aspect ratio` · `chmod 755` · `luhn 4111 1111 1111 1111` |
-| Web & security | `192.168.1.10/24` · `what is http 418` · `parse user agent Mozilla/5.0 …` · paste a JWT · paste a PEM certificate · `basic auth admin:secret` · `totp JBSWY3DPEHPK3PXP` · `GET https://api.example.com` (opens the request; nothing is sent until you press Send) |
-| Color & CSS | `#ff0000 to rgb` · `random color` · `palette from #3b82f6` · `tailwind theme from #0ea5e9` |
-| Generators | `lorem ipsum 2 paragraphs` · `gitignore for node python macos` · `qr code for https://example.com` · paste a `curl …` or `docker run …` command |
-| Productivity | `start a pomodoro` · `pause pomodoro` · `set a timer for 10 minutes` · `remind me at 3pm to call Sam` · `start break reminders` · `add todo review PR tomorrow` |
-| Anything else | `open image converter`, `go to box shadow`, … opens any tool by name |
+| Area             | Try                                                                                                                                                                                                                                                               |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Encode & convert | `convert hello to base64` · `url decode a%20b` · `escape html: <b>` · `yaml to json: a: 1` · `csv to json:` (data on the next line) · `markdown to html: # Hi` · `gzip some text`                                                                                 |
+| Hashes & IDs     | `SHA-256 of password123` · `md5 hash of hello` · `bcrypt hash of secret` · `crc32 of hello` · `generate 3 uuids` · `uuid v7` · `generate a 24 character password` · `random hex token 32`                                                                         |
+| Code & data      | `format json {"a":1}` · `format sql: select …` · `format css: a{color:red}` · `$.items[*].id on {...}` · `test regex /\d+/g on abc 123` · `json to typescript: {...}` · `html to jsx: <div class="a">`                                                            |
+| Text             | `convert user name to camel case` · `count words in: …` · `how many tokens in: …` · `sort lines:` / `dedupe lines:` (list on the next lines) · `compare` with two code blocks · `ascii art hello` · `redact: …`                                                   |
+| Time             | `convert 1700000000 to date` · `current unix timestamp` · `explain cron */5 * * * *` · `what time is it in tokyo` · `3pm utc in tokyo` · `days between 2024-01-01 and 2024-03-01` · `30 days from now` · `start stopwatch`                                        |
+| Numbers & units  | `255 to hex` · `0xff & 0x0f` · `5 km to miles` · `100 f to c` · `16px to rem` · `1920x1080 aspect ratio` · `chmod 755` · `luhn 4111 1111 1111 1111`                                                                                                               |
+| Web & security   | `192.168.1.10/24` · `what is http 418` · `parse user agent Mozilla/5.0 …` · paste a JWT · paste a PEM certificate · `basic auth admin:secret` · `totp JBSWY3DPEHPK3PXP` · `GET https://api.example.com` (opens the request; nothing is sent until you press Send) |
+| Color & CSS      | `#ff0000 to rgb` · `random color` · `palette from #3b82f6` · `tailwind theme from #0ea5e9`                                                                                                                                                                        |
+| Generators       | `lorem ipsum 2 paragraphs` · `gitignore for node python macos` · `qr code for https://msar.me` · paste a `curl …` or `docker run …` command                                                                                                                       |
+| Productivity     | `start a pomodoro` · `pause pomodoro` · `set a timer for 10 minutes` · `remind me at 3pm to call Sam` · `start break reminders` · `add todo review PR tomorrow`                                                                                                   |
+| Anything else    | `open image converter`, `go to box shadow`, … opens any tool by name                                                                                                                                                                                              |
 
 The chatbox has two tabs: **Tools** (the commands above) and **General chat**, a plain conversation with the on-device model that isn't tied to any tool. Conversations, the system prompt, temperature and reply length are shared with the [General Chat](#ai) tool page, where you also download, switch and delete models. One model is in memory at a time, and the tool finder uses whichever is loaded.
 
