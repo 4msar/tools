@@ -1,0 +1,4 @@
+#!/bin/sh
+# Bump the patch version on every commit and include it in the same commit.
+[ "$SKIP_BUMP" = "1" ] && exit 0
+node scripts/bump-version.mjs && git add package.json

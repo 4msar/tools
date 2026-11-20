@@ -4,6 +4,7 @@ import { RouterLink } from "vue-router";
 import { ChevronRight, ChevronsDownUp, ChevronsUpDown, House, Info, Search, Star, Wrench } from "lucide-vue-next";
 import { categories, searchTools, tools } from "@/tools/registry";
 import { favorites } from "@/composables/prefs";
+import { APP_VERSION, BUILD_DATE } from "@/site";
 
 const emit = defineEmits<{ navigate: [] }>();
 const filter = ref("");
@@ -118,6 +119,12 @@ function toggleAll() {
                 @click="emit('navigate')"
             >
                 <Info class="size-4 text-fg-subtle group-hover:text-accent" stroke-width="1.75" /> About
+                <span
+                    class="ml-auto text-[11px] font-normal tabular-nums text-fg-subtle"
+                    :title="BUILD_DATE ? `Built ${new Date(BUILD_DATE).toLocaleString()}` : undefined"
+                >
+                    v{{ APP_VERSION }}
+                </span>
             </RouterLink>
         </div>
     </aside>
