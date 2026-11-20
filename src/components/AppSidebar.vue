@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { RouterLink } from "vue-router";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { RouterLink, useRoute } from "vue-router";
 import { ChevronRight, ChevronsDownUp, ChevronsUpDown, House, Info, Search, Star, Wrench } from "lucide-vue-next";
 import { categories, searchTools, tools } from "@/tools/registry";
 import { favorites } from "@/composables/prefs";
@@ -9,6 +9,8 @@ import { APP_VERSION, BUILD_DATE } from "@/site";
 const emit = defineEmits<{ navigate: [] }>();
 const filter = ref("");
 const collapsed = ref<Record<string, boolean>>({});
+const nav = ref<HTMLElement>();
+const route = useRoute();
 
 const groups = computed(() => {
     const list = filter.value ? searchTools(filter.value) : tools;
@@ -23,6 +25,28 @@ function toggleAll() {
     const next = !allCollapsed.value;
     collapsed.value = Object.fromEntries(categories.map((c) => [c.id, next]));
 }
+
+// Keep the active tool visible in the sidebar: expand its category and scroll it into view.
+async function revealActive(smooth: boolean) {
+    const id = route.meta.toolId as string | undefined;
+    if (!id) return;
+    const tool = tools.find((t) => t.id === id);
+    if (tool && collapsed.value[tool.category]) collapsed.value[tool.category] = false;
+    await nextTick();
+    const container = nav.value;
+    const el = container?.querySelector<HTMLElement>(`[data-tool="${id}"]`);
+    if (!container || !el) return;
+    const c = container.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    if (r.top >= c.top && r.bottom <= c.bottom) return;
+    // Scroll only the nav (not the page), centering the item.
+    const top = container.scrollTop + (r.top - c.top) - (c.height - r.height) / 2;
+    container.scrollTo({ top, behavior: smooth ? "smooth" : "auto" });
+}
+
+// Jump instantly on first load (route resolves after mount); animate on later navigation.
+watch(() => route.meta.toolId, (_id, prev) => revealActive(prev !== undefined), { flush: "post" });
+onMounted(() => revealActive(false));
 </script>
 
 <template>
@@ -55,7 +79,7 @@ function toggleAll() {
             </button>
         </div>
 
-        <nav class="min-h-0 flex-1 overflow-y-auto px-2 pb-6 text-sm">
+        <nav ref="nav" class="min-h-0 flex-1 overflow-y-auto px-2 pb-6 text-sm">
             <RouterLink
                 v-if="!filter"
                 to="/"
@@ -98,6 +122,7 @@ function toggleAll() {
                         v-for="t in g.items"
                         :key="t.id"
                         :to="'/' + t.id"
+                        :data-tool="t.id"
                         class="flex items-center gap-2 rounded-md px-2 py-1.5 text-fg-muted transition-colors hover:text-accent"
                         active-class="!text-accent bg-subtle font-medium"
                         @click="emit('navigate')"
