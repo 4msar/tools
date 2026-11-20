@@ -5,6 +5,7 @@ import { dump } from "js-yaml";
 import { ClipboardPaste, Download, FileText, Trash2 } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, Tabs, ToolPage } from "@/components/ui";
 import { downloadBlob, readClipboard } from "@/composables/useClipboard";
+import { useFillHeight } from "@/composables/useFillHeight";
 
 // Recursive tree view node
 const JsonTreeNode: Component = defineComponent({
@@ -55,6 +56,10 @@ const inputJson = ref("");
 const tab = ref<OutTab>("format");
 const indent = ref<"2" | "4" | "tab">("2");
 const sortKeys = ref(false);
+
+// Editor panels fill the rest of the viewport and scroll internally.
+const editorGrid = ref<HTMLElement | null>(null);
+const editorHeight = useFillHeight(editorGrid);
 
 const SAMPLE = {
     name: "John Doe",
@@ -183,18 +188,18 @@ useHandoff<{ input?: string }>("json-formatter", (p) => {
             <label class="flex h-9 items-center gap-2"><input v-model="sortKeys" type="checkbox" class="checkbox" /> Sort keys</label>
         </div>
 
-        <div class="grid gap-4 lg:grid-cols-2">
-            <Panel title="Input JSON" flush>
+        <div ref="editorGrid" class="grid gap-4 lg:grid-cols-2">
+            <Panel title="Input JSON" flush :style="{ height: `${editorHeight}px` }">
                 <template #actions>
                     <Btn size="sm" variant="ghost" @click="paste"><ClipboardPaste /> Paste</Btn>
                     <Btn size="sm" variant="ghost" @click="inputJson = JSON.stringify(SAMPLE, null, 2)"><FileText /> Sample</Btn>
                     <Btn size="sm" variant="ghost" :disabled="!inputJson" @click="inputJson = ''"><Trash2 /> Clear</Btn>
                 </template>
-                <CodeArea v-model="inputJson" placeholder="Paste your JSON here…" :wrap="false" :invalid="!!parsed.error" height="24rem" />
+                <CodeArea v-model="inputJson" placeholder="Paste your JSON here…" :wrap="false" :invalid="!!parsed.error" height="0" />
                 <div class="border-t border-line px-4 py-2 text-xs text-muted">{{ inputJson.length }} characters</div>
             </Panel>
 
-            <Panel flush>
+            <Panel flush :style="{ height: `${editorHeight}px` }">
                 <template #title>
                     <Tabs v-model="tab" size="sm" :options="[{ value: 'format', label: 'Formatted' }, { value: 'minify', label: 'Minified' }, { value: 'yaml', label: 'YAML' }]" />
                 </template>
@@ -202,9 +207,9 @@ useHandoff<{ input?: string }>("json-formatter", (p) => {
                     <Btn size="sm" variant="ghost" :disabled="!currentOutput" @click="download"><Download /> Download</Btn>
                     <CopyButton :text="currentOutput" />
                 </template>
-                <div v-if="parsed.error" class="p-4"><Notice type="error">{{ parsed.error }}</Notice></div>
-                <pre v-else-if="tab !== 'yaml' && currentOutput" class="min-h-96 flex-1 overflow-auto p-4 font-mono text-[13px] leading-relaxed break-words whitespace-pre-wrap" v-html="highlighted"></pre>
-                <CodeArea v-else :model-value="currentOutput" readonly placeholder="Output appears here" height="24rem" :wrap="false" />
+                <div v-if="parsed.error" class="flex-1 overflow-auto p-4"><Notice type="error">{{ parsed.error }}</Notice></div>
+                <pre v-else-if="tab !== 'yaml' && currentOutput" class="min-h-0 flex-1 overflow-auto p-4 font-mono text-[13px] leading-relaxed break-words whitespace-pre-wrap" v-html="highlighted"></pre>
+                <CodeArea v-else :model-value="currentOutput" readonly placeholder="Output appears here" height="0" :wrap="false" />
                 <div class="border-t border-line px-4 py-2 text-xs" :class="parsed.ok ? 'text-success' : 'text-muted'">
                     <template v-if="parsed.ok">Valid JSON · {{ currentOutput.length }} characters</template>
                     <template v-else-if="parsed.error">Invalid JSON</template>
