@@ -2,12 +2,26 @@
 import { computed, onBeforeUnmount, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStorage } from "@vueuse/core";
-import { CircleCheck, CircleDashed, CircleHelp, CircleX, ExternalLink, Loader2, RotateCw, Search, Square, X } from "lucide-vue-next";
+import { ChevronDown, ChevronRight, CircleCheck, CircleDashed, CircleHelp, CircleX, ExternalLink, Loader2, RotateCw, Search, Square, X } from "lucide-vue-next";
 import { Btn, CopyButton, Field, Notice, Panel, ToolPage } from "@/components/ui";
 import { sendToTool, useHandoff } from "@/composables/handoff";
 import { checkDomain, generate, REGISTRARS, toLabel, type Candidate, type CheckResult, type RegistrarId, type Status } from "./domainCheck";
 
 const POPULAR = ["com", "net", "org", "io", "co", "ai", "dev", "app", "xyz", "me", "tech", "info", "sh", "so", "gg", "to"];
+const TLD_GROUPS: { name: string; tlds: string[] }[] = [
+    { name: "Generic", tlds: ["biz", "online", "site", "website", "space", "live", "world", "one", "pro", "today", "life", "zone", "plus", "top", "fun", "click", "link", "page", "icu", "vip", "wiki"] },
+    { name: "Tech & startups", tlds: ["cloud", "digital", "software", "systems", "tools", "codes", "build", "computer", "network", "host", "hosting", "data", "email", "run", "lol", "inc", "ventures", "engineer", "technology", "solutions", "app", "dev", "page"] },
+    { name: "Business & finance", tlds: ["company", "agency", "business", "consulting", "services", "group", "partners", "global", "international", "finance", "capital", "fund", "money", "cash", "legal", "law", "tax", "market", "marketing", "management", "llc", "ltd", "biz"] },
+    { name: "Shopping", tlds: ["shop", "store", "buy", "sale", "deals", "market", "boutique", "fashion", "clothing", "shoes", "jewelry", "gifts", "toys", "furniture", "auto", "car", "cars", "luxury"] },
+    { name: "Creative & media", tlds: ["design", "studio", "art", "gallery", "photo", "photography", "pics", "media", "video", "film", "tv", "fm", "audio", "music", "band", "blog", "news", "press", "ink", "graphics", "ninja", "rocks", "cool", "wtf"] },
+    { name: "Food & lifestyle", tlds: ["kitchen", "recipes", "food", "cafe", "coffee", "restaurant", "pizza", "bar", "pub", "wine", "beer", "menu", "health", "fit", "fitness", "yoga", "care", "clinic", "dental", "beauty", "salon", "style", "pet", "dog", "garden", "house", "home", "homes", "family", "baby", "love", "dating"] },
+    { name: "Education & community", tlds: ["academy", "education", "school", "college", "university", "courses", "training", "institute", "community", "club", "team", "foundation", "charity", "church", "events", "social", "chat", "forum", "help", "guide", "how"] },
+    { name: "Travel & places", tlds: ["travel", "tours", "holiday", "vacations", "flights", "hotel", "city", "town", "land", "earth", "place", "london", "berlin", "paris", "tokyo", "africa", "asia"] },
+    { name: "Gaming & fun", tlds: ["games", "game", "gg", "play", "fan", "fans", "party", "bet", "poker", "casino", "racing", "football", "soccer", "golf", "surf", "tennis"] },
+    { name: "Country codes", tlds: ["uk", "de", "fr", "nl", "es", "it", "ch", "se", "no", "dk", "fi", "pl", "be", "at", "ie", "pt", "cz", "in", "sg", "jp", "kr", "cn", "hk", "tw", "au", "nz", "mx", "cl", "ae", "tr", "ru", "id", "ph", "my", "vn"] },
+    { name: "Short & hacky ccTLDs", tlds: ["ly", "cc", "tv", "ws", "fm", "am", "is", "it", "im", "la", "vc", "ac", "re", "pw", "st", "lu", "li", "nu", "mx", "ms", "md", "rs", "gl", "bz", "ag", "sc", "mu", "vg", "cx", "nf"] },
+];
+const ALL_GROUPED = [...new Set(TLD_GROUPS.flatMap((g) => g.tlds))];
 const PREFIXES = ["get", "try", "use", "my", "the", "go", "hey", "join"];
 const SUFFIXES = ["app", "hq", "hub", "labs", "ly", "ify", "now", "io", "co", "studio"];
 
@@ -26,7 +40,20 @@ const running = ref(false);
 const newTld = ref("");
 let ctrl: AbortController | null = null;
 
-const allTlds = computed(() => [...POPULAR, ...s.value.custom.filter((t) => !POPULAR.includes(t))]);
+const allTlds = computed(() => [...new Set([...POPULAR, ...ALL_GROUPED, ...s.value.custom])]);
+/** The chip row: popular TLDs, then anything else that is selected or custom, so picks from "More" stay visible. */
+const shownTlds = computed(() => [...new Set([...POPULAR, ...s.value.tlds, ...s.value.custom])]);
+const showMore = ref(false);
+const tldFilter = ref("");
+const moreCount = computed(() => ALL_GROUPED.filter((t) => !POPULAR.includes(t)).length);
+const filteredGroups = computed(() => {
+    const q = tldFilter.value.trim().toLowerCase().replace(/^\./, "");
+    return TLD_GROUPS.map((g) => ({ name: g.name, tlds: q ? g.tlds.filter((t) => t.includes(q)) : g.tlds })).filter((g) => g.tlds.length);
+});
+function toggleGroup(tlds: string[]) {
+    const all = tlds.every((t) => s.value.tlds.includes(t));
+    s.value.tlds = all ? s.value.tlds.filter((t) => !tlds.includes(t)) : [...new Set([...s.value.tlds, ...tlds])];
+}
 function toggle(list: string[], v: string) {
     const i = list.indexOf(v);
     if (i >= 0) list.splice(i, 1);
@@ -153,10 +180,16 @@ function fmtDate(d?: string) {
                 <p class="-mt-2 text-xs text-muted">Separate several names with commas or new lines. Spaces join words. A name with a TLD (acme.io) is checked exactly, then on the TLDs below.</p>
 
                 <div>
-                    <span class="label">TLDs</span>
+                    <div class="mb-1.5 flex flex-wrap items-baseline justify-between gap-2">
+                        <span class="label mb-0!">TLDs <span class="font-normal text-muted">({{ s.tlds.length }} selected)</span></span>
+                        <span class="flex gap-3 text-xs">
+                            <button type="button" class="text-fg-subtle hover:text-fg" @click="s.tlds = [...POPULAR.slice(0, 8)]">Reset</button>
+                            <button type="button" class="text-fg-subtle hover:text-fg" :disabled="!s.tlds.length" @click="s.tlds = []">Clear</button>
+                        </span>
+                    </div>
                     <div class="flex flex-wrap items-center gap-1.5">
                         <button
-                            v-for="t in allTlds"
+                            v-for="t in shownTlds"
                             :key="t"
                             type="button"
                             class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-mono text-xs ring-1 transition-colors"
@@ -168,6 +201,30 @@ function fmtDate(d?: string) {
                             <X v-if="s.custom.includes(t)" class="size-3 opacity-70 hover:opacity-100" :aria-label="`Remove .${t}`" @click.stop="removeCustom(t)" />
                         </button>
                         <input v-model="newTld" class="input h-7 w-28! px-2! py-0! font-mono text-xs!" placeholder="+ add TLD" aria-label="Add a TLD" @keydown.enter.prevent="addTld" @blur="addTld" />
+                    </div>
+                    <button type="button" class="mt-2 inline-flex items-center gap-1 text-xs font-medium text-fg-subtle hover:text-fg" :aria-expanded="showMore" @click="showMore = !showMore">
+                        <component :is="showMore ? ChevronDown : ChevronRight" class="size-3.5" />{{ showMore ? "Fewer TLDs" : `More TLDs (${moreCount})` }}
+                    </button>
+                    <div v-if="showMore" class="mt-2 flex flex-col gap-3 rounded-lg bg-subtle/60 p-3 ring-1 ring-line">
+                        <input v-model="tldFilter" class="input h-8! py-0! text-xs!" placeholder="Filter TLDs…" aria-label="Filter TLDs" spellcheck="false" />
+                        <div v-for="g in filteredGroups" :key="g.name">
+                            <span class="mb-1.5 flex items-center justify-between text-xs font-medium text-fg-subtle">
+                                {{ g.name }}
+                                <button type="button" class="font-normal hover:text-fg" @click="toggleGroup(g.tlds)">{{ g.tlds.every((t) => s.tlds.includes(t)) ? "Deselect all" : "Select all" }}</button>
+                            </span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button
+                                    v-for="t in g.tlds"
+                                    :key="t"
+                                    type="button"
+                                    class="rounded-full px-2.5 py-1 font-mono text-xs ring-1 transition-colors"
+                                    :class="s.tlds.includes(t) ? 'bg-inverse text-inverse-fg ring-transparent' : 'bg-surface text-fg-subtle ring-line hover:text-fg'"
+                                    :aria-pressed="s.tlds.includes(t)"
+                                    @click="toggle(s.tlds, t)"
+                                >.{{ t }}</button>
+                            </div>
+                        </div>
+                        <p v-if="!filteredGroups.length" class="text-xs text-muted">No match. Type it in "+ add TLD" to use any TLD.</p>
                     </div>
                 </div>
 
