@@ -16,6 +16,8 @@ export interface ActionResult {
     error?: boolean;
     /** Input for the tool page (see composables/handoff.ts). */
     handoff?: Record<string, unknown>;
+    /** The user asked to open the tool ("open the JSON formatter"), so open it whatever the setting. */
+    open?: boolean;
 }
 
 export type Action = (text: string, lower: string) => ActionResult | null | Promise<ActionResult | null>;
@@ -247,7 +249,7 @@ const actions: Action[] = [
         const m = text.match(/^(?:please\s+)?(?:open|go to|show me|launch|start|run|use)\s+(?:the\s+)?(.+?)(?:\s+tool)?[.!]?$/i);
         if (!m) return null;
         const tool = rankTools(m[1], 1)[0];
-        return tool ? { toolId: tool.id, summary: `Opened ${tool.name}.` } : null;
+        return tool ? { toolId: tool.id, summary: `Opened ${tool.name}.`, open: true } : null;
     },
 ];
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import {
     ArrowUp,
@@ -16,8 +16,10 @@ import { actionExamples, runAction } from "@/chat/actions";
 import { sendToTool } from "@/composables/handoff";
 import CopyButton from "@/components/ui/CopyButton.vue";
 import { ask, engineStatus, stop } from "@/chat/engine";
+import { recents } from "@/composables/prefs";
 import {
     activeSession,
+    chatSettings,
     ensureSession,
     newChat,
     updateSession,
@@ -26,6 +28,8 @@ import {
 import { toolById } from "@/tools/registry";
 
 const emit = defineEmits<{ settings: []; consent: []; openTool: [] }>();
+/** Recently used tools, offered as one-tap chips in the empty chat. */
+const recentTools = computed(() => recents.value.slice(0, 4));
 const router = useRouter();
 const input = ref("");
 const listEl = ref<HTMLElement>();
@@ -53,9 +57,14 @@ function patchMessage(
     }));
 }
 
+/** "Opened X." reads as "Open X." when the tool page stays closed and the card below opens it. */
+const unopened = (summary: string) => summary.replace(/^Opened\b/, "Open");
+
 async function runCommand(text: string) {
     const action = await runAction(text);
     if (!action) return false;
+    const willOpen = !!action.open || !!chatSettings.value.openToolOnRun;
+    const summary = willOpen ? action.summary : unopened(action.summary);
     const session = ensureSession();
     updateSession(session.id, (current) => ({
         ...current,
@@ -64,12 +73,15 @@ async function runCommand(text: string) {
         messages: [
             ...current.messages,
             { id: crypto.randomUUID(), role: "user", content: text },
-            { id: crypto.randomUUID(), role: "assistant", content: action.summary, action },
+            { id: crypto.randomUUID(), role: "assistant", content: summary, action },
         ],
     }));
     input.value = "";
-    if (action.handoff) sendToTool(action.toolId, action.handoff);
-    openTool(action.toolId);
+    if (willOpen) {
+        if (action.handoff) sendToTool(action.toolId, action.handoff);
+        openTool(action.toolId);
+        emit("openTool");
+    }
     return true;
 }
 
@@ -162,6 +174,15 @@ function pickTool(id: string) {
     emit("openTool");
 }
 
+/** ↑ in an empty box brings back the last message, to tweak and resend. */
+function recallLast(event: KeyboardEvent) {
+    if (input.value) return;
+    const last = activeSession.value?.messages.findLast((m) => m.role === "user");
+    if (!last) return;
+    event.preventDefault();
+    input.value = last.content;
+}
+
 function startNewChat() {
     newChat();
 }
@@ -196,6 +217,22 @@ function startNewChat() {
                     >
                         {{ example }}
                     </button>
+                </div>
+                <div v-if="recentTools.length" class="mt-5 w-full max-w-[300px]">
+                    <p class="mb-1.5 text-[10px] font-semibold tracking-wide text-fg-subtle uppercase">
+                        Recently used
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-1.5">
+                        <button
+                            v-for="tool in recentTools"
+                            :key="tool.id"
+                            type="button"
+                            class="flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs text-fg-subtle transition-colors hover:border-accent hover:text-fg"
+                            @click="pickTool(tool.id)"
+                        >
+                            <component :is="tool.icon" class="size-3.5" />{{ tool.name }}
+                        </button>
+                    </div>
                 </div>
             </div>
             <template
@@ -260,7 +297,7 @@ function startNewChat() {
                             class="size-3.5 shrink-0"
                         />
                         <span class="flex-1 truncate"
-                            >{{ toolById.get(message.action.toolId)?.name }}</span
+                            >Open in {{ toolById.get(message.action.toolId)?.name }}</span
                         >
                         <ExternalLink class="size-3.5 shrink-0 group-hover:text-accent" />
                     </button>
@@ -310,10 +347,11 @@ function startNewChat() {
                 <textarea
                     v-model="input"
                     rows="1"
-                    class="max-h-24 min-h-9 flex-1 resize-none bg-transparent px-2 py-1.5 text-base text-fg sm:text-sm outline-none placeholder:text-fg-subtle"
+                    class="field-sizing-content max-h-24 min-h-9 flex-1 resize-none bg-transparent px-2 py-1.5 text-base text-fg sm:text-sm outline-none placeholder:text-fg-subtle"
                     placeholder="Ask, or say “base64 encode hello”…"
                     aria-label="Describe what you need"
                     @keydown.enter.exact.prevent="send()"
+                    @keydown.up="recallLast"
                 />
                 <button
                     v-if="busy"

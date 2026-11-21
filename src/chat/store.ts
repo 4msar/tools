@@ -32,6 +32,8 @@ interface ChatSettings {
     consented: boolean;
     /** Chose to use search and commands without downloading the model. */
     skipModel?: boolean;
+    /** Jump to the tool's page after running a command from the chat. Off: results stay in the chat. */
+    openToolOnRun?: boolean;
 }
 
 const newSession = (): ChatSession => ({
@@ -49,6 +51,7 @@ export const chatSettings = useStorage<ChatSettings>("devtools:chat:settings", {
     autoLoad: false,
     remember: true,
     consented: false,
+    openToolOnRun: false,
 });
 const memorySessions = ref<SessionState>({ activeId: "", sessions: [] });
 

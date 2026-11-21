@@ -112,6 +112,18 @@ void isCached(chatSettings.value.modelId);
                     v-model="chatSettings.remember"
                     type="checkbox"
                     class="checkbox"
+            /></label
+            ><label class="flex items-center justify-between gap-4"
+                ><span
+                    ><span class="block text-sm font-medium text-fg"
+                        >Open the tool page after a command</span
+                    ><span class="block text-xs text-fg-subtle"
+                        >Off: results stay in the chat, with a link to the tool.</span
+                    ></span
+                ><input
+                    v-model="chatSettings.openToolOnRun"
+                    type="checkbox"
+                    class="checkbox"
             /></label>
         </div>
         <div
