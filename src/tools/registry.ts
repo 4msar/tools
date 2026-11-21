@@ -10,7 +10,7 @@ import {
     LockKeyhole, MessageSquareText, MonitorSmartphone, PenTool, Pipette, Route, Scissors, Send, Shield, Smartphone, Spline,
     ServerCog, Squircle, SwatchBook, UserCheck, AlarmClock, Coffee, ListTodo, Zap, MessagesSquare,
     CreditCard, Scale, CodeXml, FileLock, Radar, GlobeLock, Keyboard, AudioWaveform, FlaskConical, FerrisWheel, Hourglass,
-    SearchCode, BotOff, Earth, Workflow, Presentation, ImagePlay,
+    SearchCode, BotOff, Earth, Workflow, Presentation, ImagePlay, SearchCheck,
 } from "lucide-vue-next";
 
 export type CategoryId =
@@ -160,6 +160,7 @@ export const tools: ToolDef[] = [
     { id: "server-block-generator", name: "Server Block Generator", category: "network", icon: ServerCog, keywords: ["nginx", "apache", "caddy", "vhost", "virtual host", "server block", "reverse proxy", "caddyfile", "ssl", "config"], description: "Generate Nginx server blocks, Apache virtual hosts and Caddyfiles for static sites, PHP apps and reverse proxies.", component: () => import("./network/ServerBlockGenerator.vue") },
     { id: "whois-lookup", name: "WHOIS Lookup", category: "network", icon: GlobeLock, keywords: ["whois", "rdap", "domain", "registrar", "expiry", "ip", "asn", "nameservers"], isNew: true, description: "Look up a domain, IP or ASN via RDAP: registrar, dates, status and nameservers.", component: () => import("./network/WhoisLookup.vue") },
     { id: "subdomain-explorer", name: "Subdomain Explorer", category: "network", icon: Radar, keywords: ["subdomain", "enumeration", "certificate transparency", "crt.sh", "recon", "dns"], isNew: true, description: "Find a domain's subdomains from Certificate Transparency logs and check which resolve.", component: () => import("./network/SubdomainExplorer.vue") },
+    { id: "domain-finder", name: "Domain Name Finder", category: "network", icon: SearchCheck, keywords: ["domain", "domain name", "availability", "available", "register", "registrar", "tld", "name ideas", "brand", "whois", "rdap"], isNew: true, description: "Find a domain name: check availability across TLDs, get prefix and suffix ideas, and see who holds taken names.", component: () => import("./network/DomainFinder.vue") },
     { id: "dns-lookup", name: "DNS Lookup", category: "network", icon: SearchCode, keywords: ["dns", "nslookup", "dig", "mx", "txt", "spf", "dmarc", "ptr", "reverse dns", "doh"], isNew: true, description: "Query A, MX, TXT, NS and other DNS records over HTTPS, with reverse lookup and SPF/DMARC checks.", component: () => import("./network/DnsLookup.vue") },
 
     // AI

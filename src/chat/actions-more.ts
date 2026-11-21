@@ -715,6 +715,7 @@ export const lateActions: Action[] = [
     (text, l) => {
         const handoffOnly: [RegExp, string, string][] = [
             [/\b(code (?:to|as|into) (?:an? )?(?:image|picture|png)|code (?:screenshot|snapshot)|screenshot (?:of )?(?:my |this )?code|carbon)\b/, "code-to-image", "Opened your code in Code to Image."],
+            [/\b(domain (?:name )?(?:finder|ideas?|availability|suggestions?)|(?:is|check if) .+\.[a-z]{2,} (?:available|taken|free)|find (?:me )?an? domain)\b/, "domain-finder", "Checking domain availability in Domain Name Finder."],
             [/^\s*curl\s/i, "curl-to-code", "Opened your cURL command. Pick a target language there."],
             [/\bdocker run\b/, "docker-run-to-compose", "Opened your docker run command as a Compose file."],
             [/\b(html|markup)\b.*\bjsx\b|\bjsx\b.*\bhtml\b/, "html-to-jsx", "Opened your HTML in HTML to JSX."],
@@ -742,6 +743,7 @@ export const lateActions: Action[] = [
             if (toolId === "svg-tools" && !input && /^\s*<svg/i.test(text)) input = text.trim();
             if (toolId === "html-preview" && !input && /^\s*<!doctype/i.test(text)) input = text.trim();
             if (toolId === "qr-code-generator" && !input) input = text.replace(/^.*?\bqr(?: ?code)?\b\s*(?:for|of|with|to)?\s*/i, "").trim();
+            if (toolId === "domain-finder" && !input) input = text.match(/\b[a-z0-9][a-z0-9-]*\.[a-z]{2,}\b/gi)?.join(", ") ?? "";
             if (toolId === "ascii-art" && !input) input = text.replace(/^.*?\b(?:ascii art|figlet|banner)\b\s*(?:for|of|with)?\s*/i, "").trim();
             return r(toolId, input ? summary : `Opened ${toolId.replace(/-/g, " ")}.`, input ? { handoff: { input } } : {});
         }

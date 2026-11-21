@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, ref } from "vue";
 import { useStorage } from "@vueuse/core";
 import { Search, ChevronDown, ChevronRight } from "lucide-vue-next";
 import { Btn, CodeArea, CopyButton, Notice, Panel, ToolPage } from "@/components/ui";
+import { useHandoff } from "@/composables/handoff";
 
 type Kind = "domain" | "ip" | "asn";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,6 +64,12 @@ async function lookup() {
 }
 
 onBeforeUnmount(() => ctrl?.abort());
+
+useHandoff<{ input?: string }>("whois-lookup", (p) => {
+    if (!p.input) return;
+    query.value = p.input;
+    lookup();
+});
 
 function vcardField(entity: Json, field: string): string {
     const arr = entity?.vcardArray?.[1];
