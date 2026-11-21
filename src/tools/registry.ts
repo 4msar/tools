@@ -10,7 +10,7 @@ import {
     LockKeyhole, MessageSquareText, MonitorSmartphone, PenTool, Pipette, Route, Scissors, Send, Shield, Smartphone, Spline,
     ServerCog, Squircle, SwatchBook, UserCheck, AlarmClock, Coffee, ListTodo, Zap, MessagesSquare,
     CreditCard, Scale, CodeXml, FileLock, Radar, GlobeLock, Keyboard, AudioWaveform, FlaskConical, FerrisWheel, Hourglass,
-    SearchCode, BotOff, Earth, Workflow, Presentation,
+    SearchCode, BotOff, Earth, Workflow, Presentation, ImagePlay,
 } from "lucide-vue-next";
 
 export type CategoryId =
@@ -69,6 +69,7 @@ export const tools: ToolDef[] = [
     { id: "html-preview", name: "HTML Preview", category: "development", icon: Eye, keywords: ["render", "sandbox", "iframe"], description: "Render HTML in a sandboxed frame that cannot reach the network.", component: () => import("./development/HtmlPreview.vue") },
     { id: "code-playground", name: "Code Playground", category: "development", icon: Play, keywords: ["javascript", "html", "css", "sandbox", "fiddle"], description: "Experiment with HTML, CSS and JavaScript with a live preview and console.", component: () => import("./development/CodePlayground.vue") },
     { id: "code-formatter", name: "Code Formatter", category: "development", icon: Wand2, keywords: ["prettier", "beautify", "sql", "css", "html", "javascript", "minify"], description: "Beautify HTML, CSS, JavaScript, TypeScript, Markdown, YAML and SQL.", component: () => import("./development/CodeFormatter.vue") },
+    { id: "code-to-image", name: "Code to Image", category: "development", icon: ImagePlay, keywords: ["carbon", "code screenshot", "snippet", "share code", "code image", "png", "svg", "syntax highlight", "pretty code"], isNew: true, description: "Turn a code snippet into a polished image with themes, backgrounds and window chrome, then export PNG or SVG.", component: () => import("./development/CodeToImage.vue") },
     { id: "semver-calculator", name: "Semver Calculator", category: "development", icon: Tag, keywords: ["version", "range", "npm", "semantic"], description: "Check versions against npm ranges, compare versions and bump them.", component: () => import("./development/SemverCalculator.vue") },
     { id: "xml-inspector", name: "XML Inspector", category: "development", icon: FileCode2, keywords: ["xml", "xpath", "format", "minify", "validate", "xml to json", "json to xml"], description: "Format, minify and validate XML, convert XML to and from JSON, and query with XPath.", component: () => import("./development/XmlInspector.vue") },
     { id: "json-path", name: "JSONPath Evaluator", category: "development", icon: Route, keywords: ["jsonpath", "query", "json", "filter", "jq"], description: "Query JSON with JSONPath expressions and see matching values and paths live.", component: () => import("./development/JsonPath.vue") },

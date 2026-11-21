@@ -714,6 +714,7 @@ export const lateActions: Action[] = [
     // Hand-off only: tools that do their work on the page
     (text, l) => {
         const handoffOnly: [RegExp, string, string][] = [
+            [/\b(code (?:to|as|into) (?:an? )?(?:image|picture|png)|code (?:screenshot|snapshot)|screenshot (?:of )?(?:my |this )?code|carbon)\b/, "code-to-image", "Opened your code in Code to Image."],
             [/^\s*curl\s/i, "curl-to-code", "Opened your cURL command. Pick a target language there."],
             [/\bdocker run\b/, "docker-run-to-compose", "Opened your docker run command as a Compose file."],
             [/\b(html|markup)\b.*\bjsx\b|\bjsx\b.*\bhtml\b/, "html-to-jsx", "Opened your HTML in HTML to JSX."],
