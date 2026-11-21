@@ -1,4 +1,16 @@
 #!/bin/sh
 # Bump the patch version on every commit and include it in the same commit.
-[ "$SKIP_BUMP" = "1" ] && exit 0
+# Skip it with any of:
+#   SKIP_BUMP=1 git commit ...          (one commit; the variable must be on the same line or exported)
+#   npm run bump:skip                    (next commit only; works from IDE/GUI commits too)
+#   git config bump.skip true            (until you run: git config --unset bump.skip)
+#   git -c bump.skip=true commit ...     (one commit)
+marker="$(git rev-parse --git-path skip-bump)"
+if [ -f "$marker" ]; then
+    rm -f "$marker"
+    echo "version bump skipped (one-shot)"
+    exit 0
+fi
+case "$SKIP_BUMP" in 1|true|yes) echo "version bump skipped (SKIP_BUMP)"; exit 0 ;; esac
+[ "$(git config --bool bump.skip 2>/dev/null)" = "true" ] && { echo "version bump skipped (bump.skip)"; exit 0; }
 node scripts/bump-version.mjs && git add package.json

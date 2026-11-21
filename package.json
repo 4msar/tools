@@ -11,7 +11,8 @@
     "generate:assets": "node scripts/generate-assets.mjs",
     "postinstall": "git config core.hooksPath .githooks || true",
     "version:minor": "node scripts/bump-version.mjs minor",
-    "version:major": "node scripts/bump-version.mjs major"
+    "version:major": "node scripts/bump-version.mjs major",
+    "bump:skip": "touch \"$(git rev-parse --git-path skip-bump)\" && echo 'Next commit will not bump the version.'"
   },
   "dependencies": {
     "@abraham/reflection": "^0.14.0",

@@ -3,7 +3,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-if (process.env.SKIP_BUMP === "1") process.exit(0);
+if (["1", "true", "yes"].includes(process.env.SKIP_BUMP ?? "")) process.exit(0);
 
 const part = process.argv[2] ?? "patch";
 if (!["major", "minor", "patch"].includes(part)) {
