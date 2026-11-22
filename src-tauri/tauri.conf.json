@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.tauri.app/config/2",
+    "productName": "DevTools",
+    "version": "../package.json",
+    "identifier": "dev.msar.devtools",
+    "build": {
+        "beforeDevCommand": "yarn dev --port 1420 --strictPort",
+        "devUrl": "http://localhost:1420",
+        "beforeBuildCommand": "yarn build",
+        "frontendDist": "../dist"
+    },
+    "app": {
+        "withGlobalTauri": false,
+        "windows": [
+            {
+                "label": "main",
+                "title": "DevTools",
+                "width": 1280,
+                "height": 820,
+                "minWidth": 420,
+                "minHeight": 520,
+                "center": true,
+                "visible": false,
+                "create": false,
+                "dragDropEnabled": false
+            }
+        ],
+        "security": {
+            "csp": null
+        }
+    },
+    "bundle": {
+        "active": true,
+        "targets": "all",
+        "category": "DeveloperTool",
+        "shortDescription": "Developer tools that run entirely on your machine",
+        "icon": [
+            "icons/32x32.png",
+            "icons/128x128.png",
+            "icons/128x128@2x.png",
+            "icons/icon.icns",
+            "icons/icon.ico"
+        ],
+        "macOS": {
+            "minimumSystemVersion": "11.0"
+        }
+    }
+}

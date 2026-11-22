@@ -12,6 +12,8 @@ const pkg = JSON.parse(
 ) as { version: string };
 
 const BUILD_DATE = new Date().toISOString();
+// Set by the Tauri CLI when it runs the dev/build commands for the desktop app.
+const isTauri = !!process.env.TAURI_ENV_PLATFORM;
 
 // Emits /version.json so open tabs can detect a new deploy (see src/composables/pwa.ts).
 const versionFile = (): Plugin => ({
@@ -41,6 +43,8 @@ export default defineConfig({
             ),
         }),
         VitePWA({
+            // The desktop app loads from disk; a service worker would only get in the way.
+            disable: isTauri,
             registerType: "prompt",
             includeAssets: [
                 "favicon.svg",
@@ -162,7 +166,10 @@ export default defineConfig({
     },
     server: {
         allowedHosts: ["app.msar.dev"],
+        watch: { ignored: ["**/src-tauri/**"] },
     },
+    // Keep Rust compile errors visible when running under the Tauri CLI.
+    clearScreen: !isTauri,
     // Large chunks (tokenizer, prettier parsers) are lazy-loaded per tool.
     build: { chunkSizeWarningLimit: 2500 },
     worker: { format: "es" },

@@ -11,6 +11,7 @@ import {
     Moon,
     PanelLeftClose,
     PanelLeftOpen,
+    Settings,
     Search,
     Star,
     Sun,
@@ -34,6 +35,12 @@ import {
 import { applyPageMeta, type PageMeta } from "@/composables/seo";
 import { canInstall, installApp } from "@/composables/pwa";
 import {
+    desktopSettingsOpen,
+    hideWindow,
+    isDesktopApp,
+    setupDesktop,
+} from "@/composables/desktop";
+import {
     closeTabAndNavigate,
     keepAliveInclude,
     neighbourTab,
@@ -43,6 +50,9 @@ import {
 
 const ChatWidget = defineAsyncComponent(
     () => import("@/components/chat/ChatWidget.vue"),
+);
+const DesktopSettings = defineAsyncComponent(
+    () => import("@/components/DesktopSettings.vue"),
 );
 
 const route = useRoute();
@@ -96,6 +106,23 @@ onKeyStroke("Escape", (e) => {
     if (!isCompact.value || e.defaultPrevented || drawerOpen.value || paletteOpen.value) return;
     compactMode.value = false;
 });
+
+// Desktop app: the global launcher shortcut opens the tool search, Spotlight-style.
+// Dismissing the search it opened (Esc / click outside) hides the window again.
+let openedByLauncher = false;
+setupDesktop({
+    router,
+    onQuickOpen: () => {
+        openedByLauncher = true;
+        paletteOpen.value = true;
+    },
+});
+watch(paletteOpen, (v) => {
+    if (!v) setTimeout(() => (openedByLauncher = false));
+});
+function onPaletteDismiss() {
+    if (isDesktopApp && openedByLauncher) hideWindow();
+}
 
 // Tab shortcuts. Alt+W closes; Alt+Shift+←/→ switches. Uses e.code so macOS Option characters don't interfere.
 onKeyStroke((e) => {
@@ -313,7 +340,18 @@ onKeyStroke((e) => {
                             >
                         </motion.button>
                         <motion.button
-                            v-if="canInstall"
+                            v-if="isDesktopApp"
+                            type="button"
+                            v-bind="pressable"
+                            class="flex size-10 cursor-pointer items-center justify-center rounded-full text-fg-subtle transition-colors hover:bg-subtle hover:text-accent"
+                            title="Desktop settings"
+                            aria-label="Desktop settings"
+                            @click="desktopSettingsOpen = true"
+                        >
+                            <Settings class="size-4" stroke-width="1.75" />
+                        </motion.button>
+                        <motion.button
+                            v-if="canInstall && !isDesktopApp"
                             type="button"
                             v-bind="pressable"
                             class="flex h-10 cursor-pointer items-center gap-1.5 rounded-full px-3 text-sm font-medium text-fg-subtle transition-colors hover:bg-subtle hover:text-accent"
@@ -425,7 +463,8 @@ onKeyStroke((e) => {
             </motion.main>
         </motion.div>
 
-        <CommandPalette v-model:open="paletteOpen" />
+        <CommandPalette v-model:open="paletteOpen" @dismiss="onPaletteDismiss" />
+        <DesktopSettings v-if="isDesktopApp" />
         <ChatWidget />
         <Toaster
             position="bottom-right"

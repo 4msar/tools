@@ -212,6 +212,24 @@ yarn build
 
 Vue 3 · TypeScript · Vite 8 · Vue Router 5 · Tailwind CSS 4 · VueUse · Lucide icons
 
+## Desktop app
+
+The same app ships as a native desktop app built with [Tauri](https://tauri.app) (`src-tauri/`).
+
+- **Menubar item** — open the app, search tools, jump to recent tools, toggle launch at login, quit.
+- **Launcher shortcut** — `⌥⇧Space` (Alt+Shift+Space) opens tool search from anywhere, Spotlight-style; press it again or hit Esc to hide. Change or turn it off in Desktop settings (gear icon in the header, or *Settings…* in the menubar).
+- **Launch at login**, **keep running when closed**, and **hide Dock icon** (macOS) options.
+- Exported files are saved to your Downloads folder; external links open in your browser.
+
+Requires Rust (stable) plus the [Tauri prerequisites](https://tauri.app/start/prerequisites/).
+
+```bash
+yarn desktop:dev     # run the desktop app with hot reload
+yarn desktop:build   # build installers into src-tauri/target/release/bundle
+```
+
+**Releases** — `.github/workflows/desktop.yml` builds macOS (Apple Silicon + Intel), Windows and Linux. Pull requests that touch the desktop code get a build check. Push a tag like `desktop-v1.0.8` (or run the workflow manually) to attach installers to a draft GitHub Release. Add the `APPLE_*` repository secrets to sign and notarize macOS builds.
+
 ## Deployment
 
 Pushes to `main` build and deploy to GitHub Pages through GitHub Actions (`.github/workflows/deploy.yml`). Every tool has its own HTML file, so deep links return 200. Unknown paths get the `noindex` 404 page, which boots the app and redirects home.

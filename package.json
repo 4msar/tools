@@ -1,13 +1,16 @@
 {
   "name": "tool",
   "private": true,
-  "version": "1.0.8",
+  "version": "1.0.9",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
+    "tauri": "tauri",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build",
     "generate:assets": "node scripts/generate-assets.mjs",
     "postinstall": "git config core.hooksPath .githooks || true",
     "version:minor": "node scripts/bump-version.mjs minor",
@@ -22,6 +25,7 @@
     "@peculiar/asn1-schema": "^3.0.0",
     "@peculiar/x509": "^3.1.0",
     "@tailwindcss/vite": "^4.3.5",
+    "@tauri-apps/api": "^2.12.5",
     "@vueuse/core": "^15.0.0",
     "ajv": "^8.20.0",
     "asn1js": "^4.0.0",
@@ -64,6 +68,7 @@
     "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.12.6",
     "@types/figlet": "^1.12.0",
     "@types/node": "^26.6.6",
     "@types/pako": "^3.0.0",

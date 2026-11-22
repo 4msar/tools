@@ -7,6 +7,13 @@ import { categoryById, searchTools } from "@/tools/registry";
 import { recents } from "@/composables/prefs";
 
 const open = defineModel<boolean>("open", { default: false });
+/** Closed without picking a tool (Esc or click outside). */
+const emit = defineEmits<{ dismiss: [] }>();
+
+function dismiss() {
+    open.value = false;
+    emit("dismiss");
+}
 const router = useRouter();
 const query = ref("");
 const active = ref(0);
@@ -60,7 +67,7 @@ function onKey(e: KeyboardEvent) {
         const t = results.value[active.value];
         if (t) go(t.id);
     } else if (e.key === "Escape") {
-        open.value = false;
+        dismiss();
         return;
     } else return;
     nextTick(() => listEl.value?.querySelector(`[data-idx="${active.value}"]`)?.scrollIntoView({ block: "nearest" }));
@@ -75,7 +82,7 @@ function onKey(e: KeyboardEvent) {
             leave-active-class="transition duration-100 ease-in"
             leave-to-class="opacity-0"
         >
-            <div v-if="open" class="fixed inset-0 z-50 flex items-start justify-center bg-inverse/25 p-4 pt-[12vh] backdrop-blur-sm" @mousedown.self="open = false">
+            <div v-if="open" class="fixed inset-0 z-50 flex items-start justify-center bg-inverse/25 p-4 pt-[12vh] backdrop-blur-sm" @mousedown.self="dismiss">
                 <div class="w-full max-w-xl overflow-hidden rounded-2xl border border-line bg-surface shadow-float" role="dialog" aria-label="Search tools">
                     <div class="flex items-center gap-3 border-b border-line px-4">
                         <Search class="size-4 shrink-0 text-fg-subtle" stroke-width="1.75" />
