@@ -7,9 +7,9 @@
 cask "msar-devtools" do
   arch arm: "aarch64", intel: "x64"
 
-  version "1.0.10"
-  sha256 arm:   "a20878fa05f0cf519cc22df1dc4e72590741982f76f9d671dc267c745e53ef28",
-         intel: "57e3669c393fc5da03cb5a259ef83b76386d3ecf35801c6cb55a0b2e4a7c4dc9"
+  version "1.0.11"
+  sha256 arm:   "fcf3d3e1acdf6c8221d3a9811930cc8044c38db43af88dd85b188fa928c594cc",
+         intel: "7f06edc41b587f4be723fa75a601fa41bad8a9d8700a99dbc24537e8e4a36979"
 
   url "https://github.com/4msar/tools/releases/download/desktop-v#{version}/DevTools_#{version}_#{arch}.dmg"
   name "DevTools"
