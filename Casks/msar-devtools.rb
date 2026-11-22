@@ -28,6 +28,12 @@ cask "msar-devtools" do
 
   app "DevTools.app"
 
+  caveats <<~EOS
+    DevTools isn't notarized by Apple yet. The first time you open it, macOS says it
+    can't verify the app: click Done, then go to System Settings → Privacy & Security
+    and click "Open Anyway". You only need to do this once.
+  EOS
+
   zap trash: [
     "~/Library/Application Support/dev.msar.devtools",
     "~/Library/Caches/dev.msar.devtools",

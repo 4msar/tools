@@ -137,7 +137,7 @@ Then replace `pubkey` in `tauri.conf.json` with the contents of `~/.tauri/devtoo
 
 ### macOS signing and notarisation (optional)
 
-Without it, macOS asks users to confirm the first launch (right-click → Open, or System Settings → Privacy & Security → Open Anyway). To sign and notarise, add these secrets from an Apple Developer account:
+Without it, builds are **ad-hoc signed** (`"signingIdentity": "-"` in `tauri.conf.json`): free, no Apple account, and macOS lets users open the app after approving it once (System Settings → Privacy & Security → **Open Anyway**). Don't remove that setting: a completely unsigned app is reported as **"damaged"** on Apple Silicon, with no way to open it. When the `APPLE_*` secrets are set, the real Developer ID identity is used instead. To sign and notarise, add these secrets from an Apple Developer account:
 
 | Secret | What |
 | --- | --- |
@@ -239,7 +239,8 @@ Notes:
 | CI macOS: *failed to import the signing certificate* | An `APPLE_CERTIFICATE` secret exists but isn't a valid base64 `.p12`. Fix or delete it. (Unset Apple secrets are skipped.) |
 | CI: *Resource not accessible by integration* when creating the release | The workflow token can't create releases. Check Settings → Actions → General → Workflow permissions is *Read and write*, or create the draft yourself (`gh release create desktop-v<version> --draft --title "DevTools Desktop v<version>"`) and re-run; the workflow reuses an existing draft. |
 | *Signature verification failed* | The release was signed with a different key than the `pubkey` in the installed app. |
-| macOS: *"DevTools" can't be opened* | Unsigned build: right-click → Open, or sign and notarise (section 5). |
+| macOS: *"DevTools" can't be opened* / *Apple could not verify* | Not notarized: System Settings → Privacy & Security → Open Anyway (once). Sign and notarise to remove it (section 5). |
+| macOS: *"DevTools" is damaged and can't be opened* | The app bundle isn't signed at all. Check `bundle.macOS.signingIdentity` is `"-"` (or the Apple secrets are set) and rebuild. To open an already-installed copy: `xattr -dr com.apple.quarantine /Applications/DevTools.app`. |
 | Launcher shortcut doesn't register | Another app uses it. Pick a different one in Desktop settings. |
 | `brew install` installs a different "DevTools" (`DevToolsApp.app`, from `me-shaon/devtools`) | That's homebrew/cask's own `devtools`. Run `brew uninstall --cask devtools`, then install with the full name `4msar/tools/msar-devtools` after `brew trust`. |
 | *The following taps are not trusted* | Run `brew trust --cask 4msar/tools/msar-devtools`, then install again. |
