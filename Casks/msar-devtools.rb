@@ -24,7 +24,7 @@ cask "msar-devtools" do
 
   # The app updates itself (Settings → Updates), so brew upgrade leaves it alone unless --greedy.
   auto_updates true
-  depends_on macos: ">= :big_sur"
+  depends_on macos: :big_sur
 
   app "DevTools.app"
 
