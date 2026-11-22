@@ -16,7 +16,18 @@ export interface DesktopSettings {
     closeToTray: boolean;
     showInDock: boolean;
     autostart: boolean;
+    autoCheckUpdates: boolean;
+    autoInstallUpdates: boolean;
     platform: string;
+    version: string;
+}
+
+export interface UpdateInfo {
+    version: string;
+    currentVersion: string;
+    notes: string | null;
+    date: string | null;
+    ready: boolean;
 }
 
 export const DEFAULT_LAUNCHER_SHORTCUT = "Alt+Shift+Space";
@@ -34,6 +45,50 @@ export const setShowInDock = (enabled: boolean) => invoke<void>("set_show_in_doc
 export const setAutostart = (enabled: boolean) => invoke<void>("set_autostart", { enabled });
 export const hideWindow = () => invoke<void>("hide_window");
 export const openExternal = (url: string) => invoke<void>("open_external", { url });
+export const checkForUpdate = () => invoke<UpdateInfo | null>("check_for_update");
+export const restartApp = () => invoke<void>("restart_app");
+export const setUpdatePrefs = (autoCheck: boolean, autoInstall: boolean) =>
+    invoke<void>("set_update_prefs", { autoCheck, autoInstall });
+
+/** True while an update is downloading, so the UI can disable buttons. */
+export const updateInstalling = ref(false);
+/** The loading toast that shows download progress. */
+let progressToast: string | number | undefined;
+
+function promptRestart(version: string) {
+    toast.success(`DevTools v${version} is installed`, {
+        description: "Restart to start using it.",
+        duration: Infinity,
+        action: { label: "Restart", onClick: () => restartApp() },
+    });
+}
+
+/** Downloads and installs the update with a progress toast, then offers a restart. */
+export async function installUpdate() {
+    if (updateInstalling.value) return;
+    updateInstalling.value = true;
+    const id = (progressToast = toast.loading("Downloading update…"));
+    try {
+        const version = await invoke<string>("install_update");
+        toast.dismiss(id);
+        promptRestart(version);
+    } catch (err) {
+        toast.error("Update failed", { id, description: String(err) });
+    } finally {
+        updateInstalling.value = false;
+        progressToast = undefined;
+    }
+}
+
+/** Shows the "new version available" toast. */
+export function offerUpdate(info: UpdateInfo) {
+    if (info.ready) return promptRestart(info.version);
+    toast(`DevTools v${info.version} is available`, {
+        description: `You're on v${info.currentVersion}.`,
+        duration: Infinity,
+        action: { label: "Install & restart", onClick: () => installUpdate() },
+    });
+}
 
 const isMac = typeof navigator !== "undefined" && /Mac/.test(navigator.platform);
 
@@ -96,6 +151,21 @@ export async function setupDesktop({ router, onQuickOpen }: SetupOptions) {
         const name = e.payload.path?.split(/[\\/]/).pop();
         if (e.payload.success) toast.success(name ? `Saved ${name} to Downloads` : "Saved to Downloads");
         else toast.error("Download failed");
+    });
+
+    await listen<UpdateInfo>("desktop://update-available", (e) => offerUpdate(e.payload));
+    await listen<{ version: string }>("desktop://update-ready", (e) => promptRestart(e.payload.version));
+    await listen("desktop://update-none", () => toast.success("DevTools is up to date"));
+    await listen<string>("desktop://update-error", (e) =>
+        toast.error("Couldn't check for updates", { description: e.payload }),
+    );
+    await listen<{ downloaded: number; total: number | null }>("desktop://update-progress", (e) => {
+        const { downloaded, total } = e.payload;
+        const mb = (n: number) => (n / 1048576).toFixed(1);
+        const text = total
+            ? `Downloading update… ${Math.round((downloaded / total) * 100)}%`
+            : `Downloading update… ${mb(downloaded)} MB`;
+        if (progressToast !== undefined) toast.loading(text, { id: progressToast });
     });
 
     // Keep the menubar's "Recent Tools" in sync.

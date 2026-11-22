@@ -43,6 +43,18 @@
         ],
         "macOS": {
             "minimumSystemVersion": "11.0"
+        },
+        "createUpdaterArtifacts": true
+    },
+    "plugins": {
+        "updater": {
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDgxMUMxQkRFMEJDODYyQ0MKUldUTVlzZ0wzaHNjZ1YybnZMSkhlSmtWUnE3YXNIc3VMR1FOeVdtWDBJa0JJQ1BjRVNIc3BSMWoK",
+            "endpoints": [
+                "https://github.com/4msar/tools/releases/latest/download/latest.json"
+            ],
+            "windows": {
+                "installMode": "passive"
+            }
         }
     }
 }

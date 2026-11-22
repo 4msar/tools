@@ -2,7 +2,11 @@ name: Desktop app
 
 # Builds the Tauri desktop app.
 # - Pull requests / pushes touching the desktop code: build check on every OS (no release).
-# - Tag `desktop-v*` (e.g. desktop-v1.0.8) or manual run: build, then attach installers to a draft GitHub Release.
+# - Tag `desktop-v*` (e.g. desktop-v1.0.9) or manual run: build, then attach installers and the signed
+#   updater manifest (latest.json) to a draft GitHub Release. Publishing that release ships the update
+#   to existing installs and triggers homebrew.yml to update the cask.
+#
+# Required secrets for releases: TAURI_SIGNING_PRIVATE_KEY (and TAURI_SIGNING_PRIVATE_KEY_PASSWORD if set).
 
 on:
     push:
@@ -84,6 +88,9 @@ jobs:
               uses: tauri-apps/tauri-action@v0
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  # Signs the update bundles; the matching public key is in src-tauri/tauri.conf.json.
+                  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+                  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
                   # Optional code signing / notarization. Add these repository secrets to enable them.
                   APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
                   APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -92,11 +99,21 @@ jobs:
                   APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
                   APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
               with:
-                  args: --target ${{ matrix.target }}
+                  # Build checks skip the signed update bundles, so they work without the secrets (e.g. fork PRs).
+                  args: --target ${{ matrix.target }} ${{ env.IS_RELEASE != 'true' && '--config src-tauri/tauri.build-check.conf.json' || '' }}
                   # Empty tagName = build only, nothing is uploaded.
                   tagName: ${{ env.IS_RELEASE == 'true' && 'desktop-v__VERSION__' || '' }}
                   releaseName: DevTools Desktop v__VERSION__
-                  releaseBody: Download the installer for your platform from the assets below.
+                  releaseBody: |
+                      Download the installer for your platform from the assets below.
+
+                      **Homebrew (macOS)**
+                      ```
+                      brew tap 4msar/tools https://github.com/4msar/tools
+                      brew install --cask devtools
+                      ```
+
+                      Already installed? DevTools updates itself — or use *Check for Updates…* in the menubar.
                   releaseDraft: true
                   prerelease: false
 

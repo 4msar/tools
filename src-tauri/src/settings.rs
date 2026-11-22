@@ -12,6 +12,10 @@ pub struct Settings {
     pub close_to_tray: bool,
     /// macOS only: show the Dock icon.
     pub show_in_dock: bool,
+    /// Look for a new version on launch and every few hours.
+    pub auto_check_updates: bool,
+    /// Download and install updates in the background; they apply on the next restart.
+    pub auto_install_updates: bool,
 }
 
 impl Default for Settings {
@@ -20,6 +24,8 @@ impl Default for Settings {
             launcher_shortcut: DEFAULT_SHORTCUT.into(),
             close_to_tray: true,
             show_in_dock: true,
+            auto_check_updates: true,
+            auto_install_updates: false,
         }
     }
 }

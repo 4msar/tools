@@ -220,6 +220,17 @@ The same app ships as a native desktop app built with [Tauri](https://tauri.app)
 - **Launcher shortcut** — `⌥⇧Space` (Alt+Shift+Space) opens tool search from anywhere, Spotlight-style; press it again or hit Esc to hide. Change or turn it off in Desktop settings (gear icon in the header, or *Settings…* in the menubar).
 - **Launch at login**, **keep running when closed**, and **hide Dock icon** (macOS) options.
 - Exported files are saved to your Downloads folder; external links open in your browser.
+- **Updates** — checks on launch and every 6 hours, or on demand from *Check for Updates…* in the menubar or Settings. Turn on *Install updates automatically* to download in the background and apply on the next restart.
+
+**Install with Homebrew (macOS)**
+
+```bash
+brew tap 4msar/tools https://github.com/4msar/tools
+```
+
+```bash
+brew install --cask devtools
+```
 
 Requires Rust (stable) plus the [Tauri prerequisites](https://tauri.app/start/prerequisites/).
 
@@ -228,7 +239,11 @@ yarn desktop:dev     # run the desktop app with hot reload
 yarn desktop:build   # build installers into src-tauri/target/release/bundle
 ```
 
-**Releases** — `.github/workflows/desktop.yml` builds macOS (Apple Silicon + Intel), Windows and Linux. Pull requests that touch the desktop code get a build check. Push a tag like `desktop-v1.0.8` (or run the workflow manually) to attach installers to a draft GitHub Release. Add the `APPLE_*` repository secrets to sign and notarize macOS builds.
+**Releases** — `.github/workflows/desktop.yml` builds macOS (Apple Silicon + Intel), Windows and Linux. Pull requests that touch the desktop code get a build check. Push a tag like `desktop-v1.0.9` (or run the workflow manually) to attach installers and the signed updater manifest (`latest.json`) to a draft GitHub Release. **Publishing** the draft ships the update to existing installs and runs `.github/workflows/homebrew.yml`, which updates `Casks/devtools.rb` with the new version and checksums.
+
+Release secrets:
+- `TAURI_SIGNING_PRIVATE_KEY` (required) — the updater signing key (`~/.tauri/devtools.key`); its public key is in `src-tauri/tauri.conf.json`. Keep a backup: without it, existing installs can't be updated. Add `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` if the key has a password.
+- `APPLE_*` (optional) — sign and notarize macOS builds. Unsigned builds make macOS ask for confirmation on first launch.
 
 ## Deployment
 

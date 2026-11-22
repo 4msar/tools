@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { onKeyStroke } from "@vueuse/core";
-import { Keyboard, RotateCcw, X } from "lucide-vue-next";
+import { Download, Keyboard, RefreshCw, RotateCcw, X } from "lucide-vue-next";
 import { toast } from "vue-sonner";
 import { Btn } from "@/components/ui";
 import { APP_VERSION } from "@/site";
 import {
     DEFAULT_LAUNCHER_SHORTCUT,
+    checkForUpdate,
+    installUpdate,
+    restartApp,
+    setUpdatePrefs,
+    updateInstalling,
+    type UpdateInfo,
     desktopSettingsOpen as open,
     formatShortcut,
     getDesktopSettings,
@@ -21,6 +27,41 @@ import {
 const settings = ref<DesktopSettings>();
 const recording = ref(false);
 const pending = ref(false);
+const checking = ref(false);
+/** null = checked and up to date; undefined = not checked in this session. */
+const update = ref<UpdateInfo | null>();
+const checkError = ref("");
+
+async function checkNow() {
+    checking.value = true;
+    checkError.value = "";
+    try {
+        update.value = await checkForUpdate();
+    } catch (err) {
+        checkError.value = String(err);
+    } finally {
+        checking.value = false;
+    }
+}
+
+async function onInstall() {
+    await installUpdate();
+    if (update.value) update.value = { ...update.value, ready: true };
+}
+
+async function toggleUpdatePref(key: "autoCheckUpdates" | "autoInstallUpdates") {
+    if (!settings.value) return;
+    const next = { check: settings.value.autoCheckUpdates, install: settings.value.autoInstallUpdates };
+    if (key === "autoCheckUpdates") next.check = !next.check;
+    else next.install = !next.install;
+    try {
+        await setUpdatePrefs(next.check, next.install);
+        settings.value.autoCheckUpdates = next.check;
+        settings.value.autoInstallUpdates = next.install;
+    } catch (err) {
+        toast.error(String(err));
+    }
+}
 
 watch(open, async (v) => {
     recording.value = false;
@@ -82,10 +123,10 @@ async function toggle(key: "autostart" | "closeToTray" | "showInDock") {
         >
             <div
                 v-if="open"
-                class="fixed inset-0 z-50 flex items-start justify-center bg-inverse/25 p-4 pt-[12vh] backdrop-blur-sm"
+                class="fixed inset-0 z-50 flex items-start justify-center bg-inverse/25 p-4 pt-[8vh] backdrop-blur-sm"
                 @mousedown.self="open = false"
             >
-                <div class="w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface shadow-float" role="dialog" aria-label="Desktop settings">
+                <div class="max-h-[84vh] w-full max-w-md overflow-y-auto rounded-2xl border border-line bg-surface shadow-float" role="dialog" aria-label="Desktop settings">
                     <div class="flex items-center justify-between border-b border-line px-5 py-3.5">
                         <h2 class="text-sm font-semibold text-fg">Desktop settings</h2>
                         <button type="button" class="cursor-pointer rounded-full p-1 text-fg-subtle hover:bg-subtle hover:text-fg" aria-label="Close" @click="open = false">
@@ -154,7 +195,51 @@ async function toggle(key: "autostart" | "closeToTray" | "showInDock") {
                         </label>
                     </div>
 
-                    <div class="border-t border-line bg-subtle px-5 py-2 text-xs text-fg-subtle">DevTools v{{ APP_VERSION }}</div>
+                    <div v-if="settings" class="border-t border-line">
+                        <div class="flex items-center justify-between gap-4 px-5 py-4">
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium text-fg">Updates</p>
+                                <p class="truncate text-xs text-fg-subtle">
+                                    <template v-if="checking">Checking…</template>
+                                    <template v-else-if="checkError">Couldn't check: {{ checkError }}</template>
+                                    <template v-else-if="update?.ready">v{{ update.version }} installed. Restart to use it.</template>
+                                    <template v-else-if="update">v{{ update.version }} is available (you have v{{ settings.version }}).</template>
+                                    <template v-else-if="update === null">You're on the latest version (v{{ settings.version }}).</template>
+                                    <template v-else>You have v{{ settings.version }}.</template>
+                                </p>
+                            </div>
+                            <Btn v-if="update?.ready" size="sm" variant="primary" @click="restartApp()"><RefreshCw />Restart</Btn>
+                            <Btn v-else-if="update" size="sm" variant="primary" :disabled="updateInstalling" @click="onInstall">
+                                <Download />{{ updateInstalling ? "Installing…" : "Install" }}
+                            </Btn>
+                            <Btn v-else size="sm" :disabled="checking" @click="checkNow"><RefreshCw :class="checking && 'animate-spin'" />Check now</Btn>
+                        </div>
+                        <label class="flex cursor-pointer items-center justify-between gap-4 border-t border-line px-5 py-3.5">
+                            <span>
+                                <span class="block text-sm font-medium text-fg">Check for updates automatically</span>
+                                <span class="block text-xs text-fg-subtle">On launch and every 6 hours.</span>
+                            </span>
+                            <input type="checkbox" class="size-4 accent-[var(--accent)]" :checked="settings.autoCheckUpdates" @change="toggleUpdatePref('autoCheckUpdates')" />
+                        </label>
+                        <label
+                            class="flex items-center justify-between gap-4 border-t border-line px-5 py-3.5"
+                            :class="settings.autoCheckUpdates ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'"
+                        >
+                            <span>
+                                <span class="block text-sm font-medium text-fg">Install updates automatically</span>
+                                <span class="block text-xs text-fg-subtle">Downloads in the background; applies on the next restart.</span>
+                            </span>
+                            <input
+                                type="checkbox"
+                                class="size-4 accent-[var(--accent)]"
+                                :checked="settings.autoInstallUpdates"
+                                :disabled="!settings.autoCheckUpdates"
+                                @change="toggleUpdatePref('autoInstallUpdates')"
+                            />
+                        </label>
+                    </div>
+
+                    <div class="border-t border-line bg-subtle px-5 py-2 text-xs text-fg-subtle">DevTools v{{ settings?.version ?? APP_VERSION }}</div>
                 </div>
             </div>
         </Transition>

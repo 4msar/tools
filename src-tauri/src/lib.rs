@@ -2,6 +2,7 @@
 //! launch-at-login, single instance and native downloads.
 
 mod settings;
+mod updates;
 
 use settings::{RecentTool, Settings};
 use std::sync::Mutex;
@@ -15,7 +16,7 @@ use tauri_plugin_autostart::{MacosLauncher, ManagerExt as _};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 use tauri_plugin_opener::OpenerExt;
 
-const MAIN: &str = "main";
+pub(crate) const MAIN: &str = "main";
 const TRAY_ID: &str = "devtools-tray";
 /// Passed by the login item so the app starts quietly in the menubar.
 const HIDDEN_ARG: &str = "--hidden";
@@ -27,8 +28,8 @@ const EV_OPEN_SETTINGS: &str = "desktop://open-settings";
 const EV_DOWNLOADED: &str = "desktop://downloaded";
 
 #[derive(Default)]
-struct AppState {
-    settings: Mutex<Settings>,
+pub(crate) struct AppState {
+    pub(crate) settings: Mutex<Settings>,
     recents: Mutex<Vec<RecentTool>>,
 }
 
@@ -39,13 +40,14 @@ struct SettingsPayload {
     settings: Settings,
     autostart: bool,
     platform: &'static str,
+    version: String,
 }
 
 fn main_window(app: &AppHandle) -> Option<WebviewWindow> {
     app.get_webview_window(MAIN)
 }
 
-fn show_main(app: &AppHandle) {
+pub(crate) fn show_main(app: &AppHandle) {
     if let Some(w) = main_window(app) {
         let _ = w.unminimize();
         let _ = w.show();
@@ -102,19 +104,23 @@ fn build_tray_menu(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
         format!("Search Tools…    {}", pretty_shortcut(&shortcut))
     };
 
-    MenuBuilder::new(app)
+    let mut menu = MenuBuilder::new(app)
         .item(&MenuItem::with_id(app, "open", "Open DevTools", true, None::<&str>)?)
         .item(&MenuItem::with_id(app, "quick", quick_label, true, None::<&str>)?)
         .item(&recent_menu.build()?)
         .item(&PredefinedMenuItem::separator(app)?)
         .item(&CheckMenuItem::with_id(app, "autostart", "Launch at Login", true, autostart, None::<&str>)?)
         .item(&MenuItem::with_id(app, "settings", "Settings…", true, None::<&str>)?)
-        .item(&PredefinedMenuItem::separator(app)?)
+        .item(&MenuItem::with_id(app, "check-updates", "Check for Updates…", true, None::<&str>)?);
+    if let Some(label) = updates::tray_label(app) {
+        menu = menu.item(&MenuItem::with_id(app, "update", label, true, None::<&str>)?);
+    }
+    menu.item(&PredefinedMenuItem::separator(app)?)
         .item(&MenuItem::with_id(app, "quit", "Quit DevTools", true, None::<&str>)?)
         .build()
 }
 
-fn refresh_tray(app: &AppHandle) {
+pub(crate) fn refresh_tray(app: &AppHandle) {
     if let (Some(tray), Ok(menu)) = (app.tray_by_id(TRAY_ID), build_tray_menu(app)) {
         let _ = tray.set_menu(Some(menu));
     }
@@ -136,6 +142,8 @@ fn on_tray_menu(app: &AppHandle, id: &str) {
             let _ = if al.is_enabled().unwrap_or(false) { al.disable() } else { al.enable() };
             refresh_tray(app);
         }
+        "check-updates" => updates::check_from_tray(app),
+        "update" => updates::on_tray_update(app),
         "quit" => app.exit(0),
         other => {
             if let Some(tool) = other.strip_prefix("tool:") {
@@ -188,6 +196,7 @@ fn get_desktop_settings(app: AppHandle, state: tauri::State<AppState>) -> Settin
         settings: state.settings.lock().unwrap().clone(),
         autostart: app.autolaunch().is_enabled().unwrap_or(false),
         platform: std::env::consts::OS,
+        version: app.package_info().version.to_string(),
     }
 }
 
@@ -313,6 +322,7 @@ pub fn run() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| show_main(app)))
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(
             tauri_plugin_window_state::Builder::default()
                 // We decide visibility ourselves (e.g. start hidden at login).
@@ -334,6 +344,7 @@ pub fn run() {
                 .build(),
         )
         .manage(AppState::default())
+        .manage(updates::UpdateState::default())
         .setup(|app| {
             let handle = app.handle().clone();
             let settings = Settings::load(&handle);
@@ -356,6 +367,8 @@ pub fn run() {
                 .show_menu_on_left_click(true)
                 .on_menu_event(|app, event| on_tray_menu(app, event.id().as_ref()))
                 .build(app)?;
+
+            updates::start_background_checks(&handle);
             Ok(())
         })
         .on_window_event(|window, event| {
@@ -376,6 +389,10 @@ pub fn run() {
             set_tray_recents,
             hide_window,
             open_external,
+            updates::check_for_update,
+            updates::install_update,
+            updates::restart_app,
+            updates::set_update_prefs,
         ])
         .build(tauri::generate_context!())
         .expect("error while building DevTools");

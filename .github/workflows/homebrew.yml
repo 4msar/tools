@@ -1,0 +1,57 @@
+name: Homebrew cask
+
+# When a desktop release is published, point Casks/devtools.rb at its DMGs and commit it to main.
+# Users install with:
+#   brew tap 4msar/tools https://github.com/4msar/tools
+#   brew install --cask devtools
+
+on:
+    release:
+        types: [published]
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: "Release tag, e.g. desktop-v1.0.9"
+                required: true
+
+permissions:
+    contents: write
+
+jobs:
+    update-cask:
+        runs-on: ubuntu-latest
+        env:
+            TAG: ${{ github.event.release.tag_name || inputs.tag }}
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: startsWith(github.event.release.tag_name || inputs.tag, 'desktop-v')
+        steps:
+            - name: Checkout main
+              uses: actions/checkout@v4
+              with:
+                  ref: main
+
+            - name: Download DMGs
+              run: |
+                  mkdir -p dmg
+                  gh release download "$TAG" --dir dmg --pattern '*_aarch64.dmg' --pattern '*_x64.dmg'
+                  ls -l dmg
+
+            - name: Update cask
+              run: |
+                  VERSION="${TAG#desktop-v}"
+                  ARM=$(sha256sum dmg/*_aarch64.dmg | cut -d' ' -f1)
+                  INTEL=$(sha256sum dmg/*_x64.dmg | cut -d' ' -f1)
+                  sed -i -E \
+                      -e "s/^(  version )\"[^\"]*\"/\1\"$VERSION\"/" \
+                      -e "s/^(  sha256 arm: +)\"[^\"]*\"/\1\"$ARM\"/" \
+                      -e "s/^( +intel: )\"[^\"]*\"/\1\"$INTEL\"/" \
+                      Casks/devtools.rb
+                  git diff
+
+            - name: Commit
+              run: |
+                  git diff --quiet && { echo "Cask already up to date"; exit 0; }
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git commit -am "chore: update Homebrew cask to ${TAG#desktop-v}"
+                  git push origin main
