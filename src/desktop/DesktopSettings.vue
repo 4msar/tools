@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { onKeyStroke } from "@vueuse/core";
-import { Download, Keyboard, RefreshCw, RotateCcw, X } from "lucide-vue-next";
+import { Download, Keyboard, RefreshCw, RotateCcw, Settings, X } from "lucide-vue-next";
+import { motion } from "motion-v";
+import { pressable } from "@/composables/motion";
 import { toast } from "vue-sonner";
 import { Btn } from "@/components/ui";
 import { APP_VERSION } from "@/site";
@@ -22,7 +24,7 @@ import {
     setLauncherShortcut,
     setShowInDock,
     type DesktopSettings,
-} from "@/composables/desktop";
+} from "@/desktop/bridge";
 
 const settings = ref<DesktopSettings>();
 const recording = ref(false);
@@ -114,6 +116,16 @@ async function toggle(key: "autostart" | "closeToTray" | "showInDock") {
 </script>
 
 <template>
+    <motion.button
+        type="button"
+        v-bind="pressable"
+        class="flex size-10 cursor-pointer items-center justify-center rounded-full text-fg-subtle transition-colors hover:bg-subtle hover:text-accent"
+        title="Desktop settings"
+        aria-label="Desktop settings"
+        @click="open = true"
+    >
+        <Settings class="size-4" stroke-width="1.75" />
+    </motion.button>
     <Teleport to="body">
         <Transition
             enter-active-class="transition duration-150 ease-out"

@@ -1,15 +1,17 @@
 /**
- * Bridge to the Tauri desktop shell (src-tauri). Everything here is a no-op in the browser,
- * and the Tauri API is only imported when running inside the desktop app.
+ * Bridge to the Tauri desktop shell (src-tauri).
+ *
+ * Desktop-only: callers gate every use behind `__DESKTOP__` (true only when the Tauri CLI runs
+ * the build), so none of this — nor the Tauri API — ends up in the web build.
  */
 import { ref, watch } from "vue";
 import type { Router } from "vue-router";
 import { toast } from "vue-sonner";
 import { recents } from "@/composables/prefs";
 
-/** True when the app runs inside the Tauri desktop shell. */
+/** True when the app runs inside the Tauri desktop shell. Always false in the web build. */
 export const isDesktopApp =
-    typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+    __DESKTOP__ && typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
 export interface DesktopSettings {
     launcherShortcut: string;

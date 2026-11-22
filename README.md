@@ -232,19 +232,13 @@ brew tap 4msar/tools https://github.com/4msar/tools
 brew install --cask devtools
 ```
 
-Requires Rust (stable) plus the [Tauri prerequisites](https://tauri.app/start/prerequisites/).
-
 ```bash
 yarn desktop:dev     # run the desktop app with hot reload
 yarn desktop:build   # build installers into src-tauri/target/release/bundle
 ```
 
-**Releases** — `.github/workflows/desktop.yml` builds macOS (Apple Silicon + Intel), Windows and Linux. Pull requests that touch the desktop code get a build check. Push a tag like `desktop-v1.0.9` (or run the workflow manually) to attach installers and the signed updater manifest (`latest.json`) to a draft GitHub Release. **Publishing** the draft ships the update to existing installs and runs `.github/workflows/homebrew.yml`, which updates `Casks/devtools.rb` with the new version and checksums.
-
-Release secrets:
-- `TAURI_SIGNING_PRIVATE_KEY` (required) — the updater signing key (`~/.tauri/devtools.key`); its public key is in `src-tauri/tauri.conf.json`. Keep a backup: without it, existing installs can't be updated. Add `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` if the key has a password.
-- `APPLE_*` (optional) — sign and notarize macOS builds. Unsigned builds make macOS ask for confirmation on first launch.
+See [docs/build-and-deploy.md](docs/build-and-deploy.md) for prerequisites, releasing, signing, Homebrew and updates.
 
 ## Deployment
 
-Pushes to `main` build and deploy to GitHub Pages through GitHub Actions (`.github/workflows/deploy.yml`). Every tool has its own HTML file, so deep links return 200. Unknown paths get the `noindex` 404 page, which boots the app and redirects home.
+Pushes to `main` build and deploy to GitHub Pages through GitHub Actions (`.github/workflows/deploy.yml`). Full build and release guide for web and desktop: [docs/build-and-deploy.md](docs/build-and-deploy.md). Every tool has its own HTML file, so deep links return 200. Unknown paths get the `noindex` 404 page, which boots the app and redirects home.

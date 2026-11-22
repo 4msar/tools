@@ -11,7 +11,6 @@ import {
     Moon,
     PanelLeftClose,
     PanelLeftOpen,
-    Settings,
     Search,
     Star,
     Sun,
@@ -35,11 +34,10 @@ import {
 import { applyPageMeta, type PageMeta } from "@/composables/seo";
 import { canInstall, installApp } from "@/composables/pwa";
 import {
-    desktopSettingsOpen,
     hideWindow,
     isDesktopApp,
     setupDesktop,
-} from "@/composables/desktop";
+} from "@/desktop/bridge";
 import {
     closeTabAndNavigate,
     keepAliveInclude,
@@ -51,9 +49,10 @@ import {
 const ChatWidget = defineAsyncComponent(
     () => import("@/components/chat/ChatWidget.vue"),
 );
-const DesktopSettings = defineAsyncComponent(
-    () => import("@/components/DesktopSettings.vue"),
-);
+// Desktop-only; `__DESKTOP__` is false in the web build, so this chunk isn't emitted there.
+const DesktopSettings = __DESKTOP__
+    ? defineAsyncComponent(() => import("@/desktop/DesktopSettings.vue"))
+    : null;
 
 const route = useRoute();
 const router = useRouter();
@@ -110,18 +109,20 @@ onKeyStroke("Escape", (e) => {
 // Desktop app: the global launcher shortcut opens the tool search, Spotlight-style.
 // Dismissing the search it opened (Esc / click outside) hides the window again.
 let openedByLauncher = false;
-setupDesktop({
-    router,
-    onQuickOpen: () => {
-        openedByLauncher = true;
-        paletteOpen.value = true;
-    },
-});
-watch(paletteOpen, (v) => {
-    if (!v) setTimeout(() => (openedByLauncher = false));
-});
+if (__DESKTOP__) {
+    setupDesktop({
+        router,
+        onQuickOpen: () => {
+            openedByLauncher = true;
+            paletteOpen.value = true;
+        },
+    });
+    watch(paletteOpen, (v) => {
+        if (!v) setTimeout(() => (openedByLauncher = false));
+    });
+}
 function onPaletteDismiss() {
-    if (isDesktopApp && openedByLauncher) hideWindow();
+    if (__DESKTOP__ && isDesktopApp && openedByLauncher) hideWindow();
 }
 
 // Tab shortcuts. Alt+W closes; Alt+Shift+←/→ switches. Uses e.code so macOS Option characters don't interfere.
@@ -339,17 +340,8 @@ onKeyStroke((e) => {
                                 ><span class="kbd">K</span></span
                             >
                         </motion.button>
-                        <motion.button
-                            v-if="isDesktopApp"
-                            type="button"
-                            v-bind="pressable"
-                            class="flex size-10 cursor-pointer items-center justify-center rounded-full text-fg-subtle transition-colors hover:bg-subtle hover:text-accent"
-                            title="Desktop settings"
-                            aria-label="Desktop settings"
-                            @click="desktopSettingsOpen = true"
-                        >
-                            <Settings class="size-4" stroke-width="1.75" />
-                        </motion.button>
+                        <!-- Desktop app only: gear button + settings dialog (not in the web build). -->
+                        <component :is="DesktopSettings" v-if="DesktopSettings && isDesktopApp" />
                         <motion.button
                             v-if="canInstall && !isDesktopApp"
                             type="button"
@@ -464,7 +456,6 @@ onKeyStroke((e) => {
         </motion.div>
 
         <CommandPalette v-model:open="paletteOpen" @dismiss="onPaletteDismiss" />
-        <DesktopSettings v-if="isDesktopApp" />
         <ChatWidget />
         <Toaster
             position="bottom-right"

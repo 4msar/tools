@@ -12,9 +12,9 @@ on:
     push:
         tags: ["desktop-v*"]
         branches: [main]
-        paths: ["src-tauri/**", ".github/workflows/desktop.yml"]
+        paths: ["src-tauri/**", "src/desktop/**", ".github/workflows/desktop.yml"]
     pull_request:
-        paths: ["src-tauri/**", "src/composables/desktop.ts", ".github/workflows/desktop.yml"]
+        paths: ["src-tauri/**", "src/desktop/**", ".github/workflows/desktop.yml"]
     workflow_dispatch:
         inputs:
             release:

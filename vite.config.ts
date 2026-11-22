@@ -163,6 +163,8 @@ export default defineConfig({
     define: {
         __APP_VERSION__: JSON.stringify(pkg.version),
         __BUILD_DATE__: JSON.stringify(BUILD_DATE),
+        // Desktop-only code (src/desktop) is behind this flag, so the web build doesn't ship it.
+        __DESKTOP__: JSON.stringify(isTauri),
     },
     server: {
         allowedHosts: ["app.msar.dev"],
