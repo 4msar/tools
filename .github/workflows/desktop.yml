@@ -61,14 +61,27 @@ jobs:
                   sudo apt-get update
                   sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libxdo-dev
 
-            - name: Enable Corepack
-              run: corepack enable
-
+            # Corepack must be enabled on the Node that setup-node installs, otherwise Windows falls back to the
+            # runner's global Yarn 1 (packageManager is yarn@4). The Yarn cache is handled separately for the same reason.
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: "22"
-                  cache: "yarn"
+
+            - name: Enable Corepack
+              run: corepack enable
+
+            - name: Locate Yarn cache
+              id: yarn-cache
+              shell: bash
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Yarn cache
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.yarn-cache.outputs.dir }}
+                  key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+                  restore-keys: yarn-${{ runner.os }}-
 
             - name: Setup Rust
               uses: dtolnay/rust-toolchain@stable
