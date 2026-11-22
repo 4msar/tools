@@ -166,7 +166,7 @@ git tag desktop-v1.0.12
 git push origin main desktop-v1.0.12
 ```
 
-3. `desktop.yml` builds on macOS (Apple Silicon and Intel), Windows and Linux and creates a **draft** release *DevTools Desktop v1.0.12* with:
+3. `desktop.yml` first creates a **draft** release *DevTools Desktop v1.0.12* (job *Create draft release*, a few seconds; it fails straight away if the tag doesn't match `package.json`). Then it builds on macOS (Apple Silicon and Intel), Windows and Linux and uploads to that draft:
    - installers (`.dmg`, `.msi`, `.exe`, `.AppImage`, `.deb`)
    - signed update bundles (`.app.tar.gz`, `.sig`, …)
    - `latest.json`, the updater manifest
@@ -177,11 +177,13 @@ git push origin main desktop-v1.0.12
 
 You can also start a release from **Actions → Desktop app → Run workflow** (with *Publish installers to a draft release* ticked); the tag is created from the version in `package.json`.
 
-The tag must match `package.json`: the release tag is `desktop-v<version>`, and the cask's download URL is built from it.
+The tag must match `package.json`: the release tag is `desktop-v<version>`, and the cask's download URL is built from it. The pre-commit hook bumps the version on every commit, so tag **after** your last commit (`node -p "require('./package.json').version"` shows it).
+
+If a release run fails: fix the problem, delete the tag (`git push origin :refs/tags/desktop-v1.0.12 && git tag -d desktop-v1.0.12`), delete the draft on GitHub if one was created, then tag the new version. Re-running a failed job reuses the old workflow file from the tagged commit.
 
 ### Build checks
 
-Pull requests and pushes to `main` that touch `src-tauri/`, `src/desktop/` or the workflow run the same build on every OS without publishing. They skip the signed update bundles (`--config src-tauri/tauri.build-check.conf.json`), so they don't need the signing secret. Installers are attached to the run as artifacts for 7 days.
+Pull requests that touch `src-tauri/`, `src/desktop/` or the workflow run the same build on every OS without publishing. They skip the signed update bundles (`--config src-tauri/tauri.build-check.conf.json`), so they don't need the signing secret. Installers are attached to the run as artifacts for 7 days.
 
 ---
 
@@ -227,6 +229,8 @@ Notes:
 | --- | --- |
 | CI: *A public key has been found, but no private key* | The `TAURI_SIGNING_PRIVATE_KEY` secret is missing or empty. |
 | Update check says *Couldn't check* | No published release yet, or `latest.json` is missing from it (release built without the signing key). |
+| CI macOS: *failed to import the signing certificate* | An `APPLE_CERTIFICATE` secret exists but isn't a valid base64 `.p12`. Fix or delete it. (Unset Apple secrets are skipped.) |
+| CI: *Resource not accessible by integration* when creating the release | The workflow token can't create releases. Check Settings → Actions → General → Workflow permissions is *Read and write*, or create the draft yourself (`gh release create desktop-v<version> --draft --title "DevTools Desktop v<version>"`) and re-run; the workflow reuses an existing draft. |
 | *Signature verification failed* | The release was signed with a different key than the `pubkey` in the installed app. |
 | macOS: *"DevTools" can't be opened* | Unsigned build: right-click → Open, or sign and notarise (section 5). |
 | Launcher shortcut doesn't register | Another app uses it. Pick a different one in Desktop settings. |
