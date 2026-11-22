@@ -40,7 +40,7 @@ jobs:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
 
             - name: Create or reuse draft
               id: release
@@ -103,7 +103,7 @@ jobs:
             IS_RELEASE: ${{ startsWith(github.ref, 'refs/tags/desktop-v') || (github.event_name == 'workflow_dispatch' && inputs.release) }}
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
 
             - name: Linux system dependencies
               if: runner.os == 'Linux'
@@ -114,12 +114,15 @@ jobs:
             # Corepack must be enabled on the Node that setup-node installs, otherwise Windows falls back to the
             # runner's global Yarn 1 (packageManager is yarn@4). The Yarn cache is handled separately for the same reason.
             - name: Setup Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v7
               with:
                   node-version: "26"
 
+            # Node 25+ no longer bundles Corepack, so install it onto setup-node's Node first.
             - name: Enable Corepack
-              run: corepack enable
+              run: |
+                  npm install -g corepack@latest
+                  corepack enable
 
             - name: Locate Yarn cache
               id: yarn-cache
@@ -129,7 +132,7 @@ jobs:
 
             - name: Yarn cache
               if: steps.yarn-cache.outputs.dir != ''
-              uses: actions/cache@v4
+              uses: actions/cache@v6
               with:
                   path: ${{ steps.yarn-cache.outputs.dir }}
                   key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
@@ -168,7 +171,7 @@ jobs:
                   [ -n "$APPLE_CERTIFICATE" ] && echo "Signing with Apple certificate" || echo "No Apple certificate: building unsigned"
 
             - name: Build and release
-              uses: tauri-apps/tauri-action@v0
+              uses: tauri-apps/tauri-action@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   # Signs the update bundles; the matching public key is in src-tauri/tauri.conf.json.
@@ -182,7 +185,7 @@ jobs:
 
             - name: Upload build artifacts
               if: env.IS_RELEASE != 'true'
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v7
               with:
                   name: devtools-${{ matrix.target }}
                   path: |
