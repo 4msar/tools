@@ -1,9 +1,10 @@
 name: Homebrew cask
 
-# When a desktop release is published, point Casks/devtools.rb at its DMGs and commit it to main.
+# When a desktop release is published, point Casks/msar-devtools.rb at its DMGs and commit it to main.
 # Users install with:
 #   brew tap 4msar/tools https://github.com/4msar/tools
-#   brew install --cask devtools
+#   brew trust --cask 4msar/tools/msar-devtools
+#   brew install --cask 4msar/tools/msar-devtools
 
 on:
     release:
@@ -45,7 +46,7 @@ jobs:
                       -e "s/^(  version )\"[^\"]*\"/\1\"$VERSION\"/" \
                       -e "s/^(  sha256 arm: +)\"[^\"]*\"/\1\"$ARM\"/" \
                       -e "s/^( +intel: )\"[^\"]*\"/\1\"$INTEL\"/" \
-                      Casks/devtools.rb
+                      Casks/msar-devtools.rb
                   git diff
 
             - name: Commit

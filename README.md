@@ -229,7 +229,11 @@ brew tap 4msar/tools https://github.com/4msar/tools
 ```
 
 ```bash
-brew install --cask devtools
+brew trust --cask 4msar/tools/msar-devtools
+```
+
+```bash
+brew install --cask 4msar/tools/msar-devtools
 ```
 
 ```bash

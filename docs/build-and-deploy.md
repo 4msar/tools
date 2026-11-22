@@ -173,7 +173,7 @@ git push origin main desktop-v1.0.12
 4. Check the draft on GitHub (edit the notes if you like; they appear in the in-app update toast).
 5. **Publish** the release. This:
    - makes `releases/latest/download/latest.json` point at it, so installed apps find the update
-   - runs `homebrew.yml`, which updates `Casks/devtools.rb` with the new version and DMG checksums and commits it to `main`
+   - runs `homebrew.yml`, which updates `Casks/msar-devtools.rb` with the new version and DMG checksums and commits it to `main`
 
 You can also start a release from **Actions → Desktop app → Run workflow** (with *Publish installers to a draft release* ticked); the tag is created from the version in `package.json`.
 
@@ -189,19 +189,26 @@ Pull requests that touch `src-tauri/`, `src/desktop/` or the workflow run the sa
 
 ## 7. Homebrew
 
-The cask lives in this repo at `Casks/devtools.rb`, so the repo doubles as a tap:
+The cask lives in this repo at `Casks/msar-devtools.rb`, so the repo doubles as a tap:
 
 ```bash
 brew tap 4msar/tools https://github.com/4msar/tools
 ```
 
 ```bash
-brew install --cask devtools
+brew trust --cask 4msar/tools/msar-devtools
 ```
+
+```bash
+brew install --cask 4msar/tools/msar-devtools
+```
+
+- Recent Homebrew only loads casks from third-party taps you've trusted, hence `brew trust`. Without it, the tap's casks are ignored.
+- The cask is named `msar-devtools`, and the install uses the full `4msar/tools/` name, because `homebrew/cask` already has an unrelated cask called `devtools`. A plain `brew install --cask devtools` installs that other app.
 
 - `homebrew.yml` keeps `version` and both `sha256` values current. Until the first desktop release is published they're placeholders, so `brew install` fails until then.
 - `auto_updates true` tells Homebrew the app updates itself, so `brew upgrade` skips it (unless `--greedy`).
-- `brew uninstall --zap --cask devtools` also removes settings, caches and the login item.
+- `brew uninstall --zap --cask 4msar/tools/msar-devtools` also removes settings, caches and the login item.
 - To refresh the cask for an existing release by hand: **Actions → Homebrew cask → Run workflow** with the tag (e.g. `desktop-v1.0.12`).
 
 Moving to a dedicated tap later (`4msar/homebrew-tap`, so users run `brew install 4msar/tap/devtools`) means copying the cask there and pointing the workflow's checkout/push at that repo with a token that can write to it.
@@ -234,5 +241,7 @@ Notes:
 | *Signature verification failed* | The release was signed with a different key than the `pubkey` in the installed app. |
 | macOS: *"DevTools" can't be opened* | Unsigned build: right-click → Open, or sign and notarise (section 5). |
 | Launcher shortcut doesn't register | Another app uses it. Pick a different one in Desktop settings. |
+| `brew install` installs a different "DevTools" (`DevToolsApp.app`, from `me-shaon/devtools`) | That's homebrew/cask's own `devtools`. Run `brew uninstall --cask devtools`, then install with the full name `4msar/tools/msar-devtools` after `brew trust`. |
+| *The following taps are not trusted* | Run `brew trust --cask 4msar/tools/msar-devtools`, then install again. |
 | Cask commit fails | `main` is protected; see Branch protection above. |
 | Desktop UI shows up on the web | Something in `src/desktop/` was imported without a `__DESKTOP__` gate; see section 3. |

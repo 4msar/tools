@@ -1,8 +1,10 @@
 # Homebrew cask for the DevTools desktop app.
 #   brew tap 4msar/tools https://github.com/4msar/tools
-#   brew install --cask devtools
+#   brew trust --cask 4msar/tools/msar-devtools
+#   brew install --cask 4msar/tools/msar-devtools
+# The token is "msar-devtools" because homebrew/cask already has an unrelated "devtools" cask.
 # version and sha256 are updated by .github/workflows/homebrew.yml when a desktop release is published.
-cask "devtools" do
+cask "msar-devtools" do
   arch arm: "aarch64", intel: "x64"
 
   version "1.0.10"
