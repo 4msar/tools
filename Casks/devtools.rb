@@ -5,9 +5,9 @@
 cask "devtools" do
   arch arm: "aarch64", intel: "x64"
 
-  version "1.0.9"
-  sha256 arm:   "0000000000000000000000000000000000000000000000000000000000000000",
-         intel: "0000000000000000000000000000000000000000000000000000000000000000"
+  version "1.0.10"
+  sha256 arm:   "a20878fa05f0cf519cc22df1dc4e72590741982f76f9d671dc267c745e53ef28",
+         intel: "57e3669c393fc5da03cb5a259ef83b76386d3ecf35801c6cb55a0b2e4a7c4dc9"
 
   url "https://github.com/4msar/tools/releases/download/desktop-v#{version}/DevTools_#{version}_#{arch}.dmg"
   name "DevTools"
