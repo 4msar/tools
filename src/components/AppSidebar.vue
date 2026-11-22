@@ -1,12 +1,22 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
-import { ChevronRight, ChevronsDownUp, ChevronsUpDown, House, Info, Search, Star, Wrench } from "lucide-vue-next";
+import { ChevronRight, ChevronsDownUp, ChevronsUpDown, House, Info, Search, Settings, Star, Wrench } from "lucide-vue-next";
 import { categories, searchTools, tools } from "@/tools/registry";
 import { favorites, sidebarGroupsCollapsed as collapsed } from "@/composables/prefs";
 import { APP_VERSION, BUILD_DATE } from "@/site";
+import { desktopSettingsOpen, isDesktopApp } from "@/desktop/bridge";
 
-const emit = defineEmits<{ navigate: [] }>();
+// desktop: the desktop app's shell — sits on the tinted canvas, and the search box opens the command palette.
+const props = defineProps<{ variant?: "desktop" }>();
+const emit = defineEmits<{ navigate: []; search: [] }>();
+const desktop = computed(() => props.variant === "desktop");
+const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
+// Nav item styles: the desktop shell highlights with a raised fill instead of the subtle tint.
+const itemActive = computed(() =>
+    desktop.value ? "!text-fg bg-bg font-medium ring-1 ring-line shadow-card" : "!text-accent bg-subtle font-medium",
+);
+const itemHover = computed(() => (desktop.value ? "hover:bg-bg/60 hover:text-fg" : "hover:text-accent"));
 const filter = ref("");
 const nav = ref<HTMLElement>();
 const route = useRoute();
@@ -60,8 +70,13 @@ onMounted(() => revealActive(false));
 </script>
 
 <template>
-    <aside class="flex h-full flex-col border-r border-line bg-surface">
-        <RouterLink to="/" class="flex h-14 shrink-0 items-center gap-2.5 border-b border-line px-4" @click="emit('navigate')">
+    <aside class="flex h-full flex-col" :class="desktop ? 'bg-subtle' : 'border-r border-line bg-surface'">
+        <RouterLink
+            to="/"
+            class="flex h-14 shrink-0 items-center gap-2.5 px-4"
+            :class="desktop ? '' : 'border-b border-line'"
+            @click="emit('navigate')"
+        >
             <span class="grid size-9 place-items-center rounded-full bg-surface text-fg shadow-float ring-1 ring-line">
                 <Wrench class="size-4" stroke-width="1.75" />
             </span>
@@ -72,13 +87,24 @@ onMounted(() => revealActive(false));
         </RouterLink>
 
         <div class="flex shrink-0 items-center gap-2 p-3">
-            <div class="relative min-w-0 flex-1">
+            <button
+                v-if="desktop"
+                type="button"
+                class="flex h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-md bg-bg px-2.5 text-xs text-fg-subtle ring-1 ring-line transition-colors ring-inset hover:text-fg"
+                @click="emit('search')"
+            >
+                <Search class="size-3.5 shrink-0" />
+                <span class="truncate">Search tools…</span>
+                <span class="ml-auto flex shrink-0 gap-0.5"><span class="kbd">{{ isMac ? "⌘" : "Ctrl" }}</span><span class="kbd">K</span></span>
+            </button>
+            <div v-else class="relative min-w-0 flex-1">
                 <Search class="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-fg-subtle" />
                 <input v-model="filter" type="search" placeholder="Filter tools…" class="input h-9 pl-8 text-xs shadow-none" />
             </div>
             <button
                 type="button"
-                class="grid size-8 shrink-0 cursor-pointer place-items-center rounded-md bg-subtle text-fg-subtle ring-1 ring-line ring-inset hover:bg-surface hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
+                class="grid size-8 shrink-0 cursor-pointer place-items-center rounded-md text-fg-subtle ring-1 ring-line ring-inset hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
+                :class="desktop ? 'bg-bg' : 'bg-subtle hover:bg-surface'"
                 :disabled="!!filter"
                 :title="allCollapsed ? 'Expand all categories' : 'Collapse all categories'"
                 :aria-label="allCollapsed ? 'Expand all categories' : 'Collapse all categories'"
@@ -93,11 +119,12 @@ onMounted(() => revealActive(false));
             <RouterLink
                 v-if="!filter"
                 to="/"
-                class="group mb-1 flex items-center gap-2 rounded-md px-2 py-1.5 font-medium text-fg transition-colors hover:text-accent"
-                exact-active-class="!text-accent bg-subtle"
+                class="group mb-1 flex items-center gap-2 rounded-md px-2 py-1.5 font-medium text-fg transition-colors"
+                :class="itemHover"
+                :exact-active-class="itemActive"
                 @click="emit('navigate')"
             >
-                <House class="size-4 text-fg-subtle group-hover:text-accent" stroke-width="1.75" /> Home
+                <House class="size-4 text-fg-subtle" :class="desktop ? '' : 'group-hover:text-accent'" stroke-width="1.75" /> Home
             </RouterLink>
 
             <div v-if="!filter && favorites.length" class="mt-3">
@@ -108,8 +135,9 @@ onMounted(() => revealActive(false));
                     v-for="t in favorites"
                     :key="'f-' + t.id"
                     :to="'/' + t.id"
-                    class="flex items-center gap-2 rounded-md px-2 py-1.5 text-fg-muted transition-colors hover:text-accent"
-                    active-class="!text-accent bg-subtle font-medium"
+                    class="flex items-center gap-2 rounded-md px-2 py-1.5 text-fg-muted transition-colors"
+                    :class="itemHover"
+                    :active-class="itemActive"
                     @click="emit('navigate')"
                 >
                     <component :is="t.icon" class="size-4 shrink-0" stroke-width="1.75" />
@@ -133,8 +161,9 @@ onMounted(() => revealActive(false));
                         :key="t.id"
                         :to="'/' + t.id"
                         :data-tool="t.id"
-                        class="flex items-center gap-2 rounded-md px-2 py-1.5 text-fg-muted transition-colors hover:text-accent"
-                        active-class="!text-accent bg-subtle font-medium"
+                        class="flex items-center gap-2 rounded-md px-2 py-1.5 text-fg-muted transition-colors"
+                        :class="itemHover"
+                        :active-class="itemActive"
                         @click="emit('navigate')"
                     >
                         <component :is="t.icon" class="size-4 shrink-0" stroke-width="1.75" />
@@ -149,11 +178,12 @@ onMounted(() => revealActive(false));
         <div class="shrink-0 border-t border-line p-2">
             <RouterLink
                 to="/about"
-                class="group flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-fg-muted transition-colors hover:text-accent"
-                active-class="!text-accent bg-subtle font-medium"
+                class="group flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-fg-muted transition-colors"
+                :class="itemHover"
+                :active-class="itemActive"
                 @click="emit('navigate')"
             >
-                <Info class="size-4 text-fg-subtle group-hover:text-accent" stroke-width="1.75" /> About
+                <Info class="size-4 text-fg-subtle" :class="desktop ? '' : 'group-hover:text-accent'" stroke-width="1.75" /> About
                 <span
                     class="ml-auto text-[11px] font-normal tabular-nums text-fg-subtle"
                     :title="BUILD_DATE ? `Built ${new Date(BUILD_DATE).toLocaleString()}` : undefined"
@@ -161,6 +191,15 @@ onMounted(() => revealActive(false));
                     v{{ APP_VERSION }}
                 </span>
             </RouterLink>
+            <button
+                v-if="desktop && isDesktopApp"
+                type="button"
+                class="flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-fg-muted transition-colors"
+                :class="itemHover"
+                @click="desktopSettingsOpen = true"
+            >
+                <Settings class="size-4 text-fg-subtle" stroke-width="1.75" /> Settings
+            </button>
         </div>
     </aside>
 </template>

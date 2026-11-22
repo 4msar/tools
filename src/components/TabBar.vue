@@ -11,7 +11,7 @@ import {
     openTabs,
 } from "@/composables/tabs";
 
-const props = defineProps<{ activeId?: string; inline?: boolean }>();
+const props = defineProps<{ activeId?: string; inline?: boolean; strip?: boolean }>();
 const router = useRouter();
 const scroller = ref<HTMLElement>();
 const menuOpen = ref(false);
@@ -94,20 +94,22 @@ watch(
 </script>
 
 <template>
-    <!-- inline: sits in the header between breadcrumb and search (desktop). Otherwise: its own row below the header. -->
+    <!-- strip: underlined tabs in the desktop app's title row. inline: pill in the web header. Otherwise: its own row below the header. -->
     <div
         class="flex min-w-0"
         v-if="openTabs.length"
         :class="
-            inline
-                ? 'h-10 items-center rounded-full bg-surface/90 px-1 shadow-float ring-1 ring-line backdrop-blur'
-                : 'h-10 items-end gap-1 border-b border-line px-2 sm:px-4'
+            strip
+                ? 'h-full items-stretch'
+                : inline
+                  ? 'h-10 items-center rounded-full bg-surface/90 px-1 shadow-float ring-1 ring-line backdrop-blur'
+                  : 'h-10 items-end gap-1 border-b border-line px-2 sm:px-4'
         "
     >
         <div
             ref="scroller"
             class="relative flex min-w-0 flex-1 gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            :class="inline ? 'items-center' : 'items-end'"
+            :class="strip ? 'items-stretch' : inline ? 'items-center' : 'items-end'"
             :style="
                 edgeMask
                     ? { maskImage: edgeMask, WebkitMaskImage: edgeMask }
@@ -121,7 +123,7 @@ watch(
                 v-for="(t, i) in openTabs"
                 :key="t.id"
                 :data-tab="t.id"
-                class="group relative shrink-0"
+                class="group relative flex shrink-0"
                 draggable="true"
                 @dragstart="onDragStart(t.id, $event)"
                 @dragover="onDragOver(i, $event)"
@@ -145,7 +147,14 @@ watch(
                     :aria-selected="t.id === activeId"
                     class="relative flex items-center gap-1.5 font-medium transition-colors"
                     :class="[
-                        inline
+                        strip
+                            ? [
+                                  'h-full max-w-48 border-b-2 pr-8 pl-3 text-[13px]',
+                                  t.id === activeId
+                                      ? 'border-accent text-fg'
+                                      : 'border-transparent text-fg-subtle hover:text-fg',
+                              ]
+                            : inline
                             ? [
                                   'h-8 max-w-44 rounded-full pr-7 pl-3 text-sm',
                                   t.id === activeId
@@ -167,7 +176,7 @@ watch(
                         :is="t.icon"
                         class="size-3.5 shrink-0"
                         :class="
-                            inline || t.id !== activeId ? '' : 'text-accent'
+                            !inline && t.id === activeId ? 'text-accent' : ''
                         "
                         stroke-width="1.75"
                     />
@@ -177,9 +186,11 @@ watch(
                     type="button"
                     class="absolute top-1/2 right-1.5 grid size-5 -translate-y-1/2 cursor-pointer place-items-center text-fg-subtle transition hover:text-fg"
                     :class="[
-                        inline
-                            ? 'rounded-full hover:bg-surface'
-                            : 'rounded-sm hover:bg-subtle',
+                        strip
+                            ? 'rounded-sm hover:bg-line/70'
+                            : inline
+                              ? 'rounded-full hover:bg-surface'
+                              : 'rounded-sm hover:bg-subtle',
                         t.id === activeId
                             ? 'opacity-100'
                             : 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
@@ -198,18 +209,22 @@ watch(
             ref="menuEl"
             class="relative shrink-0"
             :class="
-                inline
-                    ? 'ml-1 flex h-6 items-center border-l border-line pl-1'
-                    : 'mb-1.5'
+                strip
+                    ? 'ml-1 flex items-center'
+                    : inline
+                      ? 'ml-1 flex h-6 items-center border-l border-line pl-1'
+                      : 'mb-1.5'
             "
         >
             <button
                 type="button"
                 class="grid cursor-pointer place-items-center text-fg-subtle transition-colors hover:text-accent"
                 :class="
-                    inline
-                        ? 'size-8 rounded-full'
-                        : 'size-7 rounded-md hover:bg-subtle'
+                    strip
+                        ? 'size-7 rounded-md hover:bg-line/70'
+                        : inline
+                          ? 'size-8 rounded-full'
+                          : 'size-7 rounded-md hover:bg-subtle'
                 "
                 aria-label="Tab options"
                 :aria-expanded="menuOpen"
@@ -220,7 +235,7 @@ watch(
             <div
                 v-if="menuOpen"
                 class="absolute top-full right-0 z-30 w-52 rounded-md border border-line bg-surface p-1 text-sm shadow-float"
-                :class="inline ? 'mt-3' : 'mt-1'"
+                :class="inline && !strip ? 'mt-3' : 'mt-1'"
                 role="menu"
             >
                 <button
@@ -262,5 +277,5 @@ watch(
             </div>
         </div>
     </div>
-    <div v-else class="h-10" />
+    <div v-else :class="strip ? 'flex-1' : 'h-10'" />
 </template>

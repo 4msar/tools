@@ -11,6 +11,7 @@ import {
     Moon,
     PanelLeftClose,
     PanelLeftOpen,
+    Plus,
     Search,
     Star,
     Sun,
@@ -76,6 +77,21 @@ const tool = computed(() => toolById.get(route.meta.toolId as string));
 // Compact view only applies on tool pages; home/about always show the full chrome.
 const isCompact = computed(() => compactMode.value && !!tool.value);
 const showSidebar = computed(() => !isCompact.value && !sidebarCollapsed.value);
+// Desktop app shell (wide windows only): full-height sidebar on a tinted canvas, tabs in the
+// title row and the page inside an inset panel. In dev, `?shell=desktop` previews it in the browser.
+const shellPreview = (() => {
+    if (!import.meta.env.DEV) return false;
+    try {
+        const q = new URLSearchParams(location.search).get("shell");
+        if (q !== null) sessionStorage.setItem("devtools:shell", q);
+        return sessionStorage.getItem("devtools:shell") === "desktop";
+    } catch {
+        return false;
+    }
+})();
+const desktopShell = computed(
+    () => (isDesktopApp || shellPreview) && isDesktop.value && !isCompact.value,
+);
 const category = computed(() =>
     tool.value ? categoryById.get(tool.value.category) : undefined,
 );
@@ -146,7 +162,87 @@ onKeyStroke((e) => {
 
 <template>
     <MotionConfig reduced-motion="user">
-    <div class="min-h-dvh">
+    <div v-if="desktopShell" class="flex h-dvh overflow-hidden bg-subtle">
+        <AnimatePresence :initial="false">
+            <motion.div
+                v-if="!sidebarCollapsed"
+                key="shell-sidebar"
+                class="h-full w-64 shrink-0 overflow-hidden"
+                :initial="{ width: 0, opacity: 0 }"
+                :animate="{ width: 256, opacity: 1 }"
+                :exit="{ width: 0, opacity: 0 }"
+                :transition="softSpring"
+            >
+                <AppSidebar variant="desktop" class="w-64" @search="paletteOpen = true" />
+            </motion.div>
+        </AnimatePresence>
+
+        <div class="flex min-w-0 flex-1 flex-col">
+            <header class="flex h-14 shrink-0 items-stretch gap-1 pr-3" :class="sidebarCollapsed ? 'pl-3' : 'pl-1'">
+                <motion.button
+                    type="button"
+                    class="grid size-9 shrink-0 cursor-pointer place-items-center self-center rounded-md text-fg-subtle hover:bg-line/70 hover:text-fg"
+                    :aria-label="sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'"
+                    :title="sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'"
+                    v-bind="pressable"
+                    @click="sidebarCollapsed = !sidebarCollapsed"
+                >
+                    <PanelLeftOpen v-if="sidebarCollapsed" class="size-4.5" stroke-width="1.75" />
+                    <PanelLeftClose v-else class="size-4.5" stroke-width="1.75" />
+                </motion.button>
+                <TabBar strip :active-id="tool?.id" class="ml-1" />
+                <button
+                    type="button"
+                    class="grid size-8 shrink-0 cursor-pointer place-items-center self-center rounded-md text-fg-subtle hover:bg-line/70 hover:text-fg"
+                    title="Open a tool"
+                    aria-label="Open a tool"
+                    @click="paletteOpen = true"
+                >
+                    <Plus class="size-4" stroke-width="1.75" />
+                </button>
+                <div class="ml-auto flex shrink-0 items-center gap-1 pl-2">
+                    <button
+                        v-if="tool"
+                        type="button"
+                        class="grid size-9 cursor-pointer place-items-center rounded-md transition-colors hover:bg-line/70"
+                        :class="isFavorite(tool.id) ? 'text-accent' : 'text-fg-subtle hover:text-fg'"
+                        :aria-label="isFavorite(tool.id) ? 'Remove from favorites' : 'Add to favorites'"
+                        :title="isFavorite(tool.id) ? 'Remove from favorites' : 'Add to favorites'"
+                        @click="toggleFavorite(tool.id)"
+                    >
+                        <Star class="size-4" stroke-width="1.75" :fill="isFavorite(tool.id) ? 'currentColor' : 'none'" />
+                    </button>
+                    <button
+                        type="button"
+                        class="grid size-9 cursor-pointer place-items-center rounded-md text-fg-subtle transition-colors hover:bg-line/70 hover:text-fg"
+                        :title="`Theme: ${themeMode}`"
+                        aria-label="Toggle theme"
+                        @click="cycleTheme"
+                    >
+                        <Monitor v-if="themeMode === 'system'" class="size-4" stroke-width="1.75" />
+                        <Moon v-else-if="isDark" class="size-4" stroke-width="1.75" />
+                        <Sun v-else class="size-4" stroke-width="1.75" />
+                    </button>
+                    <component :is="DesktopSettings" v-if="DesktopSettings && isDesktopApp" />
+                </div>
+            </header>
+
+            <!-- The page sits in an inset panel that owns the scrolling. -->
+            <div
+                class="relative min-h-0 flex-1 overflow-y-auto border-t border-line bg-bg"
+                :class="sidebarCollapsed ? '' : 'rounded-tl-xl border-l'"
+            >
+                <main class="mx-auto w-full max-w-[1400px] px-6 pt-6 pb-8">
+                    <RouterView v-slot="{ Component }">
+                        <KeepAlive :include="keepAliveInclude" :max="15">
+                            <component :is="Component" :key="route.path" class="page-enter" />
+                        </KeepAlive>
+                    </RouterView>
+                </main>
+            </div>
+        </div>
+    </div>
+    <div v-else class="min-h-dvh">
         <!-- Desktop sidebar: slides in/out with the header toggle and compact view. -->
         <AnimatePresence :initial="false">
             <motion.div
@@ -454,6 +550,7 @@ onKeyStroke((e) => {
                 </RouterView>
             </motion.main>
         </motion.div>
+    </div>
 
         <CommandPalette v-model:open="paletteOpen" @dismiss="onPaletteDismiss" />
         <ChatWidget />
@@ -462,6 +559,5 @@ onKeyStroke((e) => {
             :theme="isDark ? 'dark' : 'light'"
             :offset="72"
         />
-    </div>
     </MotionConfig>
 </template>
