@@ -3,12 +3,11 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import { ChevronRight, ChevronsDownUp, ChevronsUpDown, House, Info, Search, Star, Wrench } from "lucide-vue-next";
 import { categories, searchTools, tools } from "@/tools/registry";
-import { favorites } from "@/composables/prefs";
+import { favorites, sidebarGroupsCollapsed as collapsed } from "@/composables/prefs";
 import { APP_VERSION, BUILD_DATE } from "@/site";
 
 const emit = defineEmits<{ navigate: [] }>();
 const filter = ref("");
-const collapsed = ref<Record<string, boolean>>({});
 const nav = ref<HTMLElement>();
 const route = useRoute();
 
@@ -19,11 +18,22 @@ const groups = computed(() => {
         .filter((g) => g.items.length);
 });
 
-const allCollapsed = computed(() => categories.every((c) => collapsed.value[c.id]));
+// The category of the open tool is always kept expanded.
+const activeCategory = computed(() => tools.find((t) => t.id === route.meta.toolId)?.category);
+const isCollapsed = (id: string) => !!collapsed.value[id] && id !== activeCategory.value;
+
+const allCollapsed = computed(() =>
+    categories.every((c) => c.id === activeCategory.value || collapsed.value[c.id]),
+);
 
 function toggleAll() {
     const next = !allCollapsed.value;
-    collapsed.value = Object.fromEntries(categories.map((c) => [c.id, next]));
+    collapsed.value = Object.fromEntries(categories.map((c) => [c.id, next && c.id !== activeCategory.value]));
+}
+
+function toggleGroup(id: string) {
+    if (id === activeCategory.value) return;
+    collapsed.value = { ...collapsed.value, [id]: !collapsed.value[id] };
 }
 
 // Keep the active tool visible in the sidebar: expand its category and scroll it into view.
@@ -31,7 +41,7 @@ async function revealActive(smooth: boolean) {
     const id = route.meta.toolId as string | undefined;
     if (!id) return;
     const tool = tools.find((t) => t.id === id);
-    if (tool && collapsed.value[tool.category]) collapsed.value[tool.category] = false;
+    if (tool && collapsed.value[tool.category]) collapsed.value = { ...collapsed.value, [tool.category]: false };
     await nextTick();
     const container = nav.value;
     const el = container?.querySelector<HTMLElement>(`[data-tool="${id}"]`);
@@ -111,13 +121,13 @@ onMounted(() => revealActive(false));
                 <button
                     type="button"
                     class="flex w-full cursor-pointer items-center gap-1.5 px-2 pb-1 text-xs font-medium text-fg-subtle transition-colors hover:text-fg"
-                    @click="collapsed[g.id] = !collapsed[g.id]"
+                    @click="toggleGroup(g.id)"
                 >
-                    <ChevronRight class="size-3 transition-transform" :class="collapsed[g.id] && !filter ? '' : 'rotate-90'" />
+                    <ChevronRight class="size-3 transition-transform" :class="isCollapsed(g.id) && !filter ? '' : 'rotate-90'" />
                     {{ g.name }}
                     <span class="ml-auto font-normal tabular-nums">{{ g.items.length }}</span>
                 </button>
-                <div v-show="!collapsed[g.id] || filter">
+                <div v-show="!isCollapsed(g.id) || filter">
                     <RouterLink
                         v-for="t in g.items"
                         :key="t.id"

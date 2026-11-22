@@ -44,3 +44,5 @@ export function pushRecent(id: string) {
 // Layout: desktop sidebar collapse and the distraction-free "compact" tool view.
 export const sidebarCollapsed = useStorage<boolean>("devtools:sidebar-collapsed", false);
 export const compactMode = useStorage<boolean>("devtools:compact", false);
+// Sidebar category collapse state, keyed by category id. Survives sidebar hide/show and reloads.
+export const sidebarGroupsCollapsed = useStorage<Record<string, boolean>>("devtools:sidebar-groups", {});
