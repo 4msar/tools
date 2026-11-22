@@ -1,7 +1,7 @@
 name: Desktop app
 
 # Builds the Tauri desktop app.
-# - Pull requests / pushes touching the desktop code: build check on every OS (no release).
+# - Pull requests touching the desktop code: build check on every OS (no release). Pushes to main do nothing.
 # - Tag `desktop-v*` (e.g. desktop-v1.0.9) or manual run: build, then attach installers and the signed
 #   updater manifest (latest.json) to a draft GitHub Release. Publishing that release ships the update
 #   to existing installs and triggers homebrew.yml to update the cask.
@@ -11,8 +11,6 @@ name: Desktop app
 on:
     push:
         tags: ["desktop-v*"]
-        branches: [main]
-        paths: ["src-tauri/**", "src/desktop/**", ".github/workflows/desktop.yml"]
     pull_request:
         paths: ["src-tauri/**", "src/desktop/**", ".github/workflows/desktop.yml"]
     workflow_dispatch:

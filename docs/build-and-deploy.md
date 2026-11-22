@@ -6,7 +6,7 @@ DevTools ships two ways from one codebase:
 | --- | --- | --- |
 | Lives at | https://tools.msar.me (GitHub Pages) | macOS, Windows, Linux installers (GitHub Releases, Homebrew) |
 | Built by | `yarn build` | `yarn desktop:build` (Tauri, `src-tauri/`) |
-| Shipped by | `.github/workflows/deploy.yml` on every push to `main` | `.github/workflows/desktop.yml` on a `desktop-v*` tag |
+| Shipped by | `.github/workflows/deploy.yml` on a `v*` tag (e.g. `v1.0.10`) | `.github/workflows/desktop.yml` on a `desktop-v*` tag |
 | Updates | Service worker + `version.json` check | Tauri updater (`latest.json` on the latest GitHub Release) |
 
 ---
@@ -41,7 +41,7 @@ yarn build
 
 ### Deploy
 
-Pushing to `main` runs `.github/workflows/deploy.yml`, which builds and publishes `dist/` to GitHub Pages. Open tabs notice the new `version.json` and offer a reload.
+Pushing a release tag (e.g. `git tag v1.0.10 && git push origin v1.0.10`) runs `.github/workflows/deploy.yml`, which builds and publishes `dist/` to GitHub Pages. Open tabs notice the new `version.json` and offer a reload.
 
 ---
 
