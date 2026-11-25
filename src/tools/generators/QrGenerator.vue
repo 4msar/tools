@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useHandoff } from "@/composables/handoff";
 import { computed, onMounted, ref, watch } from "vue";
+import { createReusableTemplate } from "@vueuse/core";
 import { Download } from "lucide-vue-next";
 import QRCode from "qrcode";
 import {
@@ -13,6 +14,15 @@ import {
     ToolPage,
 } from "@/components/ui";
 import { downloadBlob } from "@/composables/useClipboard";
+import VisualQr from "./VisualQr.vue";
+
+type Style = "classic" | "visual";
+const style = ref<Style>("classic");
+const styles = [
+    { value: "classic", label: "Classic" },
+    { value: "visual", label: "Visual" },
+] as const;
+const [DefineContent, ReuseContent] = createReusableTemplate();
 
 type Kind = "text" | "wifi" | "email" | "phone" | "sms" | "vcard";
 const kind = ref<Kind>("text");
@@ -119,7 +129,7 @@ async function draw() {
             e instanceof Error ? e.message : "Could not generate QR code.";
     }
 }
-watch([payload, opts], draw, { deep: true });
+watch([payload, opts, canvas], draw, { deep: true });
 onMounted(draw);
 
 function downloadPng() {
@@ -160,11 +170,11 @@ useHandoff<{ input?: string }>("qr-code-generator", (p) => {
 <template>
     <ToolPage>
         <template #actions>
+            <Tabs v-model="style" :options="[...styles]" size="sm" />
             <Tabs v-model="kind" :options="[...kinds]" size="sm" />
         </template>
 
-        <div class="grid gap-4 lg:grid-cols-2">
-            <div class="space-y-4">
+        <DefineContent>
                 <Panel title="Content">
                     <div class="space-y-3">
                         <Field v-if="kind === 'text'" label="Text or URL">
@@ -288,6 +298,15 @@ useHandoff<{ input?: string }>("qr-code-generator", (p) => {
                     </div>
                 </Panel>
 
+        </DefineContent>
+
+        <VisualQr v-if="style === 'visual'" :payload="payload">
+            <ReuseContent />
+        </VisualQr>
+
+        <div v-else class="grid gap-4 lg:grid-cols-2">
+            <div class="space-y-4">
+                <ReuseContent />
                 <Panel title="Options">
                     <div class="grid gap-3 sm:grid-cols-2">
                         <Field label="Size (px)"
